@@ -1,6 +1,6 @@
 # IAM & AWS CLI
 
-![Identity and Access Management](/assets/aws-certified-developer-associate/iam.png "Identity and Access Management"){ width="150" height="auto" style="display: block; margin: 0 auto" }
+![Identity and Access Management](/assets/aws-certified-developer-associate/iam.png "Identity and Access Management")
 
 **IAM (Identity and Access Management)** is a  global service. Therefore, there is no region to be selected, when you create a resource (user/group) in IAM, it will be available everywhere.
 
@@ -14,7 +14,7 @@ The **root account** (created by default,) should be used only for creating user
 
 Users don’t have to belong to a group, and user can belong to multiple groups
 
-![Examples of users and groups](/assets/aws-certified-developer-associate/users_groups.png "Examples of users and groups"){ width="100%" height="auto" style="display: block; margin: 0 auto" }
+![Examples of users and groups](/assets/aws-certified-developer-associate/users_groups.png "Examples of users and groups")
 
 We create users to allow them to use our AWS account and to allow the to do so, we need to give them proper **permissions**.
 
