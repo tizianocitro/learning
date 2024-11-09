@@ -194,8 +194,8 @@ The diagram below shows the workings of security groups when applied to EC2 inst
 
 ![Security groups diagram](/assets/aws-certified-developer-associate/security_groups_diagram.png "Security groups diagram")
 
-The <span style="color:green">allowed request </span> will reach the machine.
-The <span style="color:red">blocked request </span> will result in a timeout.
+The allowed request will reach the machine.
+The blocked request will result in a timeout.
 
 ### 2.5.2 Referencing other Security Groups
 
@@ -237,3 +237,92 @@ To connect to a machine using EC2 Instance Connect or SSH, it is essential that 
 ![Add IAM Role to EC2 instance](/assets/aws-certified-developer-associate/add_iam_role_to_ec2_instance.png "Add IAM Role to EC2 instance")
 
 ## 2.9 EC2 Instance Purchasing Options
+
+- **On-Demand Instances**: meant for short workloads and offer predictable pricing with pay by second model.
+- **Reserved (1 or 3 years term)**:
+    - **Reserved Instances**: for long workloads.
+    - **Convertible Reserved Instances**: for long workloads with flexible instance types, so for when you want to change the instance type of your VMs over time.
+- **Savings Plans (1 or 3 years term)**: commitment to an amount of usage in terms of dollars, and are meant for long workload.
+- **Spot Instances**: for short workloads, cheap but you can lose instances at any time, making them less reliable.
+- **Dedicated Hosts**: book an entire physical server with control over instance placement.
+- **Dedicated Instances**: the hardware is dedicated to you, so no other customers will share your hardware.
+- **Capacity Reservations**: reserve capacity in a specific AZ for any duration.
+
+### 2.9.1 EC2 On-Demand Instances
+
+You pay for what you use:
+- Linux or Windows: billing per second, after the first minute.
+- All other operating systems: billing per hour.
+
+It has the **highest cost among purchasing options but no upfront payment**. It is not meant for long-term commitment as it is **recommended for short-term and un-interrupted workloads**, where
+you can't predict how the application will behave.
+
+### 2.9.2 EC2 Reserved Instances
+
+They offer up to X% (72% currently) discount compared to on-demand instances.
+
+You reserve a specific instance attribute, such as instance type, region, tenancy, and OS.
+
+The **reservation period** can be:
+- 1 year (+ discount).
+- 3 years (+++ discount).
+
+There are different **payment options**:
+- No Upfront (+ discount).
+- Partial Upfront (++ discount).
+- All Upfront (+++ discount).
+
+Reserved Instance have a **scope**, meaning you can reserve capacity at regional or zonal (reserve capacity in an AZ) level.
+
+They are **recommended for steady-state usage applications (think database)** and you can buy and sell reserved machines in the **Reserved Instance Marketplace**.
+
+An offering of reserved instances are **Convertible Reserved Instance**, which offer you the flexibility of changing the instance type, instance family, OS, scope and tenancy. However, this flexibility comes at the cost of less discount (66% currently), they cost more than normal reserved instances.
+
+### 2.9.3 EC2 Savings Plans
+
+They offer a discount based on long-term usage but you do not commit to a certain instance attribute. You **commit to a certain type of usage, for example $10/hour for 1 or 3 years**. **Usage beyond the savings plan is billed at the on-demand price**.
+
+You are **locked to a specific instance family and AWS region (e.g., m5 in us-east-1)** but you are flexible across:
+- Instance Size (e.g., m5.xlarge, m5.2xlarge).
+- OS (e.g., Linux, Windows).
+- Tenancy (Host, Dedicated, Default).
+
+### 2.9.4 EC2 Spot Instances
+
+They offer discount of up to 90% compared to on-demand instances.
+
+The are instances that **you can lose at any point of time if your max price** (the price you are paying for them) **is less than the current spot price**.
+
+These are the **most cost-efficient instances in AWS and are useful for workloads that are resilient to failure**, such as batch jobs, data analysis, image processing, any distributed workloads, workloads with a flexible start and end time.
+
+Mind that **they are not suitable for critical jobs or databases** and **the exam tests you on this**.
+
+### 2.9.5 EC2 Dedicated Hosts
+
+They **provide a physical server** with EC2 instance capacity fully dedicated to your use and allow you to address compliance requirements and use your existing server-bound software licenses (per-socket, per-core, per-VM software licenses).
+
+**Purchasing options**:
+- On-demand: pay per second for active Dedicated Host.
+- Reserved: 1 or 3 years (No Upfront, Partial Upfront, All Upfront).
+
+It is **the most expensive option** but it is **useful for software that have complicated licensing model (BYOL - Bring Your Own License) or for companies that have strong regulatory or compliance needs**.
+
+### 2.9.6 EC2 Dedicated Instances
+
+Instances run on hardware that’s dedicated to you, so **the hardware is not shared with other customers**. Not that you may share hardware with other instances in the same account.
+
+![EC2 Dedicated Hosts VS Dedicated Instances](/assets/aws-certified-developer-associate/dedicated_hosts_vs_instances.png "EC2 Dedicated Hosts VS Dedicated Instances")
+
+### 2.9.7 EC2 Capacity Reservations
+
+Reserve on-demand instances capacity in a specific AZ for any duration. You **always have access to EC2 capacity in the AZ when you need it but you are charged for it at the on-demand price even if you are not running any instance**.
+
+There is no time commitment (create/cancel anytime) and no billing discounts. You can combine it with Reserved Instances and Savings Plans to benefit from billing discounts.
+
+**They are suitable for short-term, uninterrupted workloads that needs to be in a specific AZ**.
+
+### 2.9.8 Example of Price Comparison
+
+The following is a price comparison for an *m4.large* in *us-east-1* region:
+
+![Example of Price Comparison](/assets/aws-certified-developer-associate/ec2_price_comparison.png "Example of Price Comparison")
