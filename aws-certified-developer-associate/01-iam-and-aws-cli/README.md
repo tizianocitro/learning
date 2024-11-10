@@ -1,7 +1,5 @@
 # 1 IAM & AWS CLI
 
-![Identity and Access Management](/assets/aws-certified-developer-associate/iam.png "Identity and Access Management")
-
 **IAM (Identity and Access Management)** is a  global service. Therefore, there is no region to be selected, when you create a resource (user/group) in IAM, it will be available everywhere.
 
 The **root account** (created by default,) should be used only for creating users. It should never be used or shared. It is identified by seeing only the account ID within the dashboard, while IAM Users have the username attached. Use the root account only to create your first IAM User and a few account/service management tasks. For everyday tasks, use an **IAM User**.

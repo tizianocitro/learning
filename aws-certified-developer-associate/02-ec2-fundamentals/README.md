@@ -1,7 +1,5 @@
 # 2 EC2 Fundamentals
 
-![EC2](/assets/aws-certified-developer-associate/ec2.png "EC2")
-
 ## 2.1 Budget Setup
 
 It is possible to set budgets in the *Billing and Cost Management Home* in the AWS Console. To access billing data, you need to activate IAM access to **Billing Information**.
