@@ -87,7 +87,7 @@ Key pairs are necessary if we want access via **SSH** to the created VM. A key p
 
 Regarding network settings, it is a good practice to set them via **security groups**.
 
-For storage, you have the following configuration but more details will come.
+For storage, you have the following configuration but more details will come. A VM has alaways attached a **root volume** (by default an EBS volume).
 
 ![EC2 storage config](/assets/aws-certified-developer-associate/storage_ec2_options.png "EC2 storage config")
 
