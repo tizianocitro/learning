@@ -82,8 +82,28 @@ To create an EBS snapshot you need to use the *Create Snapshot* entry in an EBS 
 
 ![Create EBS Snapshots](/assets/aws-certified-developer-associate/create_ebs_snapshot.png "Create EBS Snapshots")
 
-By doing, you can configure the snapshot.
+By doing so, you can configure the snapshot.
 
 ![Create Snapshot Settings](/assets/aws-certified-developer-associate/ebs_snapshot_settings.png "EBS Snapshot Settings")
 
 Then you can use the created snapshot to create an EBS volume from it, copy the snapshot, and perform other actions. **When you create an EBS volume from a snapshot, you will see a reference to the snapshot in the EBS volume details**.
+
+## 3.5 Amazon Machine Images (AMIs)
+
+An AMI is **a customization of an EC2 instance where you add your own software, configuration, operating system, monitoring, and more**. They offer **faster boot and configuration time because all the software is pre-packaged** and does not need to be installed at boot time, for example, using EC2 user data scripts.
+
+AMIs are **built for a specific region** but **can be copied across regions**.
+
+You can launch EC2 instances from:
+- **Public AMIs**: AWS provides and maintains them.
+- **Your own AMIs**: you make and maintain them yourself.
+- **AWS Marketplace AMIs**: AMIs someone else made and potentially sells on the marketplace.
+
+## 3.6 Creating AMIs from EC2 instances
+
+1. Start an EC2 instance and customize it.
+2. Stop the instance for data integrity.
+3. Build an AMI from the instance, this will also create EBS snapshots.
+4. Launch instances using the built AMI.
+
+![Custom AMI](/assets/aws-certified-developer-associate/custom_ami.png "Custom AMI")
