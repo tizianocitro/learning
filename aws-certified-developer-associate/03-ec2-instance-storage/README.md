@@ -101,9 +101,29 @@ You can launch EC2 instances from:
 
 ## 3.6 Creating AMIs from EC2 instances
 
-1. Start an EC2 instance and customize it.
+1. Start an EC2 instance and customize it (for example, adding a EC2 user data script).
 2. Stop the instance for data integrity.
 3. Build an AMI from the instance, this will also create EBS snapshots.
 4. Launch instances using the built AMI.
 
 ![Custom AMI](/assets/aws-certified-developer-associate/custom_ami.png "Custom AMI")
+
+By opening the context menu of the machine you want to create an AMI from, you will be able to select the option *Create Image* to create an AMI.
+
+![Create AMI](/assets/aws-certified-developer-associate/create_ami.png "Create AMI")
+
+This will allow you to configure your new AMI:
+
+![AMI Info](/assets/aws-certified-developer-associate/ami_info.png "AMI Info")
+
+When you confirm the creation of the AMI, it will be visible in the *AMIs* tab under the *Images* entry in the AWS Console.
+
+![AMIs List](/assets/aws-certified-developer-associate/amis_list.png "AMIs List")
+
+Then, using the *Launch instance from AMI* button, you can start an EC2 instance from the AMI.
+
+![Launch EC2 from AMI](/assets/aws-certified-developer-associate/launch_ec2_from_ami.png "Launch EC2 from AMI")
+
+Or you can select your own AMI when creating an instance, like in the following image.
+
+![Launch EC2 from custom AMI](/assets/aws-certified-developer-associate/ec2_from_custom_ami.png "Launch EC2 from custom AMI")
