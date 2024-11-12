@@ -127,3 +127,77 @@ Then, using the *Launch instance from AMI* button, you can start an EC2 instance
 Or you can select your own AMI when creating an instance, like in the following image.
 
 ![Launch EC2 from custom AMI](/assets/aws-certified-developer-associate/ec2_from_custom_ami.png "Launch EC2 from custom AMI")
+
+## 3.7 (Local) EC2 Instance Store
+
+EBS volumes are network drives with good but limited performance. If you need a high-performance hardware disk, use EC2 Instance Store. **EC2 Instance Store leverages the physical hard-drive connected to the physical server where the EC2 instance is running**.
+
+It provide better I/O performance (very high IOPS) but **it is ephemeral storage**, meaning that the EC2 instances lose their storage if they’re stopped.
+
+**It is a good fit for buffer, cache, scratch data or temporary content but not for long-term data** (this is better handled with EBS) as there is **risk of data loss if hardware fails**. Backups and replication are your responsibility.
+
+An example of EC2 instance type that has instance store attached is the *i3* family.
+
+**From an exam perspective, anytime you see very high-performance hardware attached volume for your EC2 instances, think of Local EC2 Instance Store**.
+
+## 3.8 EBS Volume Types
+
+EBS volumes come in **6 types**:
+- **gp2/gp3 (SSD)**: General purpose SSD volume that balances price and performance for a wide variety of workloads.
+- **io1/io2 Block Express (SSD)**: Highest-performance SSD volume for mission-critical low-latency or high-throughput workloads.
+- **st1 (HDD)**: Low cost HDD volume designed for frequently accessed, throughput-intensive workloads.
+- **sc1 (HDD)**: Lowest cost HDD volume designed for less frequently accessed workloads.
+
+**EBS volumes are characterized in size, throughput, and IOPS**.
+
+Keep in mind that **only gp2/gp3 and io1/io2 Block Express can be used as boot volumes, where the root OS runs**.
+
+**General Purpose SSD and Provisioned IOPS (PIOPS) SSD are the most important for the exam**.
+
+### 3.8.1 EBS General Purpose SSD
+
+It offers **cost effective storage and low-latency**. Usable for system boot volumes, virtual desktops, development and test environments.
+
+**The size goes between 1 GiB and 16 TiB**.
+
+**gp3** (newer generation of volumes):
+- Offers a baseline of 3,000 IOPS and throughput of 125 MiB/s.
+- It is possible to increase IOPS up to 16,000 and throughput up to 1000 MiB/s, independently. It means IOPS and throughput are not linked.
+
+**gp2**:
+- The small gp2 volumes can burst IOPS to 3,000.
+- Size of the volume and IOPS are linked with the max IOPS is 16,000.
+- It means that you get 3 IOPS per each GB you add, so at 5,334 GB we are at the max IOPS.
+
+**The crucial part is that in gp3 IOPS and throughput can be scaled independently, while in gp2 they are linked together**.
+
+### 3.8.2 EBS Provisioned IOPS (PIOPS) SSD
+
+Good fit for critical business applications with sustained IOPS performance or **applications that need more than 16,000 IOPS**.
+
+**For the exam, keep in mind that when you see databases workloads that are sensitive to storage performance and consistency, this is a type of volume that will work great**.
+
+**io1 (between 4 GiB and 16 TiB)**:
+- Max PIOPS are 64,000 for Nitro EC2 instances and 32,000 for other kind of instances.
+- Can increase PIOPS independently from storage size.
+
+**io2 Block Express (between 4 GiB and 64 TiB)**:
+- They offer sub-millisecond latency.
+- Max PIOPS are 256,000 with an IOPS:GiB ratio of 1,000:1.
+
+**PIOPS supports EBS Multi-attach**.
+
+**Important to remember that for over 32,000 IOPS, you need EC2 Nitro with io1 or io2**.
+
+### 3.8.3 Hard Disk Drives (HDD)
+
+The **cannot be used as boot volumes** and the **size goes between 125 GiB and 16 TiB**.
+
+**Throughput Optimized HDD (st1)**:
+- Great for big data, data warehouses, and log processing.
+- Max throughput of 500 MiB/s and max IOPS 500.
+
+**Cold HDD (sc1)**:
+- Useful for data that is infrequently accessed.
+- For scenarios where you need the lowest possible cost.
+- Max throughput of 250 MiB/s and max IOPS 250.
