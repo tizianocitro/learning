@@ -201,3 +201,148 @@ The **cannot be used as boot volumes** and the **size goes between 125 GiB and 1
 - Useful for data that is infrequently accessed.
 - For scenarios where you need the lowest possible cost.
 - Max throughput of 250 MiB/s and max IOPS 250.
+
+## 3.9 EBS Multi-Attach (io1/io2 only)
+
+**Attach the same EBS volume to multiple EC2 instances in the same AZ**. The volume is still tight to the AZ, so you cannot attach it to another AZ
+
+**Multi-attach only works with up to 16 EC2 instances (this is important for the exam)** and you must use a file system that is cluster-aware (not XFS, EXT4, etc…).
+
+Each instance has full read and write permissions to the high-performance volume.
+
+Some use cases:
+- Achieve higher application availability in clustered Linux applications (for example using Teradata).
+- Applications must manage concurrent write operations.
+
+![EBS Multi-Attach](/assets/aws-certified-developer-associate/ebs_multi-attach.png "EBS Multi-Attach")
+
+## 3.10 Elastic File System (EFS)
+
+It is a managed Network File System (NFS) that can be mounted on many EC2 instances, **also in a multi-AZ scenario**.
+
+It uses the NFSv4 protocol, is highly available and scalable as it **scales automatically**. It follows a pay per use model, meaning that you **do not have to plan capacity in advance** but it is expensive as it costs 3x gp2, for example.
+
+Data are encrypted at rest using KMS and EFS is **compatible with Linux-based AMIs only** (not Windows) because it offers a POSIX file system (Linux) that has a standard file API.
+
+![EFS](/assets/aws-certified-developer-associate/efs.png "EFS")
+
+### 3.10.1 EFS Perfomance
+
+**EFS Scale**:
+- 1000s of concurrent NFS clients, 10 GB+/s throughput.
+- Growth to Petabyte-scale network file system, automatically.
+
+**Performance Mode** (it is set at EFS creation time):
+- **General Purpose (default and recommended option)**: latency-sensitive use cases (web server, CMS, ...).
+- **Max I/O**: higher latency and throughput and highly parallel (big data, or media processing).
+
+**Throughput Mode**:
+- **Bursting**: 1 TB means you have 50MiB/s + burst of up to 100MiB/s. Basically, it grows in throughput as it has more storage.
+- **Provisioned**: set your throughput regardless of storage size, e.g.,: 1 GiB/s for 1 TB of storage. It decorellates throughput from storage.
+- **Elastic (simpler and now recommended option)**: automatically scales throughput up or down based on your workloads:
+    - Up to 3GiB/s for reads and 1GiB/s for writes based on your workload.
+    - Used for unpredictable workdloads only.
+
+### 3.10.2 EFS Storage Class
+
+**Storage Tiers**, which provide a lifecycle management feature to move file after N days between the different types of storage tiers using **lifecycle policies**:
+- **Standard**: for frequently accessed files.
+- **Infrequent access (EFS-IA)**: gives you a cost to retrieve files but has a lower price to store these files.
+- **Archive**: for rarely accessed data (few times each year), a lot cheaper to store data on this tier (e.g., 50% less expensive).
+
+In the following example, a file that has not been accessed for 60 days is moved from the EFS Standard tier to the EFS IA tier:
+
+![EFS Storage Tiers](/assets/aws-certified-developer-associate/efs_storage_tiers.png "EFS Storage Tiers")
+
+**Availability and Durability**:
+- **Standard/Regional**: great for multi-AZ settings, for example, to resist to disasters in your production environment.
+- **One Zone**: one AZ settings, which are great for development environments. It has backup enabled by default and is compatible with IA using the EFS One Zone-IA option.
+
+## 3.11 Using EFS
+
+### 3.11.1 Creating a File System
+
+When creating an EFS we need to specify a VPC.
+
+![EFS Creation](/assets/aws-certified-developer-associate/efs_creation.png "EFS Creation")
+
+But if you click on the *Customize* button, you can enter a lot of other options for the **File System Settings**, such as file system type and encryption settings.
+
+![EFS Options](/assets/aws-certified-developer-associate/efs_options.png "EFS Options")
+
+And very important to save costs is the *Lifecycle Management* section:
+
+![EFS Lifecycle Management](/assets/aws-certified-developer-associate/efs_lifecyle_management.png "EFS Lifecycle Management")
+
+It is also possible to set the aforementioned *Performance Settings*. Enhanced is just a way to group the *Elastic* and *Provisioned* settings.
+
+![EFS Performance Settings](/assets/aws-certified-developer-associate/efs_performance_settings.png "EFS Performance Settings")
+
+For the *Provisioned* setting, you have to specify more options for the throughput and also have an indication of the throughput bill:
+
+![EFS Provisioned Setting](/assets/aws-certified-developer-associate/efs_provisioned_setting.png "EFS Provisioned Setting")
+
+Finaly, by clicking on the *Additional Settings*, you can set the *Performance Mode*.
+
+![EFS Performance Mode](/assets/aws-certified-developer-associate/efs_performance_modes.png "EFS Performance Mode")
+
+The **recommended configution by AWS is EFS with Elastic throughput mode and General Purpose performance mode**.
+
+Then, you need to configure the **Network Access** and you have to select a VPC and the **mount targets** with a security group for the file system for each target. You can create 1 mount target per AZ.
+
+![EFS Mount Targets example](/assets/aws-certified-developer-associate/efs_mount_targets.png "EFS Mount Targets example")
+
+Next, you can configure an optional **File System Policy**, also using a JSON editor.
+
+After the file system has been created, you can inspect it to access useful information, e.g., the current size.
+
+![EFS Details example](/assets/aws-certified-developer-associate/efs_details.png "EFS Details example")
+
+### 3.11.2 Mounting a File System into EC2 Instances
+
+From the EC2 creation dashboard, you can add file systems to the EC2 instance you are creating but you need to **select a subnet first** (as you can see in the image below).
+
+![EFS mount into EC2](/assets/aws-certified-developer-associate/efs_mount_ec2.png "EFS mount into EC2")
+
+Select a subnet by updating the *Network Settings* of your EC2 instance.
+
+![Select subnet for EC2](/assets/aws-certified-developer-associate/ec2_select_subnet.png "Select subnet for EC2")
+
+After you do so, you can add file system to the EC2 instance by clicking on *Add Shared File System*.
+
+![Enabled EFS for EC2 instance](/assets/aws-certified-developer-associate/efs_enabled_for_ec2.png "Enabled EFS for EC2 instance")
+
+Which will result in the file system being attached to the instance on a **mount point** that can be customized.
+
+A **security group will also be automatically created and added to the EFS mount target of the AZ where you are starting the instance**. The created security group allows inbound traffic over port 2049 and NFS protocol from the security group of the machine. So, the instance can access the file system.
+
+![EFS attached to EC2](/assets/aws-certified-developer-associate/efs_attached_ec2.png "EFS attached to EC2")
+
+To check that the file system is attached correctly, just SSH into the VM and run `ls <mount-point>`. Considering the same mount point of the image above, the command is `ls /mnt/efs/fs1`.
+
+Because the file system is shared, creating a file from the instance into it, will make that file accessible by any other instance that has this same file system attached.
+
+## 3.12 EBS vs EFS
+
+### 3.12.1 EBS
+
+EBS volumes:
+- Are attached to one instance (except if using the multi-attach of io1/io2).
+- Are locked at the AZ level.
+- In gp2, IO increases if the disk size increases.
+- In gp3 and io1, you can increase IO independently.
+
+To migrate an EBS volume across AZ, you need to take a snapshot and restore the snapshot to another AZ. However, **EBS backups use IO and you should not run them while your application is serving traffic because they can impact performance**.
+
+![EBS migration](/assets/aws-certified-developer-associate/ebs_migration.png "EBS migration")
+
+
+Root EBS volumes of instances get terminated by default if the EC2 instance gets terminated but you can disable that.
+
+### 3.12.2 EFS
+
+With EFS, it is possible to mount 100s of instances across AZs but only Linux instances (POSIX). For example, use EFS to share website files (WordPress).
+
+EFS has a higher price point than EBS but you can leverage storage tiers for cost savings.
+
+![EFS example](/assets/aws-certified-developer-associate/efs_example.png "EFS example")
