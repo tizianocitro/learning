@@ -278,7 +278,7 @@ An offering of reserved instances are **Convertible Reserved Instance**, which o
 
 ### 2.9.3 EC2 Savings Plans
 
-They offer a discount based on long-term usage but you do not commit to a certain instance attribute. You **commit to a certain type of usage, for example $10/hour for 1 or 3 years**. **Usage beyond the savings plan is billed at the on-demand price**.
+They offer a discount based on long-term usage but you do not commit to a certain instance attribute. You **commit to a certain type of usage, for example 10$/hour for 1 or 3 years**. **Usage beyond the savings plan is billed at the on-demand price**.
 
 You are **locked to a specific instance family and AWS region (e.g., m5 in us-east-1)** but you are flexible across:
 - Instance Size (e.g., m5.xlarge, m5.2xlarge).
@@ -324,3 +324,22 @@ There is no time commitment (create/cancel anytime) and no billing discounts. Yo
 The following is a price comparison for an *m4.large* in *us-east-1* region:
 
 ![Example of Price Comparison](/assets/aws-certified-developer-associate/ec2_price_comparison.png "Example of Price Comparison")
+
+## 2.10 AWS charges for IPv4 addresses
+
+Starting February 1st 2024, there's a **charge for all Public IPv4 created in your account**. The cost is 0.005$ per hour of Public IPv4 (more or less 3.6$ per month).
+
+For new accounts in AWS, you have **a free tier for the EC2 service of 750 hours of Public IPv4 per month for the first 12 months**. The important thing is that the 750 hours are cumulative across all instances, so if you have multiple instances and you are using their Public IPv4 addresses, you are consuming these hours.
+
+![EC2 Address Cost](/assets/aws-certified-developer-associate/ec2_address_cost.png "EC2 Address Cost")
+
+**For all other services there is no free tier**, for example:
+
+![Address Cost](/assets/aws-certified-developer-associate/address_cost.png "Address Cost")
+
+
+**Public IPv6 addresses are unaffected** but many Internet Service Provider (ISP) around the world do not support IPv6 yet.
+
+To troubleshoot charges, go into your *AWS Bill* or monitor all the IP addresses in your account using the **Amazon VPC IP Address Manager**, which offers the **AWS Public IP Insights** service.
+
+![Public IP Insights](/assets/aws-certified-developer-associate/ipam.png "Public IP Insights")
