@@ -18,3 +18,7 @@ The AWS Certified Developer Associate certification is great at assessing how we
 ## Services to Know to Pass the Exam
 
 ![Services to Know to Pass the Exam](/assets/aws-certified-developer-associate/aws_services.png "Services to Know to Pass the Exam")
+
+## Credits
+
+Huge thanks to **Stephane Maarek** for his [AWS Certified Developer Associate course](https://www.udemy.com/course/aws-certified-developer-associate-dva-c01/).
