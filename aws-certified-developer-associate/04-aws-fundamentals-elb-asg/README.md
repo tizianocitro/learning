@@ -276,3 +276,27 @@ And this is an example of NLB (as you can see, it also has a DNS name):
 Remmber to add the NLB security group to the instances' security group to allow traffic from the NLB to reach the instances.
 
 ![NLB Security Group](/assets/aws-certified-developer-associate/nlb_security_group.png "NLB Security Group")
+
+## 4.8 Gateway Load Balancer (GWLB)
+
+Deploy, scale, and manage a fleet of 3rd party network virtual appliances in AWS. You want to **use GWLB when you need all the traffic in your network to go through a network of virtual appliances**, such as firewalls, intrusion detection and prevention systems, deep packet inspection systems, and payload manipulation.
+
+All the process is transparent to client/application.
+
+![GWLB](/assets/aws-certified-developer-associate/gwlb.png "GWLB")
+
+This is possible because the GWLB operates at the **network layer (Layer 3)**, so it can route traffic based on IP protocol fields. The GWLB will act as:
+- **Transparent Network Gateway** – single entry/exit point for all traffic in the network.
+- **Load Balancer**: distributes traffic to your virtual appliances.
+
+**If the exam questions you on using the GENEVE protocol on port 6081, it will be the GWLB**.
+
+### 4.8.1 GWLB Target Groups
+
+GWLB target groups can target:
+- **EC2 instances**.
+- **IP addresses**: must be private IPs that can also point to on-premises.
+
+![GWLB Target Groups](/assets/aws-certified-developer-associate/gwlb_target_groups.png "GWLB Target Groups")
+
+## 4.9 ELB Sticky Sessions
