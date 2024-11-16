@@ -355,3 +355,68 @@ Or you can have application-based cookie, where you need to add a custom cookie 
 ![Cross-Zone Load Balancing NLB/GWLB](/assets/aws-certified-developer-associate/cross_zone_load_balancing_nlb_gwlb.png "Cross-Zone Load Balancing NLB/GWLB")
 
 CLB has cross-zone load balancing disabled by default but you do not pay for data transfer between AZs even if you enable it.
+
+## 4.11 ELB SSL/TLS Certificates
+
+An SSL Certificate allows traffic between your clients and your load balancer to be encrypted in transit (in-flight encryption). Nowadays, TLS certificates are mainly used, but people still refer to them as SSL certificates.
+
+Public SSL certificates are issued by Certificate Authorities (e.g., Comodo, GoDaddy, Digicert, Letsencrypt, ...) and have an expiration date that you set and must be renewed.
+
+Load balancers are responsible for **SSL termination**, which means that the connection between the clients and the load balancer is encrypted, but the connection between the load balancer and the EC2 instances can also not be encrypted. For example:
+
+![SSL/TLS Certificates](/assets/aws-certified-developer-associate/ssl_tls_certificates.png "SSL/TLS Certificates")
+
+The load balancer uses an **X.509 certificate (SSL/TLS server certificate)**. Such certificates can be managed using AWS Certificate Manager (ACM) or you can create/upload your own certificates.
+
+When you create an **HTTPS listener, you must specify a default certificate**.
+- You can add an optional list of certificates to support multiple domains.
+- Clients can use **Server Name Indication (SNI)** to specify the hostname they reach.
+- Ability to specify a security policy to support older versions of SSL/TLS (also called legacy clients).
+
+### 4.11.1 Server Name Indication (SNI)
+
+SNI **solves the problem of loading multiple SSL certificates onto one web server** to serve multiple websites.
+
+It is a newer protocol and **requires the client to indicate the hostname of the target server in the initial SSL handshake**. This allows the server to determine the correct certificate to present, or return the default one.
+
+![SNI](/assets/aws-certified-developer-associate/sni.png "SNI")
+
+**Note**:
+- Only works for ALB and NLB (newer generation) and CloudFront.
+- Does not work for CLB (older generation).
+
+**For the exam, when you see multiple SSL certificates onto your load balancer, think ALB or NLB with SNI**.
+
+### 4.11.2 SSL Certificates Configurations
+
+**Application Load Balancer (v2)** and **Network Load Balancer (v2)**:
+- Support multiple listeners with multiple SSL certificates.
+- Use Server Name Indication to make it work.
+
+**Classic Load Balancer (v1)**:
+- Supports only one SSL certificate.
+- Must use multiple CLBs for multiple hostname with multiple SSL certificates.
+
+### 4.11.3 Add SSL/TLS Certificates to ALB/NLB
+
+You add a new HTTPS listener to the load balancer and then you can add a certificate to the listener. The policy is used to define how you negotiate the certificate.
+
+![Add SSL/TLS Certificate](/assets/aws-certified-developer-associate/add_ssl_tls_certificate.png "Add SSL/TLS Certificate")
+
+You also need an action for HTTPS listeners:
+
+![HTTPS Listener Action](/assets/aws-certified-developer-associate/https_listener_action.png "HTTPS Listener Action")
+
+## 4.12 Connection Draining/Deregistration Delay
+
+This is a feature that can come up during the exam. It is called **Connection Draining** in CLB and **Deregistration Delay** in ALB and NLB.
+
+This feature ensures that **the load balancer will stop sending new requests to the instance that is draining/deregistering (going unhealthy) but will still complete in-flight requests to that instance**. 
+
+**The load balancer will give time for the instance to complete the existing requests**. Any new request will not be sent to that instance.
+
+![Connection Draining](/assets/aws-certified-developer-associate/connection_draining.png "Connection Draining")
+
+The time given by the load balancer to complete the in-flight requests goes **from 1 to 3600 seconds (default is 300 seconds)**.
+- It can be disabled by setting the time to 0.
+- Set the time to a low value if your requests are short.
