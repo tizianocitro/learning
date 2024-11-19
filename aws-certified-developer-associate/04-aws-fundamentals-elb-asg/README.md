@@ -420,3 +420,188 @@ This feature ensures that **the load balancer will stop sending new requests to 
 The time given by the load balancer to complete the in-flight requests goes **from 1 to 3600 seconds (default is 300 seconds)**.
 - It can be disabled by setting the time to 0.
 - Set the time to a low value if your requests are short.
+
+## 4.13 Auto Scaling Group (ASG)
+
+The goal of an ASG is to:
+- **Scale out** (add EC2 instances) to match an increased load.
+- **Scale in** (remove EC2 instances) to match a decreased load.
+- Ensure you have a minimum and a maximum number of EC2 instances running.
+- **Automatically register new instances to a load balancer** (if any). When an ASG is linked to an ELB, the ASG will automatically register new instances in the ASG to the ELB.
+- Re-create an EC2 instance in case a previous one is terminated, for example, if they fail the ELB health check and are deemed unhealthy.
+
+**ASG are free, meaning you only pay for the underlying EC2 instances**.
+
+The following is a configuration example of an ASG:
+
+![ASG](/assets/aws-certified-developer-associate/asg.png "ASG")
+
+As said, ASG works with ELB:
+
+![ASG with ELB](/assets/aws-certified-developer-associate/asg_with_elb.png "ASG with ELB")
+
+### 4.13.1 ASG Configuration
+
+When you create an ASG, you need to configure:
+- A **Launch Template** (older Launch Configurations are deprecated) with:
+    - AMI and instance type.
+    - EC2 user data.
+    - EBS volumes.
+    - Security groups.
+    - SSH key pair.
+    - IAM roles for the EC2 instances.
+    - Network and subnets information.
+    - Load balancer information.
+    ![ASG Launch Template](/assets/aws-certified-developer-associate/asg_launch_template.png "ASG Launch Template")
+- Minimum size.
+- Maximum size.
+- Initial capacity.
+- Scaling policies (e.g., via CloudWatch alarms).
+
+### 4.13.2 Scaling Policies with CloudWatch Alarms
+
+It is possible to auto scale an ASG based on **CloudWatch alarms**.
+
+An **alarm monitors a metric** (such as Average CPU or a custom metric) and metrics such as Average CPU are computed for the overall ASG instances.
+
+Based on the alarm, you can create **scaling policies**. You can:
+- Create **scale-out policies** (increase the number of instances).
+- Create **scale-in policies** (decrease the number of instances).
+
+## 4.14 Creating an ASG
+
+To create an ASG, go to the EC2 dashboard and click on *Auto Scaling Groups* on the left side menu. Then, click on *Create Auto Scaling Group*.
+
+Start by creating (or selecting) the launch template via the *Create a Launch Template* button:
+
+![Create ASG Launch Template](/assets/aws-certified-developer-associate/create_asg_launch_template.png "Create ASG Launch Template")
+
+Creating a launch requires to specify some information. Following the AMI:
+
+![ASG Launch Template AMI](/assets/aws-certified-developer-associate/asg_launch_template_ami.png "ASG Launch Template AMI")
+
+Then, the instance type, key pair, network settings (subnets), storage, and advanced details (e.g., user data).
+
+After the launch template is created, you can select it in the ASG creation wizard and move to setting the network and **subnets (the AZs where the instances will be launched)**.
+
+Next step is **advanced options**, where you can configure load balancing, health checks, and other additional settings like monitoring on CloudWatch.
+
+![ASG Advanced Options](/assets/aws-certified-developer-associate/asg_advanced_options.png "ASG Advanced Options")
+
+Then, configure the **group size settings**: minimum, desired, and maximum capacity.
+
+![ASG Group Size](/assets/aws-certified-developer-associate/asg_group_size.png "ASG Group Size")
+
+Finally, configure the **scaling policies** (optional) and create the ASG to see it in the list of ASGs in the EC2 dashboard.
+
+![ASG Created](/assets/aws-certified-developer-associate/asg_created.png "ASG Created")
+
+All the activities of the ASG are recorded in the *Activity History* tab of the ASG.
+
+![ASG Activity History](/assets/aws-certified-developer-associate/asg_activity_history.png "ASG Activity History")
+
+Then, in the *Instance management* tab, you can see the instances that are part of the ASG. The same instances will also appear as registered targets in the ELB (if you connect one to the ASG).
+
+## 4.15 Scaling Policies
+
+There are 3 types of scaling policies: **dynamic scaling**, **scheduled scaling**, and **predictive scaling**.
+
+### 4.15.1 Dynamic Scaling
+
+Two types of dynamic scaling: target tracking scaling and simple/step scaling.
+
+**Target tracking scaling**: the most simple and easy to set up. You **select a metric and set a target value, and AWS will try to keep the metric close to the target value**.
+- For example, I want the average ASG CPU to stay at around 40%.
+
+**Simple/Step scaling**: the idea is that you can increase or decrease the ASG size **based on a CloudWatch alarm**. For example:
+- When a CloudWatch alarm is triggered (example CPU > 70%), then add 2 units.
+- When a CloudWatch alarm is triggered (example CPU < 30%), then remove 1 unit.
+
+### 4.15.2 Scheduled Scaling
+
+Anticipate a scaling based on known usage patterns. For example, increase the min capacity to 10 at 5 pm on Fridays because you know you will get more traffic then.
+
+### 4.15.3 Predictive Scaling
+
+AWS uses machine learning to understand your traffic patterns and make sure that you have the right number of instances.
+
+AWS continuously forecasts load and schedule scaling ahead:
+
+![Predictive Scaling](/assets/aws-certified-developer-associate/predictive_scaling.png "Predictive Scaling")
+
+### 4.15.4 Metrics to Scale On
+
+- **CPUUtilization**: average CPU utilization across your instances.
+- **RequestCountPerTarget**: to make sure the number of requests per EC2 instances is stable.
+- **Average Network In/Out**: if the application is network bound (e.g., many uploads and downloads).
+- **Custom metric**: that you push using CloudWatch.
+
+### 4.15.5 Scaling Cooldowns
+
+After a scaling activity happens, you are in the **cooldown period**. By default it is **300 seconds, which is 5 minutes**.
+
+**During the cooldown period, the ASG will not launch or terminate additional instances**. This allows for metrics to stabilize and see the effect of the scaling activity on the instances, and get the new metrics.
+
+![Scaling Cooldowns](/assets/aws-certified-developer-associate/scaling_cooldowns.png "Scaling Cooldowns")
+
+**Advice**: Use a ready-to-use AMIs to reduce configuration time to serve requests fasters and reduce the cooldown period, so that scaling can be more dynamic and react faster.
+
+## 4.16 Creating a Scaling Policy on an ASG
+
+To create a scaling policy, go to the EC2 dashboard and click on *Auto Scaling Groups* on the left side menu. Then, select the ASG you want to create a scaling policy for and click on the *Automatic Scaling* tab.
+
+![Create Scaling Policy](/assets/aws-certified-developer-associate/create_scaling_policy.png "Create Scaling Policy")
+
+After a policy is created, you can see it in the list of scaling policies in the same tab:
+
+![Scaling Policy Created](/assets/aws-certified-developer-associate/scaling_policy_created.png "Scaling Policy Created")
+
+### 4.16.1 Dynamic Scaling Policy
+
+To create a dynamic scaling policy, click on the *Create Dynamic Scaling Policy* button and then select the **Policy Type**: target tracking scaling, simple scaling, and step scaling.
+
+Following is an example of a **simple scaling policy**. The action can be add, remove, or set the number of instances or percentage of instances.
+
+![Simple Scaling Policy](/assets/aws-certified-developer-associate/simple_scaling_policy.png "Simple Scaling Policy")
+
+In a simple policy, you can add only one step to increase or decrease the number of instances. On the other hand, in a **step policy**, you can add multiple steps to increase or decrease the number of instances based on the CloudWatch alarm.
+
+![Step Scaling Policy](/assets/aws-certified-developer-associate/step_scaling_policy.png "Step Scaling Policy")
+
+Regarding the **target tracking policy**, the CloudWatch alarm is created automatically based on the target value you set.
+
+![Target Tracking Scaling Policy](/assets/aws-certified-developer-associate/target_tracking_scaling_policy.png "Target Tracking Scaling Policy")
+
+### 4.16.2 Scheduled Scaling Policy
+
+To create a scheduled scaling policy, click on the *Scheduled Actions* tab and then click on *Create Scheduled Action*. Then, insert the desired capacity, min capacity, and max capacity, the **recurrence** (e.g., once, every week, every day, every 30 min, also using *Cron*) and the **start time (i.e., the time for the first scheduled action to run)**.
+
+![Scheduled Scaling Policy](/assets/aws-certified-developer-associate/scheduled_scaling_policy.png "Scheduled Scaling Policy")
+
+### 4.16.3 Predictive Policy
+
+To create a predictive policy, click on the *Predictive Scaling Policies* tab and then click on *Create Predictive Scaling Policy*. Then, enable the **Scale Based on Forecast** option, and set the metrics and target utilization to forecast.
+
+![Predictive Scaling Policy](/assets/aws-certified-developer-associate/predictive_scaling_policy.png "Predictive Scaling Policy")
+
+### 4.16.4 Monitor Scaling Metrics
+
+You can monitor the scaling metrics in the *Monitoring* tab of the ASG:
+
+![Monitor Scaling Metrics](/assets/aws-certified-developer-associate/monitor_scaling_metrics.png "Monitor Scaling Metrics")
+
+You can tools that have been developed on purpose to stress test your machines/application and see how it scales and the ASG reacts.
+
+The **CloudWatch alarms** created by the ASG can be seen in the *Alarms* tab of the CloudWatch dashboard. The first alarm triggers a scale-in policy to reduce the number of instances when the CPUUtilization is below 28% for 15 datapoints within 15 minutes. The second one triggers a scale-out policy to increase the number of machines when the CPUUtilization is above 40% for 3 datapoints within 3 minutes.
+
+![Scaling CloudWatch Alarms](/assets/aws-certified-developer-associate/scaling_cloudwatch_alarms.png "Scaling CloudWatch Alarms")
+
+## 4.17 ASG Instance Refresh
+
+If your **need to update the launch template and then re-create all EC2 instances with this new template**. Instead of terminating all instances and waiting for them to come back, you can use the ASG native feature of instance refresh.
+
+You need to set a **minimum healthy percentage** that tells to the ASG how many instances should be healthy at any point in time. The ASG will then start replacing instances one by one until all instances with the old template are replaced by instances with the new template.
+
+![ASG Instance Refresh](/assets/aws-certified-developer-associate/asg_instance_refresh.png "ASG Instance Refresh")
+
+You also have to specify a warm-up time to define how long until the instance is ready to use.
