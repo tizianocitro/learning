@@ -182,3 +182,124 @@ Go to the RDS dashboard and select the database you want to create a read replic
 And configure the read replica (multiple configuration options):
 
 ![Configure RDS Read Replica](/assets/aws-certified-developer-associate/configure_rds_read_replica.png "Configure RDS Read Replica")
+
+## 5.6 Amazon Aurora
+
+Aurora is a proprietary technology from AWS (not open sourced).
+
+**Postgres and MySQL are both supported as Aurora DB**, which means your drivers will work as if Aurora was a Postgres or MySQL database.
+
+Aurora is AWS cloud optimized and claims:
+- 5x performance improvement over MySQL on RDS.
+- 3x the performance of Postgres on RDS.
+
+**Aurora storage automatically grows** in increments of 10GB, up to 128 TB. So, **Aurora is auto expanding**.
+
+Aurora can have up to 15 replicas and the replication process is faster than MySQL (sub 10 ms replica lag).
+
+The failover in Aurora is instantaneous and way faster than RDS multi AZ.
+
+Aurora costs more than RDS (20% more, currently) but is more efficient.
+
+### 5.6.1 Aurora High Availability and Read Scaling
+
+Aurora **stores 6 copies of your data across 3 AZ**:
+- It needs only 4 copies out of 6 for writes.
+- It needs only 3 copies out of 6 for reads.
+- Self healing with peer-to-peer replication, for example, for data corruption.
+- Storage is striped across hundreds of volumes.
+
+**One Aurora instance takes writes (master)** but there is automated failover for master in less than 30 seconds should the master fail and a replica need to take its place.
+
+Aurora supports **a master and up to 15 Aurora read replicas to serve reads** with support for **cross region replication**.
+
+![Aurora High Availability and Read Scaling](/assets/aws-certified-developer-associate/aurora_high_availability_read_scaling.png "Aurora High Availability and Read Scaling")
+
+### 5.6.2 Inner Working of an Aurora Cluster
+
+In a cluster, you have a master instance and up to 15 read replicas that access an **auto expanding storage layer from 10GB to 128TB**. 
+
+The **master** is the only one that can write to the storage layer but it can fail (e.g., crash). Aurora provides a **writer endpoint** that will always point to the writer.
+
+**Read replicas can be auto scaled up to 15**, so that you always have the number of replicas that you actually need. As with the writer, read replicas have a **reader endpoint** that will always point to readers. It connects automatically to one of the read replicas based on a **load balancing algorithm that works at connection level**.
+
+![Aurora Cluster](/assets/aws-certified-developer-associate/aurora_cluster.png "Aurora Cluster")
+
+### 5.6.3 Aurora Features
+
+- Automatic fail-over,
+- Backup and Recovery.
+- Isolation and security.
+- Industry compliance.
+- Push-button scaling.
+- Automated patching with zero downtime.
+- Advanced monitoring.
+- Routine maintenance.
+- **Backtrack**: restore data at any point of time without using backups.
+
+## 5.7 Creating Amazon Aurora DB
+
+Go to *Databases* under *RDS* in the AWS Management Console and click on *Create Database*.
+
+Choose either **Aurora MySQL Compatible** or **Aurora Postgres Compatible** as the database engine:
+
+![Choose Aurora Engine](/assets/aws-certified-developer-associate/choose_aurora_engine.png "Choose Aurora Engine")
+
+And the **engine version**:
+
+![Aurora Engine Version](/assets/aws-certified-developer-associate/aurora_engine_version.png "Aurora Engine Version")
+
+Then, you have 2 options for **cluster storage configuration**:
+
+![Aurora Cluster Storage Configuration](/assets/aws-certified-developer-associate/aurora_cluster_storage_configuration.png "Aurora Cluster Storage Configuration")
+
+*I/O-Optimized* is for when you have a high load of reads and writes to your DB.
+
+For **instance configuration**, you can choose the following options (among which **serverless**):
+
+![Aurora Instance Configuration](/assets/aws-certified-developer-associate/aurora_instance_configuration.png "Aurora Instance Configuration")
+
+If you select **serverless**, you will have to configure the **capacity settings**, which will define the number of **Aurora Capacity Units (ACUs)** the DB will use. The **minimum and maximum ACUs** will define the minimum and maximum capacity the DB can use.
+
+![Aurora Serverless Capacity Settings](/assets/aws-certified-developer-associate/aurora_serverless_capacity_settings.png "Aurora Serverless Capacity Settings")
+
+In the **availability and durability** settings, we can add replicas to the cluster:
+
+![Aurora Availability and Durability](/assets/aws-certified-developer-associate/aurora_availability_durability.png "Aurora Availability and Durability")
+
+**Connectivity settings**, **additional configuration**, **authentication**, and **monitoring** are similar to RDS.
+
+Aurora offers **local write forwarding** which allows you to write to a read replica.
+
+![Aurora Local Write Forwarding](/assets/aws-certified-developer-associate/aurora_local_write_forwarding.png "Aurora Local Write Forwarding")
+
+The created DB will be visible in the RDS dashboard. From here, you can see writer and readers.
+
+![Created Aurora DB](/assets/aws-certified-developer-associate/created_aurora_db.png "Created Aurora DB")
+
+To connect, you have two endpoints: the writer endpoint and the reader endpoint:
+
+![Aurora Endpoints](/assets/aws-certified-developer-associate/aurora_endpoints.png "Aurora Endpoints")
+
+However, each instance will also have its own endpoint.
+
+From the *Actions* menu, you can:
+- **Add a reader**.
+- **Create a cross region read replica**.
+- **Add replica auto scaling** via auto scaling policies.
+- **Add a region**, which is only available if the version of Aurora has the global database feature enabled.
+- Restore to point in time.
+
+![Aurora Actions](/assets/aws-certified-developer-associate/aurora_actions.png "Aurora Actions")
+
+An Aurora scaling policy can be created for the read replicas on the two following metrics:
+- **Average CPU utilization of Aurora replicas**.
+- **Average connections of Aurora replicas**.
+
+Following an example of an **Aurora replica scaling policy**:
+
+![Aurora Replica Scaling Policy](/assets/aws-certified-developer-associate/aurora_replica_scaling_policy.png "Aurora Replica Scaling Policy")
+
+A scaling policy also needs capcity settings:
+
+![Aurora Replica Scaling Policy Capacity Settings](/assets/aws-certified-developer-associate/aurora_replica_scaling_policy_capacity_settings.png "Aurora Replica Scaling Policy Capacity Settings")
