@@ -303,3 +303,35 @@ Following an example of an **Aurora replica scaling policy**:
 A scaling policy also needs capcity settings:
 
 ![Aurora Replica Scaling Policy Capacity Settings](/assets/aws-certified-developer-associate/aurora_replica_scaling_policy_capacity_settings.png "Aurora Replica Scaling Policy Capacity Settings")
+
+## 5.8 Security in RDS and Aurora
+
+- **At-rest encryption**, data is encrypted in the underlying storage:
+    - **Database master and replicas encryption using AWS KMS**, this must be defined at launch time when you create the database.
+    - If the master is not encrypted, the read replicas cannot be encrypted.
+    - **To encrypt an un-encrypted database, go through a DB snapshot and restore as encrypted**.
+- **In-flight encryption**: TLS-ready by default, use the AWS TLS root certificates client-side.
+- **IAM Authentication**: you can use IAM roles to connect to your database instead of username and password.
+- **Security Groups**: control network access to your RDS/Aurora DB.
+- **No SSH available** except on *RDS Custom* servicer.
+- **Audit Logs** (e.g., you want to know the queries made to DBs) can be enabled and sent to CloudWatch Logs for longer retention (otherwise they will be lost after a short period of time).
+
+## 5.9 Amazon RDS Proxy
+
+It is a fully managed, highly available database proxy for RDS. This **proxy allows applications to pool and share connections established with the database**.
+
+It is serverless, has autoscaling, and is highly available as it in a multi AZ setting.
+
+Important for the exam: **RDS Proxy improves database efficiency by reducing the stress on database resources (e.g., CPU, RAM) and minimize open connections (and timeouts)**. It also **reduces RDS and Aurora failover time by up 66% because it handles the failover itself instead of having the DB instances do it**.
+
+It supports RDS, (MySQL, PostgreSQL, MariaDB, MS SQL Server) and Aurora (MySQL and PostgreSQL).
+
+It does not require huge code changes for most applications as you just need to point your application to the proxy endpoint instead of the DB endpoint.
+
+**RDS Proxy enforces IAM authentication and securely stores credentials in AWS Secrets Manager**. So, **if the exam asks about how to enforce IAM authentication to you DBs, RDS Proxy is the answer**.
+
+**RDS Proxy is never publicly accessible as it must be accessed from VPC**, enhancing security.
+
+A classical **use case for RDS Proxy** is when you have Lambda functions that need to connect to an RDS DB. Instead of having the Lambda functions open a connection to the DB, you can have them open a connection to the RDS Proxy. This is because Lambda functions can open and close connections very quickly, which can overwhelm the DB, and it may also happen that they open a lot of connections at the same time.
+
+![RDS Proxy](/assets/aws-certified-developer-associate/rds_proxy.png "RDS Proxy")
