@@ -132,7 +132,7 @@ You can also enable **storage autoscaling** for when you are running out of stor
 - Database port (as additional configuration).
 - Make the database publicly accessible via a public IP (not recommended for production).
 
-Next is **database authentication**:
+Next is **database authentication** (*Oracle* does not support IAM authentication):
 
 ![Database Authentication](/assets/aws-certified-developer-associate/database_authentication.png "Database Authentication")
 
@@ -335,3 +335,189 @@ It does not require huge code changes for most applications as you just need to 
 A classical **use case for RDS Proxy** is when you have Lambda functions that need to connect to an RDS DB. Instead of having the Lambda functions open a connection to the DB, you can have them open a connection to the RDS Proxy. This is because Lambda functions can open and close connections very quickly, which can overwhelm the DB, and it may also happen that they open a lot of connections at the same time.
 
 ![RDS Proxy](/assets/aws-certified-developer-associate/rds_proxy.png "RDS Proxy")
+
+## 5.10 Amazon ElastiCache
+
+The same way RDS is to get managed relational databases, **ElastiCache is to get managed Redis or Memcached**.
+
+Caches are in-memory databases with really high performance and low latency.
+
+Caching helps **reduce load off of databases for read intensive workloads** and **make your application stateless** by putting the state in ElastiCache.
+
+AWS takes care of OS maintenance/patching, optimizations, setup, configuration, monitoring, failure recovery and backups.
+
+Using ElastiCache involves heavy application code changes.
+
+### 5.10.1 ElastiCache DB Cache
+
+Application queries ElastiCache, if not available, get from RDS and store in ElastiCache. This helps relieve load in RDS.
+
+![ElastiCache DB Cache](/assets/aws-certified-developer-associate/elasticache_db_cache.png "ElastiCache DB Cache")
+
+Cache must have an **invalidation strategy** to make sure only the most current data is used in there.
+
+### 5.10.2 ElastiCache User Session Store
+
+User logs into any of the application and the application writes the session data into ElastiCache. When the user hits another instance of our application, the instance retrieves the data from ElastiCache and the user is already logged in.
+
+![ElastiCache User Session Store](/assets/aws-certified-developer-associate/elasticache_user_session_store.png "ElastiCache User Session Store")
+
+### 5.10.3 Redis vs Memcached
+
+**Redis**:
+- Multi-AZ with auto-failover.
+- Read replicas to scale reads and have high availability.
+- Data durability using AOF persistence.
+- Backup and restore features.
+- Supports sets and sorted sets.
+
+![Redis](/assets/aws-certified-developer-associate/redis.png "Redis")
+
+**Memcached**:
+- Multi-node for partitioning of data (sharding).
+- No high availability (replication).
+- Non persistent.
+- Backup and restore only on the serverless version.
+- Multi-threaded architecture.
+
+![Memcached](/assets/aws-certified-developer-associate/memcached.png "Memcached")
+
+## 5.11 Creating Amazon ElastiCache
+
+Go to *ElastiCache* in the AWS Management Console and click on *Create* to choose between Redis and Memcached.
+
+Configure deployment options and creation method:
+
+![ElastiCache Configuration](/assets/aws-certified-developer-associate/elasticache_configuration.png "ElastiCache Configuration")
+
+By choosing **cluster mode**, you can configure everything. **Disabling cluster mode will result in a single shard with up to 5 read replicas**, while **enabling it will result in multiple shards** for increased scalability and availability.
+
+![ElastiCache Cluster Mode](/assets/aws-certified-developer-associate/elasticache_cluster_mode.png "ElastiCache Cluster Mode")
+
+After, you need to insert cluster information like cluster name and description.
+
+You can run ElastiCache in the cloud or on-premises using **AWS Outposts**: 
+
+![ElastiCache Location](/assets/aws-certified-developer-associate/elasticache_location.png "ElastiCache Location")
+
+And, as you can see from the image above, you can chose to use the **multi AZ** feature (which will have auto-failover by default) or disable it and chose if you want auto-failover.
+
+Then, **cluster settings**, such as the node type and number of replicas:
+
+![ElastiCache Cluster Settings](/assets/aws-certified-developer-associate/elasticache_cluster_settings.png "ElastiCache Cluster Settings")
+
+You also need to configure the **subnet group** to define the subnets in the VPC where you can run the cache, as well as the AZ placements.
+
+In the **advanced settings**, you can enable **encryption at rest** and **encryption in transit** (which also gives you access control).
+
+![ElastiCache Advanced Settings](/assets/aws-certified-developer-associate/elasticache_advanced_settings.png "ElastiCache Advanced Settings")
+
+Next is **automatic backups** and **maintenance windows** (both like RDS). Finally, you can create the cache and access it from the ElastiCache dashboard.
+
+![ElastiCache Details](/assets/aws-certified-developer-associate/elasticache_details.png "ElastiCache Details")
+
+## 5.12 Caching Implementation Considerations
+
+- You have to consider that data may be out of date, caches provide eventual consistentcy.
+- Is caching effective for your data?
+    - **Pattern**: data changing slowly, few keys are frequently needed.
+    - **Anti patterns**: data changing rapidly, all large key space frequently needed.
+- Is data structured well for caching? E.g., key value caching, or caching of aggregations results.
+
+Also, you have to consider the **caching design pattern/strategy** that works best for your application.
+
+### 5.12.1 Cache Aside (Lazy Loading, Lazy Population)
+
+Cache aside is also called lazy loading or lazy population.
+
+In this pattern, the application code is responsible for loading data into the cache. The application code first checks the cache to see if the data is there. If it is not, the application code loads the data from the database and then puts it into the cache, so that the next time the data is needed, it is already in the cache.
+
+![Cache Aside](/assets/aws-certified-developer-associate/cache_aside.png "Cache Aside")
+
+**Pros**:
+- Only requested data is cached (the cache is not filled up with unused data).
+- Node failures are not fatal (just increased latency to **warm the cache**).
+
+**Cons**
+- **Cache miss penalty that results in 3 round trips**, noticeable delay for that request.
+- **Stale data**: data can be updated in the database and outdated in the cache.
+
+An example of cache aside in Python:
+
+```python
+# get user from cache or DB
+def get_user(user_id):
+    # check if user is in cache
+    user = cache.get(user_id)
+
+    # if the user is not in the cache
+    if not user:
+        # get it from the DB and add it to the cache for next time
+        user = db.query("SELECT * FROM users WHERE user_id = ?", user_id)
+        cache.set(user_id, user)
+
+    return user
+
+# app code to get the user with id 29
+user = get_user(29)
+```
+
+### 5.12.2 Write Through
+
+In this pattern, the application code writes data to the DB and the cache at the same time. This pattern is **used when data is written more often than it is read**. So, when you read data, they are always in the cache.
+
+![Write Through](/assets/aws-certified-developer-associate/write_through.png "Write Through")
+
+**Pros**:
+- Data in cache is never stale, reads are quick.
+- In this pattern, you have a **write penalty** (each write requires 2 calls: cache and DB) and not a read penalty. However, users expect a write to be slower than a read, so this may impact the user experience less than slow reads.
+
+**Cons**:
+- **Missing data** because the cache will never have the data it needs until data is added/updated in the DB. Mitigation is to implement **cache aside alongside write through**.
+- **Cache churn**: a lot of the data will never be read.
+
+An example of write through in Python:
+
+```python
+# save user to DB and cache
+def save_user(user_id, user):
+    # save user to DB
+    db.query("INSERT INTO users (user_id, user) VALUES (?, ?)", user_id, user)
+
+    # save user to cache as well
+    cache.set(user_id, user)
+
+    return user
+
+# app code to save a user with id 29
+user = save_user(29, "John Doe")
+```
+
+You can combine write through with cache aside to mitigate the missing data issue, and it is very simple because, for cache aside, we had a `get_user()` function and here we have a `save_user()` function. So, just use this two for reads and writes respectively and you have a combined cache aside and write through pattern.
+
+### 5.12.3 Cache Eviction and Time to Live
+
+**Cache eviction** can occur in 3 ways:
+- You **delete the item explicitly** in the cache.
+- Item is evicted because the memory is full and it’s not recently used (Least Recently Used, **LRU**).
+- You set an item time-to-live (or **TTL**), for example, 1 hour or 5 minutes. TTL can range from few seconds to hours or days depending on your application.
+
+**If too many evictions happen due to memory because your cache is always at full capacity, you should scale up or out**.
+
+
+### 5.12.4 Caching Summary
+
+- **Cache aside** is easy to implement and **works for many situations** as a foundation, especially on the read side. So, **it can be your first way to go**.
+- **Write through is usually combined with cache aside** as targeted for the queries or workloads that benefit from this optimization. So, **write through is usually an optimization on top of cache aside and not a first choice**.
+- Setting a **TTL is usually not a bad idea, except when you are using write through**. Set it to a sensible value for your application.
+- Only cache the data that makes sense (e.g., user profiles, blogs, ...) and not the data that is rarely accessed (e.g., logs) or sensitive data (e.g., credit card information).
+
+## 5.13 Amazon MemoryDB for Redis
+
+It is a Redis-compatible, durable, in-memory database service that delivers ultra-fast performance. with over 160 millions requests per second. It is a **durable in-memory database that has a Redis-like API**.
+
+It is in-memory data but it is a durable data storage with multi AZ transactional log and scales seamlessly from tens of GBs to hundreds of TBs of storage.
+
+Common use cases are web and mobile applications, online gaming, media streaming, etc.
+
+![MemoryDB for Redis](/assets/aws-certified-developer-associate/memorydb_for_redis.png "MemoryDB for Redis")
