@@ -206,6 +206,7 @@ Route 53 Supports the following Routing Policies
 - Failover.
 - Geolocation.
 - Geoproximity (using Route 53 Traffic Flow feature).
+- IP-based.
 - Multi-Value Answer.
 
 ### 6.8.1 Simple Routing Policy
@@ -325,6 +326,30 @@ Consider the **two following examples with two regions**. In the first example, 
 In the second example, the two regions have different bias values:
 
 ![Geoproximity Routing Different Bias](/assets/aws-certified-developer-associate/route53_geoproximity_routing_different_bias.png "Geoproximity Routing Different Bias")
+
+### 6.8.7 IP-based Routing Policy
+
+**Route traffic based on the IP address of the client making the request**. You can specify the IP address ranges (in CIDR format) and the location to route the traffic to.
+
+Use cases: optimize performance, reduce network costs, etc.
+
+![IP-based Routing](/assets/aws-certified-developer-associate/route53_ip_based_routing.png "IP-based Routing")
+
+### 6.8.8 Multi-Value Answer Routing Policy
+
+**Used to route traffic to multiple resources** because Route 53 return multiple values/resources.
+
+They can be associated with health checks, so that they return only values for healthy resources.
+
+**Up to 8 healthy records are returned for each multi-value query** and then the client will choose which one to use among them. Thanks to health checks, you can ensure that only healthy resources are returned, so **it is safer than the simple routing policy with multiple values because in simple routing, all values are returned as there is no health checks**.
+
+Multi-value is not a substitute for having an ELB, it is **client-side load balancing**.
+
+To **create a multi-value answer routing policy**, create a record and set the routing policy to **Multivalue answer**. Then, create multiple records and set the **value** for them:
+
+![Multi-Value Record](/assets/aws-certified-developer-associate/route53_multi_value_record.png "Multi-Value Record")
+
+To test these records, you can use the `nslookup` or `dig` command to check the values returned by the DNS query and see that there are multiple values returned, as many as the number of records you created. However, if you force the health check to fail for one of the records, you will see that it is not returned and will have less records because only the healthy ones are returned.
 
 ## 6.9 Route 53 Health Checks
 
@@ -461,3 +486,22 @@ You can add as many regions as you need and adjust the biases as you need:
 When you are done, you can create the traffic flow policy and **apply it to an hosted zone with a policy record DNS name** (you can also see the pricing for the policy):
 
 ![Traffic Flow Apply Policy](/assets/aws-certified-developer-associate/route53_traffic_flow_apply_policy.png "Traffic Flow Apply Policy")
+
+## 6.12 Route 53 (External) Domain Registrar and DNS Service
+
+So far, we have seen how to create records in Route 53 for domains that are registered with Route 53. However, you can also use Route 53 as a DNS service for domains that are registered with other domain registrars.
+
+You buy or register your domain name with a domain registrar, typically by paying annual charges (e.g., GoDaddy, Amazon Registrar Inc., ...). The domain registrar usually also provides you with a DNS service to manage your DNS records but you can use another DNS service to manage your DNS records.
+
+**Scenario**: you purchase the domain from GoDaddy and use Route 53 to manage your DNS records.
+
+![Route 53 External Domain Registrar](/assets/aws-certified-developer-associate/route53_external_domain_registrar.png "Route 53 External Domain Registrar")
+
+To **use Route 53 as a DNS service for a domain that is registered with another domain registrar**, you need to follow these steps:
+1. **Create a Hosted Zone in Route 53**.
+2. **Update the NS records in the domain registrar's console** to point to the Route 53 name servers.
+3. **Manage records direclty in Route 53**.
+
+![Route 53 External Domain Registrar Steps](/assets/aws-certified-developer-associate/route53_external_domain_registrar_steps.png "Route 53 External Domain Registrar Steps")
+
+The crucial point to understand here is that **domain regitrar != DNS service**, even though every domain registrar usually comes with some DNS features.
