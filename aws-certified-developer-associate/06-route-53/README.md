@@ -415,3 +415,49 @@ You can set the alarm to get the notification when the calculated health check f
 To create a CloudWatch alarm health check, you need to select the type of health check as *State of CloudWatch alarm* and then configure the CloudWatch alarm that you want to monitor:
 
 ![Create CloudWatch Alarm Health Check](/assets/aws-certified-developer-associate/route53_create_cloudwatch_alarm_health_check.png "Create CloudWatch Alarm Health Check")
+
+## 6.11 Route 53 Traffic Flow
+
+Route 53 Traffic Flow is a **visual editor for managing complex routing configurations**. It simplifies the process of creating and maintaining records in large and complex configurations.
+
+**Configurations can be saved as Traffic Flow Policy** and can be applied to different Route 53 Hosted Zones (different domain names) with **support for versioning**.
+
+![Route 53 Traffic Flow](/assets/aws-certified-developer-associate/route53_traffic_flow.png "Route 53 Traffic Flow")
+
+To create a traffic flow policy, access the Route 53 console, and choose *Traffic Flow*. Then, click on *Create Traffic Flow* and give a name to the policy.
+
+So, you get a **start point** where you specify the type of record you want to create (e.g., A, AAAA, CNAME, ...):
+
+![Traffic Flow Start](/assets/aws-certified-developer-associate/route53_traffic_flow_start.png "Traffic Flow Start")
+
+Then, you can connect it to rules or endpoint:
+
+![Traffic Flow Rules](/assets/aws-certified-developer-associate/route53_traffic_flow_rules.png "Traffic Flow Rules")
+
+For example, you can connect the record to an endpoint:
+
+![Traffic Flow Endpoint](/assets/aws-certified-developer-associate/route53_traffic_flow_endpoint.png "Traffic Flow Endpoint")
+
+Or you can connect it to a rule (in this case, a weighted rule):
+
+![Traffic Flow Weighted Rule](/assets/aws-certified-developer-associate/route53_traffic_flow_weighted_rule.png "Traffic Flow Weighted Rule")
+
+Which you can then connect to other rules or endpoints.
+
+### 6.11.1 Traffic Flow for Geoproximity Rules
+
+The **Traffic Flow UI makes it a lot easier to create and understand geoproximity routing policies**, in particular. For example, you can configure the regions and the biases and you will get a visual representation of the routing policy like the following:
+
+![Traffic Flow Geoproximity](/assets/aws-certified-developer-associate/route53_traffic_flow_geoproximity.png "Traffic Flow Geoproximity")
+
+And by changing the bias as you need, you can adjust the way the traffic is routed:
+
+![Traffic Flow Geoproximity Bias](/assets/aws-certified-developer-associate/route53_traffic_flow_geoproximity_bias.png "Traffic Flow Geoproximity Bias")
+
+You can add as many regions as you need and adjust the biases as you need:
+
+![Traffic Flow Geoproximity Multiple Regions](/assets/aws-certified-developer-associate/route53_traffic_flow_geoproximity_multiple_regions.png "Traffic Flow Geoproximity Multiple Regions")
+
+When you are done, you can create the traffic flow policy and **apply it to an hosted zone with a policy record DNS name** (you can also see the pricing for the policy):
+
+![Traffic Flow Apply Policy](/assets/aws-certified-developer-associate/route53_traffic_flow_apply_policy.png "Traffic Flow Apply Policy")
