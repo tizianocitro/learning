@@ -92,3 +92,326 @@ Enter the **contact information** for registrant, administrative, and technical 
 Finally, create the domain and it can be accessed ion the *Registered Domains* section. If you click on it, you can see its details and the **records** associated with it. Upon creation, you will see a *NS* record which is the name servers (AWS servers) for the hosted zone and a *SOA* record.
 
 ## 6.4 Creating Records in Route 53
+
+To create a record in Route 53, access the Route 53 console, and choose *Hosted Zones*. Then, click on the hosted zone you want to create a record for:
+
+![Hosted Zone](/assets/aws-certified-developer-associate/route53_hosted_zone.png "Hosted Zone")
+
+And click on **Create Record**:
+
+![Create Record](/assets/aws-certified-developer-associate/route53_create_record.png "Create Record")
+
+Enter the **record name**, **record type** (A, AAAA, ...), **value** (the IP address), **routing policy** (will see later), and **TTL**:
+
+![Enter Record](/assets/aws-certified-developer-associate/route53_enter_record.png "Enter Record")
+
+Finally, create the record and it will be listed in the hosted zone.
+
+You can test the created record on your terminal or AWS CloudShell. For example, to test the record, you can use either of the following commands from the `bind-utils` package:
+
+```bash
+nslookup example.com
+
+dig example.com
+```
+
+## 6.5 Route 53 Records TTL
+
+The **TTL allows you to control how long the DNS resolvers cache the records provided in response to DNS queries**. The TTL is set in seconds and the default value is 300 seconds. This is useful because we do not expect records to change a lot, so we do not want to query the DNS server too often.
+
+![TTL](/assets/aws-certified-developer-associate/route53_ttl.png "TTL")
+
+- High TTL – e.g., 24 hours.
+    - Less traffic on Route 53 because less clients are making queries as results are cached.
+    - Possibly outdated records as you have to wait for the TTL to expire.
+
+- Low TTL – e.g., 60 seconds.
+    - More traffic on Route 53, so it will cost you more.
+    - Records are outdated for less time, so it is easier to change records.
+
+A strategy is to **lower the TTL before a change** and then increase it again after the record change to reduce the traffic on Route 53.
+
+**TTL is mandatory for each DNS record, except for the Alias record**.
+
+You can use the `nslookup` or `dig` command to check the TTL of a record, as well as checking if the record is up to date or not.
+
+## 6.6 Route 53 CNAME vs Alias Records
+
+You will use these records to **map a hostname to another hostname**. For example, you have an AWS resource (e.g., ELB, CloudFront, ...) that exposes an AWS hostname like lb1-1234.us-east-2.elb.amazonaws.com but you want myapp.mydomain.com.
+
+A **CNAME** record:
+- Points a hostname to any other hostname. For example, app.mydomain.com to blabla.anything.com.
+- Works **only for non-root domain**. For example, it works for www.mydomain.com or demo.mydomain.com but not for mydomain.com.
+
+An **Alias** record:
+- Points a hostname to an AWS resource. For example, app.mydomain.com to resource.amazonaws.com.
+- Works for both root and non-root domains. For example, it works for www.mydomain.com and demo.mydomain.com, and also for mydomain.com.
+- Is free of charge.
+- Offers native health checks.
+
+### 6.6.1 Alias Records
+
+They are an extension to DNS functionality to **map a hostname to an AWS resource**.
+
+![Alias Record](/assets/aws-certified-developer-associate/route53_alias_record.png "Alias Record")
+
+Alias records **automatically recognize changes in the resource's IP addresses**.
+
+Alias records are **always of type A/AAAA for AWS resources (IPv4/IPv6)** and you cannot set a TTL for them (it will be assigned by Route 53).
+
+Unlike CNAME, it **can be used for the top node of a DNS namespace (called the Zone Apex)**, e.g.: example.com.
+
+A target for an alias record can be:
+- Elastic Load Balancers.
+- CloudFront distributions.
+- API Gateway.
+- Elastic Beanstalk environments.
+- S3 Websites.
+- VPC Interface Endpoints.
+- Global Accelerator accelerator.
+- Route 53 record in the same hosted zone.
+
+**A target for an alias record cannot be an EC2 DNS name**.
+
+## 6.7 Creating CNAME and Alias Records
+
+To create a CNAME or Alias record in Route 53, access the Route 53 console, and choose *Hosted Zones*. Then, click on the hosted zone you want to create a record.
+
+To **create a CNAME record**, click on *Create Record* and enter **record type as CNAME**.
+
+![Create CNAME](/assets/aws-certified-developer-associate/route53_create_cname.png "Create CNAME")
+
+To **create an Alias record**, click on *Create Record* and enter **record type** as A or AAAA. Then, **enable the Alias attribute** and select the type of **Route traffic to** endpoint in the list:
+
+![Create Alias](/assets/aws-certified-developer-associate/route53_create_alias.png "Create Alias")
+
+Then select the region for it and **select the resource you want to route traffic to**, a load balancer in the image below:
+
+![Select Resource](/assets/aws-certified-developer-associate/route53_select_resource.png "Select Resource")
+
+You can also configure a **routing policy** for the record and enable/disable **health checks** (because this is an Alias record):
+
+![Health Checks](/assets/aws-certified-developer-associate/route53_health_checks.png "Health Checks")
+
+You can follow this exact process to create an Alias record to route traffic to a desired AWS resource when users hit the Zone Apex.
+
+## 6.8 Route 53 Routing Policies
+
+Routing policies define how Route 53 responds to DNS queries.
+
+Route 53 Supports the following Routing Policies
+- Simple.
+- Weighted.
+- Latency-based.
+- Failover.
+- Geolocation.
+- Geoproximity (using Route 53 Traffic Flow feature).
+- Multi-Value Answer.
+
+### 6.8.1 Simple Routing Policy
+
+Typically used to **route traffic to a single resource** but you **can specify multiple values** in the same record. If multiple values are returned, a **random one is chosen by the client** (it is a client choice which one to use).
+
+![Simple Routing](/assets/aws-certified-developer-associate/route53_simple_routing.png "Simple Routing")
+
+When Alias is enabled, you can specify only one AWS resource. 
+
+You cannot associate health checks to it.
+
+**Configuring it** is really simple, you just need to create a record and leave the routing policy to the value **Simple routing**.
+
+### 6.8.2 Weighted Routing Policy
+
+They allow you to **control the percentage of the requests that go to each resource**.
+
+You **assign each record a relative weight**, so that **the traffic received by each resource is proportional to the weight assigned to the record**. Weights do not need to sum up to 100.
+
+![Weighted Routing](/assets/aws-certified-developer-associate/route53_weighted_routing.png "Weighted Routing")
+
+DNS records must have the same name and type.
+
+They can be associated with health checks.
+
+Use cases: load balancing between regions, testing new versions of software, A/B testing, etc.
+
+**Assign a weight of 0 to a record to stop sending traffic to a resource**.
+
+**If all records have weight of 0, then all records will be returned equally**.
+
+To **create a weighted routing policy**, create a record and set the routing policy to **Weighted routing**. Then, create multiple records and set the **weight** for them:
+
+First record:
+
+![Weighted Record 1](/assets/aws-certified-developer-associate/route53_first_weighted_record.png "Weighted Record 1")
+
+To add the second record, click on *Add another record*:
+
+![Weighted Record 2](/assets/aws-certified-developer-associate/route53_second_weighted_record.png "Weighted Record 2")
+
+### 6.8.3 Latency-based Routing Policy
+
+With latency-based routing, you can route your traffic based on the **lowest network latency for your end user**. Latency is the time taken for the DNS query to resolve to the IP address and is based on traffic between users and AWS regions.
+
+So, you can redirect to the resource that has the least latency close to your users. This is helpful when latency for users is a priority/concern. For example, Germany users may be redirected to the North Virginia region if it has the lowest latency.
+
+They can be associated with health checks and have a **failover capability**.
+
+![Latency Routing](/assets/aws-certified-developer-associate/route53_latency_routing.png "Latency Routing")
+
+To **create a latency-based routing policy**, create a record and set the routing policy to **Latency routing**. Then, create multiple records and set the **region** for them.
+
+First record:
+
+![Latency Record 1](/assets/aws-certified-developer-associate/route53_first_latency_record.png "Latency Record 1")
+
+Then, click on *Add another record* to add the second record:
+
+![Latency Record 2](/assets/aws-certified-developer-associate/route53_second_latency_record.png "Latency Record 2")
+
+To test these records, you can use a VPN to change your location and check the resource that responds.
+
+### 6.8.4 Failover Routing Policy (Active-Passive Setup)
+
+These are used when you want to create an **active/passive setup**. For example, you have a primary instance in EU-West-1 and a secondary DR site in EU-Central-1. If the primary instance is healthy, Route 53 will route traffic to it. If the primary instance is unhealthy, Route 53 will perform an **automatic failover** and route traffic to the secondary instance.
+
+![Failover Routing](/assets/aws-certified-developer-associate/route53_failover_routing.png "Failover Routing")
+
+To **create a failover routing policy**, create a record and set the routing policy to **Failover routing**. Then, **create 2 records, one primary and one secondary, by setting the failover record type** for them:
+
+![Failover Record](/assets/aws-certified-developer-associate/route53_failover_record.png "Failover Record")
+
+To test these records, you can block the primary instance (for example by making it inaccessible to health checkers) to simulate a failure and check if the secondary instance responds.
+
+### 6.8.5 Geolocation Routing Policy
+
+This routing is **based on user location**, i.e., the location of the user making the DNS query. Specify location by Continent, Country or by US State (if there is overlapping, most precise location selected).
+
+You should create a **Default record in case there is no match on location**.
+
+For example, users in Germany will be sent to an instance with IP 11.22.33.44, and users in the France will be sent to an instance with IP 55.66.77.88. All other users will be sent to the default record at 99.11.22.33.
+
+![Geolocation Routing](/assets/aws-certified-developer-associate/route53_geolocation_routing.png "Geolocation Routing")
+
+They can be associated with health checks.
+
+Use cases: website localization, restrict content distribution, load balancing, etc.
+
+To **create a geolocation routing policy**, create a record and set the routing policy to **Geolocation routing**. Then, create multiple records and set the **location (or Default)** for them:
+
+![Geolocation Record](/assets/aws-certified-developer-associate/route53_geolocation_record.png "Geolocation Record")
+
+To test these records, you can use a VPN to change your location and check the resource that responds.
+
+### 6.8.6 Geoproximity Routing Policy
+
+Route traffic to your resources based on the geographic location of users and resources.
+
+With this policy, you have the **ability to shift more traffic to resources in one region by setting the bias**.
+
+To **change the size of the geographic region, specify bias values**:
+- To expand (1 to 99): more traffic to the resource.
+- To shrink (-1 to -99): less traffic to the resource.
+
+Resources can be:
+- AWS resources (specify AWS region).
+- Non-AWS resources (specify Latitude and Longitude).
+
+You **must use Route 53 Traffic Flow to use this feature and leverage the bias**.
+
+Consider the **two following examples with two regions**. In the first example, the two regions both have bias set to 0:
+
+![Geoproximity Routing Same Bias](/assets/aws-certified-developer-associate/route53_geoproximity_routing_same_bias.png "Geoproximity Routing Same Bias")
+
+In the second example, the two regions have different bias values:
+
+![Geoproximity Routing Different Bias](/assets/aws-certified-developer-associate/route53_geoproximity_routing_different_bias.png "Geoproximity Routing Different Bias")
+
+## 6.9 Route 53 Health Checks
+
+HTTP Health Checks are a way to **check the status for public resources (only)**.
+
+Health checks provide Automated DNS Failover. Three types of health checks:
+1. Health checks that **monitor an endpoint** (application, server, other AWS resource)
+2. Health checks that monitor other health checks (**Calculated Health Checks**)
+3. Health checks that **monitor CloudWatch Alarms** (you get full control). For example, you can check throttles of DynamoDB, alarms on RDS, custom metrics. This is particularly helpful for private resources.
+
+Health checks are integrated with CloudWatch Metrics because they have their own metrics that you can see there.
+
+![Route53 Health Checks diagram](/assets/aws-certified-developer-associate/route53_health_checks_diagram.png "Route53 Health Checks diagram")
+
+### 6.9.1 Monitor an Endpoint
+
+About **15 global health checkers** will check the endpoint health.
+- **Healthy/Unhealthy Threshold**, which is 3 by default, and indecates how many health checkers need to report the endpoint as unhealthy to consider it unhealthy.
+- **Interval**: by default 30 seconds but you can set to 10 seconds (higher cost).
+- Supported protocols: HTTP, HTTPS and TCP.
+- If **>18%** of health checkers report the endpoint is healthy, Route 53 considers it Healthy. Otherwise, it is deemed Unhealthy.
+- Ability to choose which locations you want Route 53 to use.
+
+You need to configure your router/firewall to **allow incoming requests from Route 53 health checkers**. The IP ranges can be found at [https://ip-ranges.amazonaws.com/ip-ranges.json](https://ip-ranges.amazonaws.com/ip-ranges.json).
+
+![Monitor an Endpoint](/assets/aws-certified-developer-associate/route53_monitor_endpoint.png "Monitor an Endpoint")
+
+Health Checks pass only when the endpoint returns a 2xx or 3xx status code and can also be setup to pass/fail based on the text in the first 5120 bytes of the response.
+
+### 6.9.2 Calculated Health Checks
+
+**Combine the results of multiple health checks into a single health check**:
+
+![Calculated Health Checks](/assets/aws-certified-developer-associate/route53_calculated_health_checks.png "Calculated Health Checks")
+
+You can use OR, AND, or NOT to combine and monitor **up to 256 child health checks**. You need to specify how many of the health checks need to pass to make the parent health check pass.
+
+Use case: perform maintenance to your website without causing all health checks to fail.
+
+### 6.9.3 CloudWatch Alarm Health Checks
+
+Route 53 health checkers are outside the VPC, so they cannot access private endpoints (private VPC or on-premises resource). 
+
+**You can create a CloudWatch Metric and associate a CloudWatch Alarm, then create a health check that checks the alarm itself**. So, if the metric is breached, the alarm will go off and the health check will fail.
+
+![CloudWatch Alarm Health Checks](/assets/aws-certified-developer-associate/route53_cloudwatch_alarm_health_checks.png "CloudWatch Alarm Health Checks")
+
+## 6.10 Creating Route 53 Health Checks
+
+To create a health check in Route 53, access the Route 53 console, and choose *Health checks*. Then, click on *Create health check* and choose the **type of health check** you want to create:
+
+![Create Health Check](/assets/aws-certified-developer-associate/route53_create_health_check.png "Create Health Check")
+
+### 6.10.1 Creating a Monitor an Endpoint Health Check
+
+To create a monitor an endpoint health check, you need to select the type of health check as *Endpoint* (like in the previous image) and then configure the endpoint that you want to monitor:
+
+![Health Check Configuration](/assets/aws-certified-developer-associate/route53_health_check_configuration.png "Health Check Configuration")
+
+There are also some advanced options that you can configure for the health check (e.g., interval, failure threshold, look for string in the response's first 5120 bytes, regions, ...):
+
+![Advanced Options](/assets/aws-certified-developer-associate/route53_advanced_options.png "Advanced Options")
+
+Before creation, you can also set a CloudWatch alarm for the health check to get notified when it fails:
+
+![CloudWatch Alarm](/assets/aws-certified-developer-associate/route53_cloudwatch_alarm.png "CloudWatch Alarm")
+
+To test the health check, you can block inbound traffic to the port configured in the health check (in this case, port 80) to force the health check to fail. For example, this is how health checks look like in the dashboard:
+
+![Health Check Status](/assets/aws-certified-developer-associate/route53_health_check_status.png "Health Check Status")
+
+From the **Health Checkers** tab, you can see what health checkers are doing and also look for failed checks.
+
+### 6.10.2 Creating a Calculated Health Check
+
+To create a calculated health check, you need to select the type of health check as *Calculated health check* and then configure the child health checks that you want to combine:
+
+![Create Calculated Health Check](/assets/aws-certified-developer-associate/route53_create_calculated_health_check.png "Create Calculated Health Check")
+
+To configure the child health checks, you need to select the health checks that you want to combine and the **combination method** (AND, OR, or NOT):
+
+![Configure Child Health Checks](/assets/aws-certified-developer-associate/route53_configure_child_health_checks.png "Configure Child Health Checks")
+
+You can set the alarm to get the notification when the calculated health check fails, just like the previous health check.
+
+### 6.10.3 Creating a CloudWatch Alarm Health Check
+
+To create a CloudWatch alarm health check, you need to select the type of health check as *State of CloudWatch alarm* and then configure the CloudWatch alarm that you want to monitor:
+
+![Create CloudWatch Alarm Health Check](/assets/aws-certified-developer-associate/route53_create_cloudwatch_alarm_health_check.png "Create CloudWatch Alarm Health Check")
