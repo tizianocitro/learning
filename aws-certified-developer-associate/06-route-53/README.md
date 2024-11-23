@@ -2,7 +2,7 @@
 
 ## 6.1 Domain Name System (DNS)
 
-DNS translates the human friendly hostnames into the machine IP addresses. For example, www.google.com -> [172.217.18.36](172.217.18.36). DNS is the backbone of the internet and uses a hierarchical naming structure: [.com](.com), example.com, www.example.com, docs.example.com.
+DNS translates the human friendly hostnames into the machine IP addresses. For example, www.google.com -> [172.217.18.36](172.217.18.36). DNS is the backbone of the internet and uses a hierarchical naming structure: [.com](.com), [example.com](example.com), www.example.com, docs.example.com.
 
 Some **terminologies**:
 - **Domain Registrar**: Amazon Route 53, GoDaddy, etc.
@@ -35,7 +35,7 @@ The only AWS service which **provides a 100% availability SLA**.
 ### 6.2.1 Route 53 Records
 
 Records define how you want to route traffic for a domain. Each record contains:
-- **Domain/subdomain name**: e.g., example.com.
+- **Domain/subdomain name**: e.g., [example.com](example.com).
 - **Record type**: e.g., A or AAAA.
 - **Value**: e.g., [12.34.56.78](12.34.56.78).
 - **Routing policy**: how Route 53 responds to queries.
@@ -59,7 +59,7 @@ Route 53 supports the following DNS record types:
 A **hosted zone** is a container for records that define how to route traffic to a domain and its subdomains. In AWS, you pay 0.50$ per month per hosted zone.
 
 Two types of hosted zones:
-- **Public Hosted Zones**: are for domains that are public and available over the internet. They contain records that specify how to route traffic on the internet (public domain names). For example, application1.mypublicdomain.com.
+- **Public Hosted Zones**: are for domains that are public and available over the internet. They contain records that specify how to route traffic on the internet (public domain names). For example, [application1.mypublicdomain.com](application1.mypublicdomain.com).
 
 ![Public Hosted Zone](/assets/aws-certified-developer-associate/public_hosted_zone.png "Public Hosted Zone")
 
@@ -121,11 +121,11 @@ The **TTL allows you to control how long the DNS resolvers cache the records pro
 
 ![TTL](/assets/aws-certified-developer-associate/route53_ttl.png "TTL")
 
-- High TTL – e.g., 24 hours.
+- **High TTL**: e.g., 24 hours.
     - Less traffic on Route 53 because less clients are making queries as results are cached.
     - Possibly outdated records as you have to wait for the TTL to expire.
 
-- Low TTL – e.g., 60 seconds.
+- **Low TTL**: e.g., 60 seconds.
     - More traffic on Route 53, so it will cost you more.
     - Records are outdated for less time, so it is easier to change records.
 
@@ -137,7 +137,7 @@ You can use the `nslookup` or `dig` command to check the TTL of a record, as wel
 
 ## 6.6 Route 53 CNAME vs Alias Records
 
-You will use these records to **map a hostname to another hostname**. For example, you have an AWS resource (e.g., ELB, CloudFront, ...) that exposes an AWS hostname like lb1-1234.us-east-2.elb.amazonaws.com but you want myapp.mydomain.com.
+You will use these records to **map a hostname to another hostname**. For example, you have an AWS resource (e.g., ELB, CloudFront, ...) that exposes an AWS hostname like [lb1-1234.us-east-2.elb.amazonaws.com](lb1-1234.us-east-2.elb.amazonaws.com) but you want [myapp.mydomain.com](myapp.mydomain.com).
 
 A **CNAME** record:
 - Points a hostname to any other hostname. For example, app.mydomain.com to blabla.anything.com.
@@ -289,7 +289,7 @@ This routing is **based on user location**, i.e., the location of the user makin
 
 You should create a **Default record in case there is no match on location**.
 
-For example, users in Germany will be sent to an instance with IP 11.22.33.44, and users in the France will be sent to an instance with IP 55.66.77.88. All other users will be sent to the default record at 99.11.22.33.
+For example, users in Germany will be sent to an instance with IP [11.22.33.44](11.22.33.44), and users in the France will be sent to an instance with IP [55.66.77.88](55.66.77.88). All other users will be sent to the default record at [99.11.22.33](99.11.22.33).
 
 ![Geolocation Routing](/assets/aws-certified-developer-associate/route53_geolocation_routing.png "Geolocation Routing")
 
