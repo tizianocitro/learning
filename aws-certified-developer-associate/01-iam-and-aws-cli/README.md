@@ -219,8 +219,7 @@ Some AWS service will need to perform actions on your behalf, so they need permi
 
 Roles are available under the *Account Management -> Roles* menu. Important for the exam are the roles for AWS services.
 
-When creating a role for an AWS service, you need to choose to which service (or use case) you want to assign the role to.
-Then, you need to attach permissions policies to the role and give it a *name*.
+When creating a role for an AWS service, you need to choose to which service (or use case) you want to assign the role to. Then, you need to attach permissions policies to the role and give it a *name*.
 
 Following an example for EC2:
 
