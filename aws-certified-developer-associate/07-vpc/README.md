@@ -1,4 +1,4 @@
-# 7 VPC Fundamentals
+# 7 Virtual Private Cloud (VPC)
 
 **A Virtual Private Cloud (VPC) is a private network to deploy your resources** and is a **regional resource**.
 

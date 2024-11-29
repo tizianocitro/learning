@@ -1,4 +1,4 @@
-# 2 EC2 Fundamentals
+# 2 Elastic Compute Cloud (EC2)
 
 ## 2.1 Budget Setup
 
