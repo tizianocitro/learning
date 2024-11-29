@@ -1,4 +1,4 @@
-# 4 AWS Fundamentals: ELB and ASG
+# 4 Elastic Load Balancer and Auto Scaling Groups
 
 ## 4.1 Scalability
 

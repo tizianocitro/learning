@@ -1,4 +1,4 @@
-# 5 AWS Fundamentals: RDS, Aurora, and ElastiCache
+# 5 Relational Database Service, Aurora, and ElastiCache
 
 ## 5.1 Relational Database Service (RDS)
 
