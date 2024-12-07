@@ -28,7 +28,7 @@ In AWS you apply the **Least Privilege Principle**: don’t give more permission
 
 Following an example of policy:
 
-```javascript
+```json
 {
     "Id": "Policy-1",
     "Version": "2012-10-17",
@@ -104,8 +104,9 @@ If a user belongs to multiple teams, they will inherit all the policies from all
 
 AWS provides a lot of preconfigured permissions policies, such as *AdministratorAccess*, *IAMReadOnlyAccess* and *IAMFullAccess*.
 
-Following is how the *AdministratorAccess* policy is defined by AWS
-```javascript
+Following is how the *AdministratorAccess* policy is defined by AWS:
+
+```json
 {
     "Version": "2012-10-17",
     "Statement": [
@@ -134,7 +135,8 @@ AWS provides a visual and a JSON editor for creating policies.
 - **Condition**: conditions for when this policy is active (optional).
 
 **Action** can contains APIs in the form of `<prefix>*`, meaning that all APIs that start with `<prefix>` will be included in the permission. For example, the following policy will allow any *List* API provided by IAM, such as ListUsers and ListGroups.
-```javascript
+
+```json
 {
     "Version": "2012-10-17",
     "Statement": [

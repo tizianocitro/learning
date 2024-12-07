@@ -126,7 +126,8 @@ They are **JSON-based policies**:
 - Principal: the account or user to apply the policy to.
 
 Following an example of a bucket policy that allows public read access to the bucket:
-```javascript
+
+```json
 {
     "Version": "2012-10-17",
     "Statement": [
