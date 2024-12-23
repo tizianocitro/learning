@@ -106,7 +106,7 @@ You can **invalidate part of the cache using the CreateInvalidation API to avoid
 
 If you have an application that serves up content that varies based on parameters (e.g., user, device, language, location, ...), you can **add other elements (HTTP headers, cookies, query strings) to the cache key using CloudFront Cache Policies**.
 
-### 12.5 Cache Policies
+## 12.5 Cache Policies
 
 Cache policies allow you to **customize the cache key**. You can **add additional elements to the cache key** to serve up different versions of the same object based on the request.
 
@@ -313,3 +313,85 @@ Click on the *Edit* button to change the settings. You can choose between *No re
 Then, save and see how it appears in the distribution settings:
 
 ![CloudFront Geo Restriction Enabled](/assets/aws-certified-developer-associate/cloudfront_geo_restriction_enabled.png "CloudFront Geo Restriction Enabled")
+
+## 12.12 CloudFront Signed URLs and Signed Cookies
+
+You can use CloudFront Signed URL/Cookie to distribute paid shared content to premium users over the world:
+
+You attach a policy with:
+- **URL expiration**.
+- **IP ranges to access the data from**.
+- **Trusted signers**: which AWS accounts can create signed URLs.
+
+How long should the URL be valid for?
+- Shared content (movie, music): make it short (a few minutes).
+- Private content (private to the user): you can make it last for years.
+
+**Signed URL vs Signed Cookies**:
+- Signed URLs provide access to individual files: **one signed URL per file**.
+- Signed Cookies provide access to multiple files: **one signed cookie for many files**.
+
+### 12.12.1 CloudFront Signed URLs vs S3 Pre-Signed URLs
+
+**CloudFront Signed URLs**:
+- **Allow access to a path, no matter the origin**: it can be an S3 bucket, an EC2 instance, an ALB, etc.
+- **Account wide key-pair**: any IAM user with sufficient permissions can create keys and key groups (signers of the URLs).
+- Can **filter by IP, path, date, expiration**.
+- Can **leverage caching features** of CloudFront.
+
+**S3 Pre-Signed URLs**:
+- Issue a **request as the person who pre-signed the URL**.
+- Uses the **IAM key of the signing IAM principal**.
+- **Limited lifetime**.
+
+S3 pre-signed URLs are more specific because they are limited to S3, while CloudFront signed URLs are more flexible because they can be used to access content from any origin.
+
+### 12.12.2 CloudFront Signed URL Workflow
+
+We have an S3 bucket that is configured to be the origin of a CloudFront distribution. The content of the bucket is private and can be accessed only by CloudFront because of OAC. We want to provide access to a file in the bucket to a user through CloudFront.
+
+The user authenticates with the application and requests access to a file. The application checks the user's credentials and generates a CloudFront signed URL for the file. The signed URL is sent to the user, who can use it to access the file through CloudFront.
+
+![CloudFront Signed URL](/assets/aws-certified-developer-associate/cloudfront_signed_url.png "CloudFront Signed URL")
+
+It **works in the same way for signed cookies**.
+
+## 12.13 CloudFront Signed URL Process
+
+**Two types of signers**:
+- **Trusted key group (recommended)**: can leverage APIs to create and rotate keys, and IAM for API security.
+- **AWS account that contains a CloudFront Key Pair (not recommended)**: need to manage keys using the root account and the AWS console, so it is **not recommended** because:
+    - You should not use the root account for this.
+    - Not possible to automate like you can with key groups, which can be done via APIs.
+
+### 12.13.1 CloudFront Trusted Key Groups
+
+In your CloudFront distribution **create one or more trusted key groups**.
+
+The, **generate your own public and private key**:
+- The private key is used by your applications (e.g., EC2) to sign URLs.
+- The public key (uploaded) is used by CloudFront to verify URLs.
+
+### 12.13.2 Adding a Key Pair to Use in a Key Group
+
+Go to the CloudFront service and find the *Key Management* entry in the menu. Then, go into *Public Keys* to add a new key pair that you can generate separately (e.g., locally).
+
+Following image is an example of a key pair (2048 bit key size):
+
+![Generated Key Pair](/assets/aws-certified-developer-associate/generated_pey_pair.png "Generated Key Pair")
+
+So, click on the *Create Public Key* button and add the generated public key:
+
+![CloudFront Add Public Key](/assets/aws-certified-developer-associate/cloudfront_add_public_key.png "CloudFront Add Public Key")
+
+### 12.13.3 Creating a Key Group
+
+Go to the CloudFront service and find the *Key Management* entry in the menu. Then, go into *Key Groups* and click on the *Create Key Group* button.
+
+![CloudFront Key Group Console](/assets/aws-certified-developer-associate/cloudfront_key_group_console.png "CloudFront Key Group Console")
+
+Insert a **name**, optionally a **description**, and add the **public keys (currently, up to 5)** you want to use in the key group:
+
+![CloudFront Create Key Group](/assets/aws-certified-developer-associate/cloudfront_create_key_group.png "CloudFront Create Key Group")
+
+Finally, create it and you will see it in the list of key groups.
