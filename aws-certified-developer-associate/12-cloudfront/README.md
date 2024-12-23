@@ -270,3 +270,46 @@ For the **origin request policy creation**, you have to add some information lik
 And the set the **origin request settings**, where you can add elements to the origin request (headers, custom headers, etc.) with the options indicated previously:
 
 ![CloudFront Origin Request Policy Origin Request](/assets/aws-certified-developer-associate/cloudfront_origin_request_policy_origin_request.png "CloudFront Origin Request Policy Origin Request")
+
+## 12.10 ALB or EC2 as Origins
+
+
+### 12.10.1 EC2 as Origin
+
+You can expose back-end applications running on EC2 instances through CloudFront, so that users can access them through edge locations.
+
+To do so, your EC2 instances must be **publicly accessible** and the **security group must allow inbound traffic from CloudFront edge locations' IP addresses**.
+
+![CloudFront EC2](/assets/aws-certified-developer-associate/cloudfront_ec2.png "CloudFront EC2")
+
+### 12.10.2 ALB as Origin
+
+You can also use an ALB as an origin for CloudFront. This is useful when you have an ALB with multiple EC2 instances behind it, which **remain private** because you can have private VPC connection between the ALB and EC2 instances.
+
+To do so, the ALB must be **publicly accessible** and the **security group must allow inbound traffic from CloudFront edge locations' IP addresses**.
+
+![CloudFront ALB](/assets/aws-certified-developer-associate/cloudfront_alb.png "CloudFront ALB")
+
+## 12.11 CloudFront Geo Restriction
+
+You can **restrict who can access your distribution** via:
+- **Allow list**: Allow users to access your content only if they are re in one of the countries on a list of approved countries.
+- **Block list**: Prevent users from accessing your content if they are in one of the countries on a list of banned countries.
+
+The country is determined using a 3rd party Geo-IP database.
+
+**Use case**: Copyright Laws to control access to content.
+
+### 12.11.1 Turn on Geo Restriction
+
+To turn on Geo Restriction, go to the CloudFront service and select the distribution you want to work with. Then, go to the *Security* tab and find the *CloudFront Geographic Restrictions* settings.
+
+![CloudFront Geo Restriction](/assets/aws-certified-developer-associate/cloudfront_geo_restriction.png "CloudFront Geo Restriction")
+
+Click on the *Edit* button to change the settings. You can choose between *No restrictions* (in case, no need to select countries), *Allow list*, and *Black list* and then select the countries you want to allow or block:
+
+![CloudFront Geo Restriction Edit](/assets/aws-certified-developer-associate/cloudfront_geo_restriction_edit.png "CloudFront Geo Restriction Edit")
+
+Then, save and see how it appears in the distribution settings:
+
+![CloudFront Geo Restriction Enabled](/assets/aws-certified-developer-associate/cloudfront_geo_restriction_enabled.png "CloudFront Geo Restriction Enabled")
