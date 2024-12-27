@@ -70,3 +70,60 @@ Using **Fargate with EFS provides a full serverless experience** because EFS and
 **Use case**: persistent multi-AZ shared storage for your containers.
 
 Note: **S3 cannot be mounted as a file system on ECS tasks**.
+
+## 13.6 Creating an ECS Cluster
+
+To create an ECS cluster, go into the ECS console and find the *Clusters* section. Click on *Create Cluster* to create a new cluster.
+
+Enter a **name** and optionally a **namespace** for the cluster:
+
+![ECS Cluster Name](/assets/aws-certified-developer-associate/ecs_cluster_name.png "Create ECS Cluster Name")
+
+Then select the **infrastructure** type (launch type) for the cluster. You can choose between EC2, Fargate, and **ECS Anywhere**:
+
+![ECS Cluster Launch Type](/assets/aws-certified-developer-associate/ecs_cluster_launch_type.png "Create ECS Cluster Launch Type")
+
+You can **choose both EC2 and Fargate launch types at the same time**:
+
+![ECS Cluster EC2 and Fargate](/assets/aws-certified-developer-associate/ecs_cluster_ec2_and_fargate.png "Create ECS Cluster EC2 and Fargate")
+
+To **use EC2 launch type**, you need to:
+- Create a new ASG or use an existing one.
+- Choose the OS.
+- Choose the instance type.
+- Optionally configure an SSH key pair.
+- Set the desired capacity.
+- Configure the root EBS volume.
+
+![ECS Cluster EC2 Instances](/assets/aws-certified-developer-associate/ecs_cluster_ec2_instances.png "Create ECS Cluster EC2 Instances")
+
+If you use the EC2 launch type, you need to **configure the networking (VPC, subnets, and security groups)**:
+
+![ECS Cluster Networking](/assets/aws-certified-developer-associate/ecs_cluster_networking.png "Create ECS Cluster Networking")
+
+For the **security group**, you can create a new one or use an existing one:
+
+![ECS Cluster Security Group](/assets/aws-certified-developer-associate/ecs_cluster_security_group.png "Create ECS Cluster Security Group")
+
+Before creating the cluster, you can also set **monitoring** and **tags**:
+
+![ECS Cluster Monitoring and Tags](/assets/aws-certified-developer-associate/ecs_cluster_monitoring_and_tags.png "Create ECS Cluster Monitoring and Tags")
+
+After clicking on *Create*, you can go into your ASG and see the instances being created (it depends on the capacity settings). When the cluster is ready, you can see it in the ECS console:
+
+![ECS Cluster Ready](/assets/aws-certified-developer-associate/ecs_cluster_ready.png "ECS Cluster Ready")
+
+If you click on the cluster, you can see its **properties**:
+
+![ECS Cluster Properties](/assets/aws-certified-developer-associate/ecs_cluster_properties.png "ECS Cluster Properties")
+
+In the *Infrastructure* tab, you can see **capacity providers**. In the image, there are 3 capacity providers:
+- **FARGATE**: you can launch Fargate tasks in the cluster.
+- **FARGATE_SPOT**: you can launch Fargate tasks in spot mode (like EC2 spot instances) in the cluster.
+- **ASG**: you can launch EC2 instances in the cluster directly from the specified ASG. The EC2 instances in the ASG will also appear in the **container instances** section.
+
+![ECS Cluster Capacity Providers](/assets/aws-certified-developer-associate/ecs_cluster_capacity_providers.png "ECS Cluster Capacity Providers")
+
+What these providers mean is that, when you create an ECS task, it can be launched on Fargate, Fargate Spot, or on the EC2 instances in the ASG. The instances will also appear in the **container instances** section:
+
+![ECS Cluster Container Instances](/assets/aws-certified-developer-associate/ecs_cluster_container_instances.png "ECS Cluster Container Instances")
