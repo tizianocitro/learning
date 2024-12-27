@@ -450,3 +450,15 @@ To use this feature:
 - Specify the public key to encrypt them.
 
 ![CloudFront Field-Level Encryption](/assets/aws-certified-developer-associate/cloudfront_field_level_encryption.png "CloudFront Field-Level Encryption")
+
+## 12.18 CloudFront Real-Time Logs
+
+You can **get real-time requests received by CloudFront sent to Kinesis Data Streams**. This is to monitor, analyze, and take actions based on content delivery performance.
+
+You can choose:
+- **Sampling rate**: the percentage of requests for which you want to receive, so if you have a high traffic website, you can sample the logs to reduce costs.
+- **Sample specific fields and specific cache behaviors** (path patterns).
+
+![CloudFront Real-Time Logs](/assets/aws-certified-developer-associate/cloudfront_real_time_logs.png "CloudFront Real-Time Logs")
+
+CloudFront can only send logs to Kinesis Data Streams, so to batch logs to, for example, S3, you need to use Kinesis Data Firehose after Kinesis Data Streams (this is what the image above shows).
