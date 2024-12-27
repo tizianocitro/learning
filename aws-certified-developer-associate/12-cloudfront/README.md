@@ -273,7 +273,6 @@ And the set the **origin request settings**, where you can add elements to the o
 
 ## 12.10 ALB or EC2 as Origins
 
-
 ### 12.10.1 EC2 as Origin
 
 You can expose back-end applications running on EC2 instances through CloudFront, so that users can access them through edge locations.
@@ -398,6 +397,8 @@ Finally, create it and you will see it in the list of key groups.
 
 ## 12.14 CloudFront Pricing and Price Classes
 
+**This can come up at the exam**.
+
 CloudFront **edge locations are all around the world and because of that the cost of data out per edge location varies**.
 
 ![CloudFront Pricing](/assets/aws-certified-developer-associate/cloudfront_pricing.png "CloudFront Pricing")
@@ -410,3 +411,42 @@ Three price classes:
 3. **Price Class 100**: only the least expensive regions.
 
 ![CloudFront Price Classes](/assets/aws-certified-developer-associate/cloudfront_price_classes.png "CloudFront Price Classes")
+
+## 12.15 CloudFront Multiple Origin
+
+**This can come up at the exam**.
+
+**Multiple origins are useful to route to different kind of origins based on the content type** (cache behaviors).
+
+Based on path pattern:
+- `/images/*`.
+- `/api/*`.
+- `/*`.
+
+![CloudFront Multiple Origin](/assets/aws-certified-developer-associate/cloudfront_multiple_origin.png "CloudFront Multiple Origin")
+
+## 12.16 CloudFront Origin Groups
+
+**This can come up at the exam**.
+
+**Origin groups are useful to increase high-availability and do failover**.
+
+A origin group comprises one primary and one secondary origin. If the primary origin fails, the second one is used.
+
+![CloudFront Origin Groups](/assets/aws-certified-developer-associate/cloudfront_origin_groups.png "CloudFront Origin Groups")
+
+You can also use **CloudFront origin groups with S3 to achieve regional-level high availability and disaster recovery**. The architecture in the following image shows a CloudFront distribution with an origin group that has an S3 bucket as the primary origin and an S3 bucket in another region as the secondary origin. These two buckets have cross-region replication enabled between them, so that in case of failure of the primary bucket, the secondary bucket can be used and has all the content.
+
+![CloudFront Origin Groups S3](/assets/aws-certified-developer-associate/cloudfront_origin_groups_s3.png "CloudFront Origin Groups S3")
+
+## 12.17 CloudFront Field-Level Encryption
+
+This feature is to **protect user sensitive information through the application stack**.
+
+It adds an additional layer of security along with HTTPS because **sensitive information are encrypted at the edge** close to user using asymmetric encryption. As a result, whichever component that wants to access the sensitive information must have the private key to decrypt it.
+
+To use this feature:
+- Specify the set of fields in POST requests that you want to be encrypted (up to 10 fields).
+- Specify the public key to encrypt them.
+
+![CloudFront Field-Level Encryption](/assets/aws-certified-developer-associate/cloudfront_field_level_encryption.png "CloudFront Field-Level Encryption")
