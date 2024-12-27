@@ -48,3 +48,25 @@ As roles you use:
 
 ## 13.4 ECS Load Balancer Integrations
 
+This is how you can **expose your ECS containers to the internet**. You can **expose your ECS tasks via HTTP/HTTPS endpoints** using:
+- **Application Load Balancer**: works for most use cases.
+- **Network Load Balancer**: recommended only for high throughput/high performance use cases, or to pair it with AWS Private Link.
+- **Classic Load Balancer**: legacy, it is supported but not recommended (no advanced features and no Fargate).
+
+![ECS Load Balancer Integrations](/assets/aws-certified-developer-associate/ecs_load_balancer_integrations.png "ECS Load Balancer Integrations")
+
+## 13.5 ECS Data Volumes via EFS
+
+They allow for **data persistence and data sharing between containers**.
+
+With EFS, you can **mount EFS file systems onto ECS tasks**.
+- It works for both EC2 and Fargate launch types.
+- **Tasks running in any AZ will share the same data in the EFS file system**.
+
+Using **Fargate with EFS provides a full serverless experience** because EFS and Fargate are serverless services.
+
+![ECS Data Volumes via EFS](/assets/aws-certified-developer-associate/ecs_data_volumes_via_efs.png "ECS Data Volumes via EFS")
+
+**Use case**: persistent multi-AZ shared storage for your containers.
+
+Note: **S3 cannot be mounted as a file system on ECS tasks**.
