@@ -395,3 +395,18 @@ Insert a **name**, optionally a **description**, and add the **public keys (curr
 ![CloudFront Create Key Group](/assets/aws-certified-developer-associate/cloudfront_create_key_group.png "CloudFront Create Key Group")
 
 Finally, create it and you will see it in the list of key groups.
+
+## 12.14 CloudFront Pricing and Price Classes
+
+CloudFront **edge locations are all around the world and because of that the cost of data out per edge location varies**.
+
+![CloudFront Pricing](/assets/aws-certified-developer-associate/cloudfront_pricing.png "CloudFront Pricing")
+
+You can **reduce the number of edge locations for cost reduction using price classes**.
+
+Three price classes:
+1. **Price Class All**: all regions to offer the best performance but is the most expensive.
+2. **Price Class 200**: most regions, but excludes the most expensive regions.
+3. **Price Class 100**: only the least expensive regions.
+
+![CloudFront Price Classes](/assets/aws-certified-developer-associate/cloudfront_price_classes.png "CloudFront Price Classes")
