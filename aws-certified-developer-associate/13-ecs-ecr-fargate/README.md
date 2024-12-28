@@ -160,3 +160,53 @@ You can also **configure the storage** for the task. You can choose between:
 As with the cluster, you can also set **monitoring** and **tags** for the task definition. Finally, you can create the task definition.
 
 Now **you can use this task definition to create an ECS service**.
+
+## 13.8 Creating an ECS Service
+
+An **ECS service is a long-running task that runs on ECS**. It is a way to ensure that a specified number of tasks are running at any given time. For example, a web application.
+
+On the opposite, **an ECS task is a one-time task: it does its job and stops**. For example, a batch job.
+
+To create an ECS service, go into the ECS console and find the cluster you want to create the service in, and then click on *Create* in the *Services* tab.
+
+![ECS Service Create](/assets/aws-certified-developer-associate/ecs_service_create.png "Create ECS Service")
+
+Set the **compute configuration** by selecting the **compute options**, the **launch type** (*FARGATE*, *EC2*, and *EXTERNAL*), and the **platform version** (e.g., *Latest*):
+
+![ECS Service Compute Configuration](/assets/aws-certified-developer-associate/ecs_service_compute_configuration.png "Create ECS Service Compute Configuration")
+
+Next is the **deployment configuration where you coose between a service and a task**:
+
+![ECS Service Deployment Configuration](/assets/aws-certified-developer-associate/ecs_service_deployment_configuration.png "Create ECS Service Deployment Configuration")
+
+In this case, we are creating a service, so we need to **select Service**. Then, you need to set the **family**, the **service type (replica or daemon)**, and a **name**. The **desired tasks** defines how many tasks/replicas you want to run.
+
+![ECS Service Deployment Configuration 2](/assets/aws-certified-developer-associate/ecs_service_deployment_configuration_2.png "Create ECS Service Deployment Configuration 2")
+
+Among other options, you then have to configure the **networking** options (e.g., VPC, subnets, security groups):
+
+![ECS Service Networking](/assets/aws-certified-developer-associate/ecs_service_networking.png "Create ECS Service Networking")
+
+We can create a **security group** for the service that allows inbound traffic on port 80 because we are running a task definition with a NGINX container. We also enable a public IP:
+
+![ECS Service Security Group](/assets/aws-certified-developer-associate/ecs_service_security_group.png "Create ECS Service Security Group")
+
+Next, we configure the load balancer by creating a new ALB:
+
+![ECS Service Load Balancer](/assets/aws-certified-developer-associate/ecs_service_load_balancer.png "Create ECS Service Load Balancer")
+
+![ECS Service Load Balancer 2](/assets/aws-certified-developer-associate/ecs_service_load_balancer_2.png "Create ECS Service Load Balancer 2")
+
+Before creation, you can also configure **service auto scaling**, **task placement**, and **tags**:
+
+![ECS Service Other Options](/assets/aws-certified-developer-associate/ecs_service_other_options.png "Create ECS Service Other Options")
+
+After creating the service, it can take a few minutes to deploy successfully. You can see the service in the console:
+
+![ECS Service Created](/assets/aws-certified-developer-associate/ecs_service_created.png "Create ECS Service Created")
+
+And by clicking on it, you can see its **details** (from the tabs here, you can also access the task's containers logs):
+
+![ECS Service Details](/assets/aws-certified-developer-associate/ecs_service_details.png "Create ECS Service Details")
+
+Now that it is ready, you can use the **DNS name of the ALB** to access the NGINX container. If you have configured more tasks in the service, you will see that the ALB will distribute the traffic betwseen them. As a result, you will receive different responses from the different NGINX containers. 
