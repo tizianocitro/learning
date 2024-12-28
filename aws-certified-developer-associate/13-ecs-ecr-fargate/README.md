@@ -246,3 +246,41 @@ Two options:
 In the image below, we have an ECS service with a target tracking scaling based on the average CPU utilization of the ECS service. When the CPU utilization is above a defined threshold, CloudWatch Metric will trigger a CloudWatch alarm to scale the ECS service by adding a new task in the service.
 
 ![ECS Auto Scaling CPU Utilization](/assets/aws-certified-developer-associate/ecs_auto_scaling_cpu_utilization.png "ECS Auto Scaling CPU Utilization")
+
+## 13.10 ECS Rolling Updates
+
+When updating an ECS service from v1 to v2, you can control how many tasks can be started and stopped, and in which order.
+
+When updating the service, you can set the **minimum healthy percent (default 100%)** and the **maximum percent (default 200%)** of tasks that are allowed to be in the *RUNNING* state during a deployment. The image below shows the rolling update process:
+
+![ECS Rolling Updates](/assets/aws-certified-developer-associate/ecs_rolling_updates.png "ECS Rolling Updates")
+
+Now let's see two scenarios: **Min 50% - Max 100%** and **Min 100% - Max 150%**.
+
+### 13.10.1 Scenario 1: Min 50% - Max 100%
+
+Considering a starting number of 4 tasks, the following steps will occur:
+- **T1**: 4 v1 tasks are running.
+- **T2**: 2 v1 tasks are stopped (because we can terminate 50% of the tasks before starting new ones because the minimum is 50%).
+- **T3**: 2 new v2 tasks are started.
+- **T4**: 2 v1 and 2 v2 tasks are running.
+- **T5**: 2 v1 tasks are stopped.
+- **T6**: 2 new v2 tasks are started.
+- **T7**: 4 v2 tasks are running.
+
+![ECS Rolling Updates Scenario 1](/assets/aws-certified-developer-associate/ecs_rolling_updates_scenario_1.png "ECS Rolling Updates Scenario 1")
+
+### 13.10.2 Scenario 2: Min 100% - Max 150%
+
+Considering a starting number of 4 tasks, the following steps will occur:
+- **T1**: 4 v1 tasks are running.
+- **T2**: 2 v2 tasks are started (because tasks cannot be terminated as the minimum is 100%).
+- **T3**: 4 v1 and 2 v2 tasks are running.
+- **T4**: 2 v1 tasks are stopped.
+- **T5**: 2 v1 and 2 v2 tasks are running.
+- **T6**: 2 v2 tasks are started.
+- **T7**: 2 v1 and 4 v2 tasks are running.
+- **T8**: 2 v1 tasks are stopped.
+- **T9**: 4 v2 tasks are running.
+
+![ECS Rolling Updates Scenario 2](/assets/aws-certified-developer-associate/ecs_rolling_updates_scenario_2.png "ECS Rolling Updates Scenario 2")
