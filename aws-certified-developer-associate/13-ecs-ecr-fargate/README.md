@@ -284,3 +284,39 @@ Considering a starting number of 4 tasks, the following steps will occur:
 - **T9**: 4 v2 tasks are running.
 
 ![ECS Rolling Updates Scenario 2](/assets/aws-certified-developer-associate/ecs_rolling_updates_scenario_2.png "ECS Rolling Updates Scenario 2")
+
+## 13.11 ECS Solutions Architectures
+
+Here are some useful-to-know ECS solutions architectures.
+
+### 13.11.1 ECS Tasks Invoked by EventBridge
+
+In this architecture, an EventBridge rule triggers an ECS task on Fargate to process the event.
+
+The ECS task can be used to process events from various sources (e.g., S3, DynamoDB, etc.). In this case, the task is processing an S3 event and then stores the result in DynamoDB.
+
+To interact with S3 and DynamoDB, the ECS task needs the appropriate permissions. These permissions are granted by the ECS Task Role.
+
+![ECS Tasks Invoked by EventBridge](/assets/aws-certified-developer-associate/ecs_tasks_invoked_by_eventbridge.png "ECS Tasks Invoked by EventBridge")
+
+### 13.11.2 ECS Tasks Invoked by EventBridge Schedule
+
+In this architecture, an EventBridge rule triggers an ECS task on Fargate on a schedule, every 1 hour in this case.
+
+![ECS Tasks Invoked by EventBridge Schedule](/assets/aws-certified-developer-associate/ecs_tasks_invoked_by_eventbridge_schedule.png "ECS Tasks Invoked by EventBridge Schedule")
+
+### 13.11.3 ECS Tasks Polling Messages from SQS Queue
+
+In this architecture, an ECS service has 3 tasks that poll messages from an SQS queue and processe them.
+
+ECS Service Auto Scaling is enabled and used to scale the number of tasks based on the number of messages in the SQS queue. The more messages in the queue, the more tasks in the service.
+
+![ECS Tasks Polling Messages from SQS Queue](/assets/aws-certified-developer-associate/ecs_tasks_polling_messages_from_sqs_queue.png "ECS Tasks Polling Messages from SQS Queue")
+
+### 13.11.4 Intercept Stopped Tasks using EventBridge
+
+In this architecture, an EventBridge rule intercepts stopped tasks and sends a notification to an SNS topic.
+
+The notification can be used to send an email to an administrator, for example.
+
+![Intercept Stopped Tasks using EventBridge](/assets/aws-certified-developer-associate/intercept_stopped_tasks_using_eventbridge.png "Intercept Stopped Tasks using EventBridge")
