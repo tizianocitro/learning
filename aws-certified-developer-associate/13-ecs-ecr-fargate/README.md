@@ -209,4 +209,40 @@ And by clicking on it, you can see its **details** (from the tabs here, you can 
 
 ![ECS Service Details](/assets/aws-certified-developer-associate/ecs_service_details.png "Create ECS Service Details")
 
-Now that it is ready, you can use the **DNS name of the ALB** to access the NGINX container. If you have configured more tasks in the service, you will see that the ALB will distribute the traffic betwseen them. As a result, you will receive different responses from the different NGINX containers. 
+Now that it is ready, you can use the **DNS name of the ALB** to access the NGINX container. If you have configured more tasks in the service, you will see that the ALB will distribute the traffic betwseen them. As a result, you will receive different responses from the different NGINX containers.
+
+## 13.9 ECS Service Auto Scaling
+
+Automatically increase/decrease the desired number of ECS tasks.
+
+**Amazon ECS Auto Scaling** uses **AWS Application Auto Scaling**, which can scale based on:
+- **ECS service average CPU utilization**.
+- **ECS service average memory utilization**: scale on RAM.
+- **ALB request count per target**: metric coming from the ALB.
+
+Three types of auto scaling:
+1. **Target tracking**: scale based on target value for a specific CloudWatch metric.
+2. **Step scaling**: scale based on a specified CloudWatch Alarm.
+3. **Scheduled scaling**: scale based on a specified date/time (predictable changes).
+
+ECS service auto scaling (task level) is not the same as EC2 auto scaling (EC2 instance level).
+- This is why Fargate auto scaling is much easier to setup because of serverless.
+
+### 13.9.1 EC2 Launch Type: Auto Scaling EC2 Instances
+
+You can accommodate the ECS Service scaling by adding underlying EC2 instances.
+
+Two options:
+1. **Auto Scaling Group Scaling**:
+    - Scale your ASG based on CPU utilization.
+    - Add EC2 instances over time.
+2. **ECS Cluster Capacity Provider**:
+    - Used to automatically provision and scale the infrastructure for ECS tasks.
+    - The capacity provider is paired with an ASG.
+    - Adds EC2 instances when you are missing capacity (CPU, RAM, ...).
+
+### 13.9.2 Example of ECS Auto Scaling based on CPU Utilization
+
+In the image below, we have an ECS service with a target tracking scaling based on the average CPU utilization of the ECS service. When the CPU utilization is above a defined threshold, CloudWatch Metric will trigger a CloudWatch alarm to scale the ECS service by adding a new task in the service.
+
+![ECS Auto Scaling CPU Utilization](/assets/aws-certified-developer-associate/ecs_auto_scaling_cpu_utilization.png "ECS Auto Scaling CPU Utilization")
