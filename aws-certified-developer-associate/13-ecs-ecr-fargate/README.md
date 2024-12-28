@@ -127,3 +127,36 @@ In the *Infrastructure* tab, you can see **capacity providers**. In the image, t
 What these providers mean is that, when you create an ECS task, it can be launched on Fargate, Fargate Spot, or on the EC2 instances in the ASG. The instances will also appear in the **container instances** section:
 
 ![ECS Cluster Container Instances](/assets/aws-certified-developer-associate/ecs_cluster_container_instances.png "ECS Cluster Container Instances")
+
+## 13.7 Creating an ECS Task Definition
+
+Go into the ECS console and find the *Task Definitions* section, and then click on *Create new Task Definition*.
+
+Enter the **task definition family**:
+
+![ECS Task Definition Family](/assets/aws-certified-developer-associate/ecs_task_definition_family.png "Create ECS Task Definition Family")
+
+Next is to configure the **infrastructure requirements**, which define where the task can be launched. The requirements specify the:
+- Possible launch type: EC2 or Fargate.
+- OS architecture.
+- Task size: CPU and memory needs.
+- Task role: allows the containers in the task to call AWS services. 
+- Task execution role: allows the container agent to call AWS services.
+
+![ECS Task Definition Infrastructure Requirements](/assets/aws-certified-developer-associate/ecs_task_definition_infrastructure_requirements.png "Create ECS Task Definition Infrastructure Requirements")
+
+![ECS Task Definition Task Roles](/assets/aws-certified-developer-associate/ecs_task_definition_task_roles.png "Create ECS Task Definition Task Roles")
+
+Then, you need to **configure the containers in the task**. You can add multiple containers to the task definition. **Some of the information you need to specify for each container** are indicated in the following images:
+
+![ECS Task Definition Containers](/assets/aws-certified-developer-associate/ecs_task_definition_containers.png "Create ECS Task Definition Containers")
+
+![ECS Task Definition Containers 2](/assets/aws-certified-developer-associate/ecs_task_definition_containers_2.png "Create ECS Task Definition Containers 2")
+
+You can also **configure the storage** for the task. You can choose between:
+
+![ECS Task Definition Storage](/assets/aws-certified-developer-associate/ecs_task_definition_storage.png "Create ECS Task Definition Storage")
+
+As with the cluster, you can also set **monitoring** and **tags** for the task definition. Finally, you can create the task definition.
+
+Now **you can use this task definition to create an ECS service**.
