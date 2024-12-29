@@ -320,3 +320,70 @@ In this architecture, an EventBridge rule intercepts stopped tasks and sends a n
 The notification can be used to send an email to an administrator, for example.
 
 ![Intercept Stopped Tasks using EventBridge](/assets/aws-certified-developer-associate/intercept_stopped_tasks_using_eventbridge.png "Intercept Stopped Tasks using EventBridge")
+
+## 13.12 ECS Task Definitions
+
+Task definitions are **metadata in JSON form** (the console provides a UI to build them) to tell ECS how to run one or more Docker containers (up to 10 containers).
+
+A **task definition defines up to 10 containers and contains crucial information**, such as:
+- Image name.
+- Port binding for container and host.
+- Memory and CPU required.
+- Environment variables.
+- Networking information.
+- IAM role.
+- Logging configuration (e.g. CloudWatch).
+
+### 13.12.1 Load Balancing and Port Mapping with EC2 Launch Type
+
+When using EC2 instances, each machine has its own IP and executes multiple tasks that are under the same IP (the instance's one) but on different host ports that will be mapped to their container port.
+
+**ECS will automatically assign a host port using Dynamic Host Port Mapping**, if you do not define the host port but only the container port in the task definition.
+
+When adding an ALB in front of the Dynamic Host Port Mapping, the **ALB finds the right port on your EC2 instances**. However, you have to allow on the EC2 instance’s security group **any port from the ALB's security group**.
+
+![Load Balancing and Port Mapping with EC2 Launch Type](/assets/aws-certified-developer-associate/load_balancing_and_port_mapping_with_ec2_launch_type.png "Load Balancing and Port Mapping with EC2 Launch Type")
+
+### 13.12.2 Load Balancing and Port Mapping with Fargate Launch Type
+
+With Fargate, each task has a unique private IP because there is no host (it is serverless). So, **you only need to define the container port (host port is not applicable)**.
+
+In the image below, the ALB connects to all tasks in the ECS cluster on the same port but on their different IPs that they got via their Elastic Network Interface (ENI):
+- ECS ENI security group: configured to allow port 80 from the ALB.
+- ALB security group: configured to allow port 80/443 from web.
+
+![Load Balancing and Port Mapping with Fargate Launch Type](/assets/aws-certified-developer-associate/load_balancing_and_port_mapping_with_fargate_launch_type.png "Load Balancing and Port Mapping with Fargate Launch Type")
+
+### 13.12.3 One IAM Role per Task Definition
+
+**The exam tests you on this**.
+
+**IAM roles are assigned per task definition**. Each ECS task that is running in an ECS service gets all the permissions from the role assigned to the task definition that it is created from.
+
+![One IAM Role per Task Definition](/assets/aws-certified-developer-associate/one_iam_role_per_task_definition.png "One IAM Role per Task Definition")
+
+### 13.12.4 Environment Variables in Task Definitions
+
+**Environment variables**:
+- Hardcoded: e.g., fixe non-sensitive URLs.
+- SSM Parameter Store: sensitive variables (e.g., API keys, shared configs).
+- Secrets Manager: sensitive variables (e.g., DB passwords).
+
+**Environment files (bulk)**: bulk load your environment variables from a file stored in S3.
+
+![Environment Variables](/assets/aws-certified-developer-associate/ecs_environment_variables.png "Environment Variables")
+
+### 13.12.5 Data Volumes (Bind Mounts) to Share Data in Task Definitions
+
+**Bind mounts enable data sharing between multiple containers in the same task definition**. For example, is useful to share files for logging/metrics evaluation with *sidecar* containers, like in the following image:
+
+![Data Volumes (Bind Mounts)](/assets/aws-certified-developer-associate/ecs_data_volumes_bind_mounts.png "Data Volumes (Bind Mounts)")
+
+Bind mounts work for both EC2 and Fargate tasks:
+- **EC2 tasks**: volumes use EC2 instance storage, so data are tied to the lifecycle of the EC2 instance.
+- **Fargate tasks**: volumes use ephemeral storage, so data are tied to the container(s) using them.
+    - Fargate offers from 20 GiB to 200 GiB (default 20 GiB) of ephemeral storage.
+
+Use cases:
+- Share ephemeral data between multiple containers (**this is really important for the exam**).
+- **Sidecar container pattern**, where the sidecar container used to send metrics/logs to other destinations (separation of conerns).
