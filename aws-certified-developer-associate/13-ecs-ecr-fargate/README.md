@@ -390,7 +390,7 @@ Use cases:
 - Share ephemeral data between multiple containers (**this is really important for the exam**).
 - **Sidecar container pattern**, where the sidecar container used to send metrics/logs to other destinations (separation of conerns).
 
-## 13.13 Using ECS Task Definitions
+## 13.13 More on ECS Task Definition Creation
 
 To create a task definition, go into the ECS console and find the *Task Definitions* section, and then click on *Create new Task Definition* to choose among two options:
 
