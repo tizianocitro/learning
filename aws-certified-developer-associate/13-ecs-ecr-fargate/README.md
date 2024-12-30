@@ -427,3 +427,110 @@ Finally, you can configure **monitoring at task definition level**.
 ![ECS Task Definitions Monitoring](/assets/aws-certified-developer-associate/ecs_task_definitions_monitoring.png "ECS Task Definitions Monitoring")
 
 Before creating, you can also set **tags** for the task definition.
+
+## 13.14 ECS Tasks Placement
+
+When an ECS task is started with EC2 launch type, ECS must determine where to place it, considering the constraints of CPU and memory (RAM).
+
+Similarly, when a service scales in, ECS needs to determine which task to terminate.
+
+To assist with this, you can define **task placement strategies** and **task placement constraints**.
+
+All of this is **only for ECS tasks with EC2 launch type** (Fargate not supported).
+
+### 13.14.1 Task Placement Process
+
+**Task placement strategies are a best effort**. When ECS places a task, it uses the **following process to select the appropriate EC2 container instance**:
+1. Identify which instances satisfy the CPU, memory, and port requirements.
+2. Identify the instances that satisfy the task placement constraints.
+3. Identify the instances that best satisfy the task placement strategies.
+4. Select the instances.
+
+## 13.15 ECS Task Placement Strategies
+
+Task placement strategies are **used to determine where to place tasks within a cluster**. You can define multiple strategies for a task definition.
+
+There are different strategies: **binpack**, **random**, and **spread**. You can mix them together in the same task definition.
+
+The **exams tests you on your understanding of the different strategies**.
+
+### 13.15.1 Binpack
+
+**Tasks are placed on the least available amount of CPU and memory on instances**. This minimizes the number of EC2 instances in use for cost savings.
+
+For example, you start with one EC2 instance, ECS will place as many tasks as possible on that instance until it can no longer fit any more tasks. Then, it will start a new EC2 instance and do the same there.
+
+![ECS Binpack](/assets/aws-certified-developer-associate/ecs_binpack.png "ECS Binpack")
+
+The JSON to define the binpack strategy on memory is as follows:
+```json
+"placementStrategy": [
+    {
+        "type": "binpack",
+        "field": "memory"
+    }
+]
+```
+
+This is the strategy that **offers the most cost savings**.
+
+### 13.15.2 Random
+
+**Tasks are placed randomly on instances**. This is the default strategy.
+
+The JSON to define the random strategy is as follows:
+```json
+"placementStrategy": [
+    {
+        "type": "random"
+    }
+]
+```
+
+### 13.15.3 Spread
+
+**Tasks are placed evenly based on the specified value** (e.g., instanceId, attribute:ecs.availability-zone, ...)
+
+![ECS Spread](/assets/aws-certified-developer-associate/ecs_spread.png "ECS Spread")
+
+The JSON to define the spread strategy base on the availability zone is as follows:
+```json
+"placementStrategy": [
+    {
+        "type": "spread",
+        "field": "attribute:ecs.availability-zone"
+    }
+]
+```
+
+### 13.15.4 Combining Strategies
+
+You can combine strategies in the same task definition. For example, you can use binpack for memory and spread for availability zone:
+
+```json
+"placementStrategy": [
+    {
+        "type": "binpack",
+        "field": "memory"
+    },
+    {
+        "type": "spread",
+        "field": "attribute:ecs.availability-zone"
+    }
+]
+```
+
+Or you can have multiple strategies of the same type. For example, you can have two spread strategies on different values:
+
+```json
+"placementStrategy": [
+    {
+        "type": "spread",
+        "field": "attribute:ecs.availability-zone"
+    },
+    {
+        "type": "spread",
+        "field": "instanceId"
+    }
+]
+```
