@@ -140,18 +140,20 @@ Next is to configure the **infrastructure requirements**, which define where the
 - Possible launch type: EC2 or Fargate.
 - OS architecture.
 - Task size: CPU and memory needs.
-- Task role: allows the containers in the task to call AWS services. 
-- Task execution role: allows the container agent to call AWS services.
+- **Task role (very important at the exam)**: allows the containers in the task to call AWS services. 
+- **Task execution role**: allows the container agent to call AWS services.
 
 ![ECS Task Definition Infrastructure Requirements](/assets/aws-certified-developer-associate/ecs_task_definition_infrastructure_requirements.png "Create ECS Task Definition Infrastructure Requirements")
 
 ![ECS Task Definition Task Roles](/assets/aws-certified-developer-associate/ecs_task_definition_task_roles.png "Create ECS Task Definition Task Roles")
 
-Then, you need to **configure the containers in the task**. You can add multiple containers to the task definition. **Some of the information you need to specify for each container** are indicated in the following images:
+Then, you need to **configure the containers in the task (at least one has to be an essential container)**. You can add multiple containers to the task definition. **Some of the information you need to specify for each container** are indicated in the following images:
 
 ![ECS Task Definition Containers](/assets/aws-certified-developer-associate/ecs_task_definition_containers.png "Create ECS Task Definition Containers")
 
 ![ECS Task Definition Containers 2](/assets/aws-certified-developer-associate/ecs_task_definition_containers_2.png "Create ECS Task Definition Containers 2")
+
+**If a container is configured as essential, the task will stop if the container stops**. If a container is not essential, the task will continue to run if the container stops.
 
 You can also **configure the storage** for the task. You can choose between:
 
@@ -387,3 +389,41 @@ Bind mounts work for both EC2 and Fargate tasks:
 Use cases:
 - Share ephemeral data between multiple containers (**this is really important for the exam**).
 - **Sidecar container pattern**, where the sidecar container used to send metrics/logs to other destinations (separation of conerns).
+
+## 13.13 Using ECS Task Definitions
+
+To create a task definition, go into the ECS console and find the *Task Definitions* section, and then click on *Create new Task Definition* to choose among two options:
+
+![ECS Task Definitions Creation Options](/assets/aws-certified-developer-associate/ecs_task_definitions_creation_options.png "Create ECS Task Creation Options")
+
+Most of the **task definition configuration settings are discussed in** [13.7 Creating an ECS Task Definition](#137-creating-an-ecs-task-definition). Do, refer to that section for more details.
+
+A crucial thing to remember is that at least one of the containers in the task definition must be marked as **essential**. If the essential container stops, the task stops. It is up to you to define which are the essential containers for your application. If a non-essential container stops, the task continues to run.
+
+You can also use **private registries** to store your images:
+
+![ECS Task Definitions Private Registry](/assets/aws-certified-developer-associate/ecs_task_definitions_private_registry.png "ECS Task Definitions Private Registry")
+
+Following is how you can add **environment variables** to a container in the task definition:
+
+![ECS Task Definitions Environment Variables](/assets/aws-certified-developer-associate/ecs_task_definitions_environment_variables.png "ECS Task Definitions Environment Variables")
+
+the *ARN* value for the secret is the **ARN of the secret** in Secrets Manager, but the same is valid for SSM Parameter Store.
+
+For logging, you can configure **log collection** from the container to CloudWatch or other destinations (with differnt configurations for each destination):
+
+![ECS Task Definitions Logging](/assets/aws-certified-developer-associate/ecs_task_definitions_logging.png "ECS Task Definitions Logging")
+
+Then, you can configure **health checks** and **start and stop timeouts** for the container.
+- **Start timeout**: how long to wait for the container to start before it is considered unhealthy.
+- **Stop timeout**: how long to wait for the container to shut down gracefully before forcefully terminating it.
+
+![ECS Task Definitions Timeouts](/assets/aws-certified-developer-associate/ecs_task_definitions_timeouts.png "ECS Task Definitions Timeouts")
+
+Finally, you can configure **monitoring at task definition level**.
+- **Trace collection**: AWS adds a sidecar container for OpenTelemetry to route traces to **AWS X-Ray**.
+- **Metrics collection**: AWS adds a sidecar container to route custom metrics to CloudWatch or Amazon Managed Service for Prometheus.
+
+![ECS Task Definitions Monitoring](/assets/aws-certified-developer-associate/ecs_task_definitions_monitoring.png "ECS Task Definitions Monitoring")
+
+Before creating, you can also set **tags** for the task definition.
