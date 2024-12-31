@@ -534,3 +534,26 @@ Or you can have multiple strategies of the same type. For example, you can have 
     }
 ]
 ```
+
+## 13.16 ECS Task Placement Constraints
+
+Task placement constraints are **used to place tasks based on specific rules**. You can define multiple constraints for a task definition.
+
+Two types of constraints:
+1. **distinctInstance**: place each task on a different container instance. The JSON is as follows:
+    ```json
+    "placementConstraints": [
+        {
+            "type": "distinctInstance"
+        }
+    ]
+    ```
+2. **memberOf**: place tasks on instances that satisfy an expression defined using the *Cluster Query Language*. The JSON that defines an expression to place tasks on instances with a specific instance type (t2 family) is as follows:
+    ```json
+    "placementConstraints": [
+        {
+            "type": "memberOf",
+            "expression": "attribute:ecs.instance-type =~ t2.*"
+        }
+    ]
+    ```
