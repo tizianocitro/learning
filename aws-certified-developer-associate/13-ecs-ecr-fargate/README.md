@@ -628,3 +628,16 @@ Finally, you can pull the image from the repository:
 ```bash
 docker pull <aws_account_id>.dkr.ecr.<region>.amazonaws.com/demo:latest
 ```
+
+## 13.18 AWS Copilot
+
+**Copilot is a CLI tool** to build, release, and operate production-ready containerized apps.
+- It is installed separately from the AWS CLI.
+
+It **simplifies the process of running containerized applications** on App Runner, ECS, and Fargate **by allowing you focus on building the actual applications rather than setting up infrastructure**. It:
+- Uses CloudFormation to provision all the required infrastructure for containerized applications: ECS, VPC, ELB, ECR, etc.
+- Offers automated deployments with one command using CodePipeline.
+- Enables deployment on multiple environments.
+- Provides features for troubleshooting, health status, logs, etc.
+
+![AWS Copilot](/assets/aws-certified-developer-associate/aws_copilot.png "AWS Copilot")
