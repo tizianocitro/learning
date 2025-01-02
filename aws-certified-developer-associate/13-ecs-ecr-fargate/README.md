@@ -557,3 +557,74 @@ Two types of constraints:
         }
     ]
     ```
+
+## 13.17 ECR
+
+ECR allows you to store and manage Docker container images.
+
+You can store images in a:
+- **Private repository**: accessible only from your AWS account(s).
+- **Public repository**: publish images to Amazon ECR Public Gallery at https://gallery.ecr.aws.
+
+It is fully integrated with ECS and backed by S3. Access is controlled through IAM roles.
+
+A few features it supports are:
+- Image vulnerability scanning.
+- Image versioning.
+- Image tags.
+- Image lifecycle.
+
+![ECR with ECS on EC2](/assets/aws-certified-developer-associate/ecr_with_ecs_on_ec2.png "ECR with ECS on EC2")
+
+### 13.17.1 Using ECR from the CLI
+
+You need to login to ECR before you can push or pull images. To do so, you can use the following command:
+```bash
+aws ecr get-login-password --region <region> | \
+docker login --username AWS \
+--password-stdin <aws_account_id>.dkr.ecr.<region>.amazonaws.com
+```
+
+The `aws ecr get-login-password --region <region>` command gets a password to use for the login that is then piped to the `docker login` command.
+
+The `<>` are placeholders for the actual values. The above command could be something like:
+```bash
+aws ecr get-login-password --region us-east-1 | \
+docker login --username AWS \
+--password-stdin 123456789012.dkr.ecr.us-east-1.amazonaws.com
+```
+
+Then, you just run Docker commands to push and pull images. For example:
+```bash
+docker push <aws_account_id>.dkr.ecr.<region>.amazonaws.com/demo:latest
+
+docker pull <aws_account_id>.dkr.ecr.<region>.amazonaws.com/demo:latest
+```
+
+In case an EC2 instance (or you) can't pull a Docker image, check IAM permissions.
+
+### 13.17.2 Creating an ECR Repository and Pushing an Image to It
+
+To create an ECR repository, go into the ECR console, and then under the *Repositories* section, click on *Create Repository*.
+
+Enter a **name** for the repository and specify the **visibility (public or private)**:
+
+![ECR Create Repository](/assets/aws-certified-developer-associate/ecr_create_repository.png "Create ECR Repository")
+
+There is also an option for **tag immutability** (avoid to push the same tag twice), which prevents images from being overwritten. You can also use **KMS to encrypt the images**.
+
+After creating the repository, you can push images to it. To do so, you need to login to ECR (as shown in [13.17.1 Using ECR from the CLI](#13171-using-ecr-from-the-cli)) and then push the image:
+```bash
+docker push <aws_account_id>.dkr.ecr.<region>.amazonaws.com/demo:latest
+```
+
+Notice that **the name of the repository is part of the image name**. What changes is the tag.
+
+After pushing the image, you can see it in the ECR console within the repository:
+
+![ECR Repository Image Pushed](/assets/aws-certified-developer-associate/ecr_repository_image_pushed.png "ECR Repository Image Pushed")
+
+Finally, you can pull the image from the repository:
+```bash
+docker pull <aws_account_id>.dkr.ecr.<region>.amazonaws.com/demo:latest
+```
