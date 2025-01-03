@@ -342,6 +342,8 @@ When using EC2 instances, each machine has its own IP and executes multiple task
 
 **ECS will automatically assign a host port using Dynamic Host Port Mapping**, if you do not define the host port but only the container port in the task definition.
 
+**Set `host port = 0 (or empty)` to enable random host port, which allows multiple containers of the same type to launch on the same EC2 container instance**. If you specify a host port, only one container of that type can be launched on the EC2 instance because when launching other containers of the same type, the host port will be already in use.
+
 When adding an ALB in front of the Dynamic Host Port Mapping, the **ALB finds the right port on your EC2 instances**. However, you have to allow on the EC2 instance’s security group **any port from the ALB's security group**.
 
 ![Load Balancing and Port Mapping with EC2 Launch Type](/assets/aws-certified-developer-associate/load_balancing_and_port_mapping_with_ec2_launch_type.png "Load Balancing and Port Mapping with EC2 Launch Type")
@@ -641,3 +643,55 @@ It **simplifies the process of running containerized applications** on App Runne
 - Provides features for troubleshooting, health status, logs, etc.
 
 ![AWS Copilot](/assets/aws-certified-developer-associate/aws_copilot.png "AWS Copilot")
+
+## 13.19 EKS
+
+It is a service to **launch managed Kubernetes clusters on AWS**.
+- Kubernetes is an open-source system for automatic deployment, scaling and management of containerized (usually Docker) application.
+- EKS is an alternative to ECS with a similar goal but different API. 
+
+Kubernetes is not proprietary to AWS, and, in a certain way, it provides standardization. **Kubernetes is cloud-agnostic**, so it can be used in any cloud (e.g., Azure, GCP, etc.).
+
+EKS supports:
+- EC2 launch mode if you want to deploy worker nodes.
+- Fargate launch mode to deploy serverless containers.
+- Multiple regions by deploying one EKS cluster per region.
+- Logs and metrics collection with CloudWatch Container Insights.
+
+**Use case**: your company is already using Kubernetes on-premises or in another cloud, and wants to migrate to AWS using Kubernetes. Or they simply want to use the Kubernetes API.
+
+### 13.19.1 EKS Cluster with EC2 Worker Nodes
+
+In the image below, you can see a multi-AZ EKS cluster with EC2 worker nodes.
+
+![EKS Cluster with EC2 Worker Nodes](/assets/aws-certified-developer-associate/eks_cluster_with_ec2_worker_nodes.png "EKS Cluster with EC2 Worker Nodes")
+
+### 13.19.2 EKS Node Types
+
+1. **Managed node groups**:
+    - Creates and manages nodes (EC2 instances) for you.
+    - Nodes are part of an ASG managed by EKS.
+    - Supports on-demand or spot instances.
+
+2. **Self-managed nodes**:
+    - Nodes are created and registered by you to the EKS cluster and managed by an ASG.
+    - You can use the prebuilt AMI for EKS (*Amazon EKS Optimized AMI*) to simplify the process of setting up new nodes.
+    - Supports on-demand or spot instances.
+
+3. **AWS Fargate**: no maintenance required because there are no nodes to manage.
+
+### 13.19.3 EKS Data Volumes
+
+To be able to attach volumes to EKS pods, you need to specify a **StorageClass** manifest on your EKS cluster. It leverages a **Container Storage Interface (CSI)** compliant driver.
+
+There is support for:
+- EBS.
+- EFS: only type of volume that works with Fargate.
+- FSx for Lustre.
+- FSx for NetApp ONTAP.
+
+## 13.20 ECS Config File
+
+Suppose you have an ECS cluster and you want to enable IAM roles for your ECS tasks so that they can make API requests to AWS services.
+
+There is an ECS configuration option that you should enable in the `/etc/ecs/ecs.config` configuration file. The option is `ECS_ENABLE_TASK_IAM_ROLE`.
