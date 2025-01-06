@@ -91,3 +91,39 @@ Under the *Events* tab in the created enviroment, you can see the events generat
 To upload a new version of the application code, you can do this by clicking on the *Upload and Deploy* button in the environment's dashboard:
 
 ![Upload and Deploy](/assets/aws-certified-developer-associate/eb_upload_and_deploy.png "Upload and Deploy")
+
+### 14.4.2 Creating and Managing Multiple Environments
+
+Go under your application where you can see all the environments that you have created:
+
+![Manage Environments](/assets/aws-certified-developer-associate/eb_manage_environments.png "Manage Environments")
+
+You can also create a new environment from here by clicking on the *Create New Environment* button. For example, we can add an environment for production:
+
+![Create New Production Environment](/assets/aws-certified-developer-associate/eb_create_new_production_environment.png "Create New Production Environment")
+
+The configurations can be the same as for the development environment in [14.4 Creating an Elastic Beanstalk Environment](#144-creating-an-elastic-beanstalk-environment) but, for example, we can change the presets to be high availability:
+
+![High Availability Presets](/assets/aws-certified-developer-associate/eb_high_availability_presets.png "High Availability Presets")
+
+And also change other optional configurations. For example, a **VPC**:
+
+![VPC Configuration](/assets/aws-certified-developer-associate/eb_vpc_configuration.png "VPC Configuration")
+
+And the **subnets** in which we want instances to be launched:
+
+![Subnets Configuration](/assets/aws-certified-developer-associate/eb_subnets_configuration.png "Subnets Configuration")
+
+In the configuration in the image above, you can also se it we want to use a public IP address or not. If you use a load balancer, we can avoid using a public IP address.
+
+We can also specify if you want a **database**, which will be tight to the lifecycle of the environment. So, if we delete the environment, the database will be deleted as well.
+
+![Database Configuration](/assets/aws-certified-developer-associate/eb_database_configuration.png "Database Configuration")
+
+We can also change **EC2 instances settings** like the root volume or security group. Same for the **ASG** (e.g., capacity, scaling triggers, etc.) and **load balancer** (e.g., type, listeners, etc.), which can also be shared across multiple environments.
+
+There are also the **other options** to configure email notifications, **rolling updates and deployments**, and other monitoring and logging configurations.
+
+After finishing the configuration, we can create the environment and see it in the console, along with the other environments:
+
+![Production Environment Created](/assets/aws-certified-developer-associate/eb_production_environment_created.png "Production Environment Created")
