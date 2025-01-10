@@ -56,7 +56,7 @@ It comprises:
 
 ## 14.4 Creating an Elastic Beanstalk Environment
 
-To create an environment, go to the Elastic Beanstalk console and click on **Create Application**.
+To create an environment, go to the Elastic Beanstalk console and click on *Create Application*.
 
 Select the **environment tier** and enter a **name** for the application:
 
@@ -127,3 +127,292 @@ There are also the **other options** to configure email notifications, **rolling
 After finishing the configuration, we can create the environment and see it in the console, along with the other environments:
 
 ![Production Environment Created](/assets/aws-certified-developer-associate/eb_production_environment_created.png "Production Environment Created")
+
+## 14.5 Deployment Modes For Updates
+
+1. **All at once**: deploy all in one go. It is the fastest options, but instances are not available to serve traffic for a bit, so there will be downtime.
+2. **Rolling**: update a few instances at a time (bucket), and then move onto the next
+bucket once the first bucket is healthy.
+3. **Rolling with additional batches**: like rolling, but spins up new instances to move the
+batch, so that the old application is still available.
+4. **Immutable**: spins up new instances in a new ASG, deploys the new version to these instances,
+and then swaps all the instances when everything is healthy.
+5. **Blue/green**: create a new environment and switch over when ready.
+6. **Traffic splitting**: for canary testing, where you send a small percentage of traffic to the new deployment.
+
+### 14.5.1 All at Once
+
+It provides the **fastest deployment but the application has downtime**.
+
+It is great for quick iterations in development environment and also has **no additional cost**.
+
+![All at Once Deployment](/assets/aws-certified-developer-associate/eb_all_at_once_deployment.png "All at Once Deployment")
+
+### 14.5.2 Rolling
+
+This mode update a few instances at a time (the bucket), and then move onto the next bucket once the first bucket is healthy. For this reason, **the application will be running below capacity** and **there will be both versions (old and new) running at the same time** until the update is complete.
+- Below capacity because the instances are not available to serve traffic while they are being updated. For example, with 4 instances and a bucket size of 2, only 2 instances will be available to serve traffic at a time (50% capacity).
+
+The **bucket size is configurable**, so that you can control how many instances are updated at a time.
+
+It is a **long deployment (the bigger the bucket size, the longer the deployment)** but there is **no downtime** and **no additional cost**.
+
+![Rolling Deployment](/assets/aws-certified-developer-associate/eb_rolling_deployment.png "Rolling Deployment")
+
+### 14.5.3 Rolling with Additional Batches
+
+This mode is like rolling, but it spins an additional batch of instances used to move the bucket of instances to the new version, so that the old version is still available to serve traffic. 
+
+**Thanks to the additional batch of instances, the application is always running at full capacity** during the deployment.
+- The **additional batch is removed once the deployment is complete**.
+- The bucket size can be configured.
+- There is **no downtime**.
+- There is a **small additional cost due to the application running over capacity** at certain points during the update.
+
+It is even a **longer deployment than rolling because of the additional batch of instances** that need to be created and removed, but it is **great for production environments**.
+
+![Rolling with Additional Batches Deployment](/assets/aws-certified-developer-associate/eb_rolling_with_additional_batches_deployment.png "Rolling with Additional Batches Deployment")
+
+### 14.5.4 Immutable
+
+The **update from V1 code to V2 code** follows the following steps:
+1. A current ASG has instances running the V1 code.
+2. A temporary ASG with new instances is created.
+3. V2 code is deployed on an instance in the temporary ASG and, if everything works properly, the code is deployed to all instances in the temporary ASG.
+4. The temporary ASG is merged with the current ASG by moving the instances from the temporary ASG to the current ASG.
+5. The temporary ASG is empty and deleted.
+6. Instances running the V1 code and the V2 code are running at the same time, so the current ASG has double the capacity.
+7. The instances running the V1 code are terminated.
+
+![Immutable Deployment](/assets/aws-certified-developer-associate/eb_immutable_deployment.png "Immutable Deployment")
+
+This mode:
+- Is **great for production environments**.
+- Offers **quick rollback** because you just terminate the new ASG if the deployment fails.
+- Has **zero downtime**.
+- Has **high cost** because the application is running at **double capacity** during the deployment.
+- Takes the **longest deployment** time.
+
+### 14.5.5 Blue/Green
+
+It is **not a direct feature of Elastic Beanstalk, it requires manual work**:
+- The **creation of two environments**: *blue* and *green*. These two environments can be validated and rolled back independently.
+- The swap between the two environments: using **Beanstalk swap URLs to swap environments** when done with environment testing.
+- Route 53 record to control traffic between the two environments: setup **Route 53 weighted policies to split the traffic between the two environments**. For example, 90% of the traffic goes to the blue environment and 10% goes to the green environment.
+
+![Blue/Green Deployment](/assets/aws-certified-developer-associate/eb_blue_green_deployment.png "Blue/Green Deployment")
+
+This mode provides **zero downtime** and release facility, and is **great for production environments**.
+
+### 14.5.6 Traffic Splitting
+
+Traffic splitting is used for **canary testing**, where you send a small percentage of traffic to the new deployment to test if it is working properly.
+- There is **no application downtime**.
+- Less expensive than the immutable deployment because you are not running at double capacity.
+
+This mode follows the following steps:
+1. The new application version is deployed to a temporary ASG, while the old version is still running in the current ASG.
+2. A **small percentage of the traffic is sent to the temporary ASG for a configurable amount of time**, while the **deployment health is monitored**.
+3. If there is a deployment failure, this triggers an **automated rollback**. The rollback is very quick because we **just stop sending the percentage of traffic to the temporary ASG**.
+4. Otherwise, new instances are migrated from the temporary ASG to the current ASG.
+5. Old application version is terminated.
+
+![Traffic Splitting Deployment](/assets/aws-certified-developer-associate/eb_traffic_splitting_deployment.png "Traffic Splitting Deployment")
+
+### Summary and Table from AWS Documentation
+
+More can be found in the documentation at [https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.deploy-existing-version.html](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.deploy-existing-version.html).
+
+![Deployment Modes Summary](/assets/aws-certified-developer-associate/eb_deployment_modes_summary.png "Deployment Modes Summary")
+
+## 14.6 Using the Deployment Modes
+
+To configure the deployment mode, go to the Elastic Beanstalk console and click on the environment you want to configure it for. Under the *Configuration* tab, find the *Updates, monitoring, and logging* section. When editing this section, you will find the *Rolling updates and deployments* section where you can the configure **Application Deployments** settings:
+
+![Rolling Updates and Deployments](/assets/aws-certified-developer-associate/eb_rolling_updates_and_deployments.png "Rolling Updates and Deployments")
+
+### 14.6.1 Deployment Policy
+
+From here, you can select the **deployment policy** (all at once, rolling, rolling with additional batches, immutable, or traffic splitting).
+
+![Deployment Policy](/assets/aws-certified-developer-associate/eb_deployment_policy.png "Deployment Policy")
+
+For **all at once** and **immutable**, there is not much to configure.
+
+For **rolling** and **rolling with additional batches**, you can configure the **batch size** in fixed or percentage terms:
+
+![Rolling Batch Size](/assets/aws-certified-developer-associate/eb_rolling_batch_size.png "Rolling Batch Size")
+
+For **traffic splitting**, you can configure the batch size (same as above image) but also the traffic splitting:
+
+![Traffic Splitting Configuration](/assets/aws-certified-developer-associate/eb_traffic_splitting_configuration.png "Traffic Splitting Configuration")
+
+The **effect of the deployment policy** can be seen in the *Events* tab of the environment. For example, in the image below, we can see the part of the **events** generated by the deployment of a new application version using the **immutable deployment policy**:
+
+![Immutable Deployment Events](/assets/aws-certified-developer-associate/eb_immutable_deployment_events.png "Immutable Deployment Events")
+
+### 14.6.2 Changing Deployment Policy on Application Update
+
+The deployment policy can also be changed when updating the application version. When uploading a new application version, click on *Deployment Preferences* and configure the deployment policy:
+
+![Change Deployment Policy on Application Update](/assets/aws-certified-developer-associate/eb_change_deployment_policy_on_application_update.png "Change Deployment Policy on Application Update")
+
+By default, it will be the one configured in the environment settings.
+
+### 14.6.3 Swapping Environment Domains
+
+When using the **blue/green deployment policy**, you can swap the URLs of the two environments. This can be done in the *Actions* dropdown of the environment:
+
+![Swap Environment Domains](/assets/aws-certified-developer-associate/eb_swap_environment_domains.png "Swap Environment Domains")
+
+For example, in the image below, we are swapping a *prod* environment with a *dev* environment:
+
+![Swap Environment Domains Example](/assets/aws-certified-developer-associate/eb_swap_environment_domains_example.png "Swap Environment Domains Example")
+
+The **swap is not immediate**. It can take a few minutes to complete because it is a DNS change.
+
+## 14.7 Cloning an Environment
+
+This feature allows you to **clone an environment with the exact same configuration**, which is useful for deploying a test version of your application. After cloning an environment, you can change settings as needed.
+
+All resources and configuration of the original environment are preserved:
+- Load Balancer type and configuration.
+- RDS database type (but the data is not preserved).
+- Environment variables.
+
+From the *Actions* dropdown of an environment, you can clone it. This is useful when you want to create a new environment with the same configuration as an existing one.
+
+![Clone Environment](/assets/aws-certified-developer-associate/eb_clone_environment.png "Clone Environment")
+
+When you click on the *Clone Environment* button, you can see the current environment:
+
+![Clone Environment Configuration](/assets/aws-certified-developer-associate/eb_clone_environment_configuration.png "Clone Environment Configuration")
+
+And do some configuration to the new environment (options are quite limited):
+
+![Clone Environment Configuration 2](/assets/aws-certified-developer-associate/eb_clone_environment_configuration_2.png "Clone Environment Configuration 2")
+
+## 14.8 Elastic Beanstalk CLI
+
+An additional CLI called EB CLI makes working with Beanstalk easier from the command line. It is helpful for automated deployment pipelines.
+
+Some basic commands (not very important for this exam):
+- eb create.
+- eb status.
+- eb health.
+- eb events.
+- eb logs.
+- eb open.
+- eb deploy.
+- eb config.
+- eb terminate.
+
+## 14.9 How to Deploy an Application on Elastic Beanstalk
+
+1. Package code as a zip file and describe dependencies:
+    - Python: requirements.txt.
+    - Node.js: package.json.
+    - etc.
+2. Upload the zip file to Elastic Beanstalk:
+    -  Console: upload a zip file (creates new app version) and then deploy.
+    - CLI: create new app version using CLI (uploads zip) and then deploy.
+4. Elastic Beanstalk will deploy the zip on each EC2 instance, resolve dependencies, and start the application.
+
+## 14.10 Elastic Beanstalk Lifecycle Policies
+
+Beanstalk can store **at most 1000 application versions per account**. If you do not remove old versions, you won't be able to deploy anymore, so you need to phase out old application versions.
+
+To phase out old application versions, you can use **lifecycle policies**. Versions that are currently used won't be deleted.
+
+Lifecycle policies can be:
+- **Based on time**: old versions are removed.
+- **Based on space**: when you have too many versions.
+
+It is also possible to not delete the source bundle (the ZIP file containing the application code) in S3 to prevent data loss.
+
+### 14.10.1 Configure Lifecycle Policies
+
+To do so, go to *Application Versions* in your application and click on *Settings* to configure the lifecycle policy:
+
+![Application Versions Settings](/assets/aws-certified-developer-associate/eb_application_versions_settings.png "Application Versions Settings")
+
+First thing is to **activate** (the checkbox) it and configure the:
+- **Lifecycle rule**: in the image below, limit versions to exist for 180 days.
+- **Retention**: whether to keep the source bundle in S3 or not. In the image below, it is set to retain the source bundle.
+- **Existing service role**: the role that will be used to delete the old versions.
+
+![Lifecycle Policy Configuration](/assets/aws-certified-developer-associate/eb_lifecycle_policy_configuration.png "Lifecycle Policy Configuration")
+
+## 14.11 Elastic Beanstalk Extensions
+
+All the parameters set in the console UI can be configured with code using configuration files.
+
+**Requirements**:
+- All configuration files should be in the **.ebextensions/ directory in the root of source code**.
+- Files should be in YAML or JSON formats.
+- Even though the file is in JSON or YAML, **the extension must bew .config** (e.g., logging.config).
+- You can modify some default settings using the **option_settings** document.
+- You can **add resources**, such as RDS, ElastiCache, and DynamoDB.
+
+Resources managed by *.ebextensions* get deleted if the environment goes away.
+
+Consider the following `environment-variables.config` file to configure database environment variables:
+
+```yaml
+# You must place this file in .ebextensions
+# So the file is at .ebextensions/environment-variables.config
+# Note: Even though the markup language is YAML, you must use .config extension
+option_settings:
+  # see: https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/command-options-general.html#command-options-general-elasticbeanstalkapplicationenvironment
+  aws:elasticbeanstalk:application:environment:
+    DB_URL: "jdbc:postgresql://rds-url-here.com/db"
+    DB_USER: username
+```
+
+If you deploy an application version with this file in the *.ebextensions* directory, the environment variables will be set in the environment. You can see them in the environment's *Configuration* in the console:
+
+![Environment Variables Configuration](/assets/aws-certified-developer-associate/eb_environment_variables_configuration.png "Environment Variables Configuration")
+
+## 14.12 Elastic Beanstalk Under the Hood
+
+Under the hood, **Elastic Beanstalk relies on CloudFormation**, which is used to provision other AWS services.
+
+You can define CloudFormation resources in your *.ebextensions* to provision AWS resources.
+
+In the CloudFormation console, you can see the stacks with all the resources created by Beanstalk.
+
+## 14.13 Migrating Load Balancer Type
+
+After creating an Elastic Beanstalk environment, you **cannot change the Elastic Load Balancer type** (only the configuration).
+
+To **migrate** (e.g., from a CLB to an ALB):
+1. Create a new environment with the same configuration except for the LB. You cannot clone because it would clone the LB type as well.
+2. Deploy your application onto the new environment.
+3. Perform a CNAME swap (URLs swap) or Route 53 update to move the traffic to the new environment.
+
+![Migrating Load Balancer Type](/assets/aws-certified-developer-associate/eb_migrating_load_balancer_type.png "Migrating Load Balancer Type")
+
+### 14.14 Migrating RDS to Decouple the Database from the Environment Lifecycle
+
+RDS can be provisioned with Beanstalk, which is great for development and testing but not for producation as **the database lifecycle is tied to the Beanstalk environment lifecycle**.
+
+The best for production is to separately create an RDS database and provide the EB application with the connection string.
+
+To **migrate** from an RDS database tied to an environment to a standalone RDS database:
+1. Create a snapshot of the RDS database as a safeguard.
+2. Go to RDS and protect the database from deletion.
+3. Create a new EB environment without RDS and point the EB application to the existing RDS database (e.g., via an environment variable).
+4. Perform a CNAME swap (URLs swap) or Route 53 update to move the traffic to the new environment. Like we do for a blue/green deployment.
+5. Terminate the old environment. Still, **RDS will not be deleted because we have protected it from deletion**.
+6. Delete the CloudFormation stack created by the old environment, which will be in the *DELETE_FAILED* state.
+
+![Decouple RDS from the Environment Lifecycle](/assets/aws-certified-developer-associate/eb_decouple_rds_from_environment_lifecycle.png "Decouple RDS from the Environment Lifecycle")
+
+## 14.15 Tips and Tricks
+
+1. **Problem**: Your deployments on Elastic Beanstalk are slow. After checking the logs, you realize that this is due to the fact that your application dependencies are resolved on each instance each time you deploy. What can you do to speed up the deployment process with minimal impact?
+**Solution**: Resolve the dependencies beforehand and package them in the ZIP file that you upload to Elastic Beanstalk.
+2. **Problem**: You have been hired by a company to run some tests on their application hosted on Elastic Beanstalk. You cannott run these tests on the current environment as this is the production environment, so you have to create another environment similar to the one already running. How do you do to do this?
+**Solution**: Cloning the environment.
+3. **Problem**: You have been tasked to run an application developed using Rust language on Elastic Beanstalk. After checking, you found that Rust runtime is not currently supported on Elastic Beanstalk. How would you proceed?
+**Solution**: Use a Docker image with Rust installed and all of your software, libraries, and configuration packaged in it.
