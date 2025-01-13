@@ -106,9 +106,9 @@ The **template** can be like this where we create an EC2 instance:
 ```yaml
 Resources:
     MyInstance:
-        # This is the type of resource you want to create
+        # The type of resource you want to create
         Type: AWS::EC2::Instance
-        # Properties are the parameters for the resource
+        # Properties of the resource
         Properties:
             AvailabilityZone: us-east-1a
             ImageId: ami-0a3c3a20c09d6f377
@@ -140,3 +140,87 @@ Finally, you can review the stack and create it. See it in the *Stacks* dashboar
 **CloudFront tags the resources it creates**, for example, with the stack name and stack ID:
 
 ![CloudFormation Tags Resources](/assets/aws-certified-developer-associate/cf_tags_resources.png "CloudFormation Tags Resources")
+
+## 15.6 Updating a Stack
+
+To update a stack, you can use the *Update* button in the *Stacks* dashboard:
+
+![Stacks Dashboard Update](/assets/aws-certified-developer-associate/cf_stacks_dashboard.png "Stacks Dashboard Update")
+
+Which will allow you to:
+- Replace the current template.
+- Edit the current template.
+- Keep the current template and only update the parameters, for example.
+
+![Updating a Stack](/assets/aws-certified-developer-associate/cf_update_stack.png "Updating a Stack")
+
+For instance, you can upload the following template that also has a parameter `SecurityGroupDescription` to replace the previous one:
+```yaml
+Parameters:
+    SecurityGroupDescription:
+        # | indicates a multiline string
+        Description: |
+            Security Group Description
+        Type: String
+
+Resources:
+    MyInstance:
+        Type: AWS::EC2::Instance
+        Properties:
+            AvailabilityZone: us-east-1a
+            ImageId: ami-0a3c3a20c09d6f377
+            InstanceType: t2.micro
+            SecurityGroups:
+                - !Ref SSHSecurityGroup
+                - !Ref ServerSecurityGroup
+
+    MyEIP:
+        Type: AWS::EC2::EIP
+        Properties:
+            InstanceId: !Ref MyInstance
+        DependsOn: MyInstance
+
+    SSHSecurityGroup:
+        Type: AWS::EC2::SecurityGroup
+        Properties:
+            GroupDescription: |
+                Enable SSH access via port 22
+            SecurityGroupIngress:
+                - CidrIp: 0.0.0.0/0
+                  FromPort: 22
+                  IpProtocol: tcp
+                  ToPort: 22
+
+    ServerSecurityGroup:
+        Type: AWS::EC2::SecurityGroup
+        Properties:
+            GroupDescription:
+                !Ref SecurityGroupDescription
+            SecurityGroupIngress:
+                - IpProtocol: tcp
+                  FromPort: 80
+                  ToPort: 80
+                  CidrIp: 0.0.0.0/0
+                - IpProtocol: tcp
+                  FromPort: 22
+                  ToPort: 22
+                  CidrIp: 192.168.1.1/32
+```
+
+When you move to the next step, you will be prompted to provide a value for the parameter `SecurityGroupDescription`:
+
+![Providing Parameter Value](/assets/aws-certified-developer-associate/cf_parameter_value.png "Providing Parameter Value")
+
+The rest of the options are the same as the creation of a stack. However, at the end of the review, you can see a **previow of the changes** that will be made as part of the stack update:
+
+![Reviewing Changes](/assets/aws-certified-developer-associate/cf_review_changes.png "Reviewing Changes")
+
+**Note**: existing resources might not need to be replaced because they can be updated in place. You can check whether a change requires a replacement (or other actions) by looking at the `Update requires` field in the documentation of the resource type. For example, the `ImageId` property of an EC2 instance requires replacement, while the `IamInstanceProfile` property does not.
+
+![Update Requires](/assets/aws-certified-developer-associate/cf_update_requires.png "Update Requires")
+
+The whole process of updating will take some time, and you can see the events generated in the *Events* tab of the stack.
+
+Once completed, you can check that the `ServerSecurityGroup` security groups to verify that the description you passed as parameter is actually being used:
+
+![Security Group Description](/assets/aws-certified-developer-associate/cf_security_group_description.png "Security Group Description")
