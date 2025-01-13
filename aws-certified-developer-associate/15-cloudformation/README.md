@@ -387,3 +387,107 @@ AWS provides pseudo parameters in any CloudFormation template, which can be used
 | AWS::NoValue     | Does not return a value |
 
 For instance, `AWS::AccountId` returns your AWS account ID, `AWS::Region` returns the region where the stack is being created, etc.
+
+
+## 15.10 Mappings
+
+Mappings are **fixed variables within templates**. They are very handy to differentiate between different environments (dev vs prod), regions, AMI types, etc.
+
+All the values are hardcoded within the template. For example:
+```yaml
+Mappings:
+    RegionMap:
+        us-east-1:
+            HVM64: ami-0ff8a91507f77f867
+            HVMG2: ami-0a584ac55a7631c0c
+        us-west-1:
+            HVM64: ami-0bdb828fd58c52235
+            HVMG2: ami-0e4176b225a5f442d
+        eu-west-1:
+            HVM64: ami-047bb4163c506cd98
+            HVMG2: ami-0a9d27a9f4f5c0efc
+```
+
+Then, you can **reference the mapping** in the template using the `Fn::FindInMap` function to return a named value from a specific key.
+- The shorthand for this in YAML is `!FindInMap`.
+- The function takes three parameters: the **name of the mapping**, the **top-level key**, and the **second-level key** (e.g., `!FindInMap [ RegionMap, us-west-1, HVM64 ]`).
+- You can use pseudo parameters in mappings as top-level or second-level keys.
+
+For example, in a template you can use the `RegionMap` mapping like this:
+```yaml
+MyEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+        AvailabilityZone: us-east-1a
+        ImageId:
+            # Reference the mapping using the Aws::Region
+            # pseudo parameter as the top-level key to
+            # get the AMI ID for the current region
+            !FindInMap [ RegionMap, !Ref "AWS::Region", HVM64 ]
+        InstanceType: t2.micro
+```
+
+### 15.10.1 Mappings vs Parameters
+
+Mappings are great when you know in advance all the values that can be taken and that they can be deduced from variables such as:
+- Region.
+- Availability Zone.
+- AWS Account.
+- Environment: dev vs prod.
+- ...
+
+Mappings allow safer control over the template.
+
+However, if you have really user specific inputs, then you should use parameters.
+
+## 15.11 Outputs
+
+The `Outputs` section is optional and **declares optional output values that we can import into other stacks** if you export them first.
+
+For example, outputs can be very useful if you define a network stack and output the variables such as VPC ID and Subnet IDs. Then, you can reference these outputs in other stacks, such as an application stack that needs the VPC ID.
+
+![Outputs](/assets/aws-certified-developer-associate/cf_outputs.png "Outputs")
+
+You can also view the outputs in the AWS console or by using the AWS CLI. They are the best way to perform some collaboration cross stack, as you let each expert handle their own part of the stack.
+
+For example, we can create an `SSHSecurityGroup` resource as part of one template, and create an `ReusableSSHSecurityGroup` output that references that security group and exports it as `CompanySSHSecurityGroup`:
+```yaml
+Resources:
+    SSHSecurityGroup:
+        Type: AWS::EC2::SecurityGroup
+        Properties:
+            GroupDescription: |
+                Enable SSH access via port 22
+            SecurityGroupIngress:
+                - CidrIp: 0.0.0.0/0
+                  FromPort: 22
+                  IpProtocol: tcp
+                  ToPort: 22
+
+Outputs:
+    ReusableSSHSecurityGroup:
+        Description: |
+            The SSH security group for the company
+        Value: !Ref SSHSecurityGroup
+        Export:
+            Name: CompanySSHSecurityGroup
+```
+
+The **export name has to be unique within the region**.
+
+Then, create a second template that leverages that security group by **importing the output** `CompanySSHSecurityGroup` via the `Fn::ImportValue` (shorthand `!ImportValue`) function:
+```yaml
+Resources:
+    MyEC2Instance:
+        Type: AWS::EC2::Instance
+        Properties:
+            AvailabilityZone: us-east-1a
+            ImageId: ami-0a3c3a20c09d6f377
+            InstanceType: t2.micro
+            SecurityGroups:
+                # Import the security group from
+                # the other template
+                - !ImportValue CompanySSHSecurityGroup
+```
+
+Given that **the imported value creates a dependency between the two stacks**, the stack that exports the value cannot be deleted before the stack that imports it.
