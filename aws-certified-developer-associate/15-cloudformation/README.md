@@ -224,3 +224,166 @@ The whole process of updating will take some time, and you can see the events ge
 Once completed, you can check that the `ServerSecurityGroup` security groups to verify that the description you passed as parameter is actually being used:
 
 ![Security Group Description](/assets/aws-certified-developer-associate/cf_security_group_description.png "Security Group Description")
+
+## 15.7 Resources
+
+Resources are the core of CloudFormation templates and only **mandatory section**. They represent the different AWS components that will be created and configured.
+- Resources are declared and can reference each other.
+- AWS figures out creation, updates and deletes of resources for us.
+
+**Resource types identifiers** are of the form:
+
+![Resource Type Identifier](/assets/aws-certified-developer-associate/cf_resource_type_identifier.png "Resource Type Identifier")
+
+There are over *700 types of resources available* and all of them can be found at [https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html).
+
+**Properties are used to configure the resources**. In the documentation of each resource, you can find the properties that can be used to configure the resource. For example, the following image shows the `ImageId` and `IamInstanceProfile` properties of an EC2 instance in the documentation:
+
+![EC2 Resourse Documentation](/assets/aws-certified-developer-associate/cf_update_requires.png "EC2 Resourse Documentation")
+
+Following is an example of an EC2 instance resource in YAML format with three properties (`AvailabilityZone`, `ImageId`, and `InstanceType`):
+```yaml
+Resources:
+    MyEC2Instance:
+        Type: AWS::EC2::Instance
+        Properties:
+            AvailabilityZone: us-east-1a
+            ImageId: ami-0a3c3a20c09d6f377
+            InstanceType: t2.micro
+```
+
+### 15.7.1 Resources-related FAQs
+
+1. Can I create a dynamic number of resources? Yes, you can by using *CloudFormation Macros and Transform*.
+2. **Is every AWS Service supported**? Almost. Only a select few niches are not there yet but you can work around that using **CloudFormation Custom Resources**.
+
+## 15.8 Parameters
+
+Parameters are a way to **provide inputs to templates**. They should be **used if a resource configuration is likely to change** in the future because you won't have to re-upload a template to change its content.
+
+![Parameters](/assets/aws-certified-developer-associate/cf_parameters.png "Parameters")
+
+They are important if:
+- You want to reuse your templates.
+- Some inputs cannot be determined ahead of time.
+
+Parameters are extremely powerful, controlled, and can prevent errors from happening in templates thanks to **types** (e.g., `Type: String`).
+
+The following is an example of a parameter of type string in YAML format:
+```yaml
+Parameters:
+    SecurityGroupDescription:
+        Description: |
+            Security Group Description
+        Type: String
+```
+
+The `Fn::Ref` function can be leveraged to **reference parameters**.
+- The shorthand for this in YAML is `!Ref`.
+- This function can also reference other elements within the template.
+- Parameters can be used anywhere in a template
+
+Considering the parameter `SecurityGroupDescription` defined above, we can reference it in the `ServerSecurityGroup` resource as follows:
+```yaml
+ServerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+        # Reference the parameter
+        GroupDescription:
+            !Ref SecurityGroupDescription
+        SecurityGroupIngress:
+            - IpProtocol: tcp
+              FromPort: 80
+              ToPort: 80
+              CidrIp:
+```
+
+Also, as we where saying, `!Ref` can be used to **reference other resources within the template**. For example, the following `MyInstance` EC2 instance resource references the `ServerSecurityGroup` resource defined above:
+```yaml
+Resources:
+    MyInstance:
+        Type: AWS::EC2::Instance
+        Properties:
+            AvailabilityZone: us-east-1a
+            ImageId: ami-0a3c3a20c09d6f377
+            InstanceType: t2.micro
+            SecurityGroups:
+                - !Ref ServerSecurityGroup
+```
+
+### 15.8.1 Parameters Settings
+
+Parameters can be controlled by all these settings:
+1. **Type**:
+    - String.
+    - Number.
+    - CommaDelimitedList.
+    - List of Number.
+    - AWS-Specific Parameter: to help catch invalid values by matching against existing values in the AWS account.
+    - List of AWS-Specific Parameter.
+    - SSM Parameter: to reference a parameter from SSM Parameter store.
+2. **Description**: description of the parameter.
+3. ConstraintDescription (string).
+4. Min/MaxLength.
+5. Min/MaxValue.
+6. **Default**: default value if the user does not provide one.
+7. AllowedValues (array).
+8. AllowedPattern (regex).
+9. NoEcho (boolean): to hide the value when someone is viewing the stack.
+10. ...
+
+### 15.8.2 Important Examples for the Exam
+
+1. **AllowedValues**: in the following example, the parameter `InstanceType` can only be `t2.micro`, `t2.small`, or `t2.medium` (this will show a dropdown in the CloudFormation console) with a default value of `t2.micro`:
+    ```yaml
+    Parameters:
+        InstanceType:
+            Type: String
+            Default: t2.micro
+            AllowedValues:
+                - t2.micro
+                - t2.small
+                - t2.medium
+            Default: t2.micro
+
+    Resources:
+        MyEC2Instance:
+            Type: AWS::EC2::Instance
+            Properties:
+                # Reference the parameter above
+                InstanceType: !Ref InstanceType
+                ImageId: ami-0a3c3a20c09d6f377
+    ```
+
+2. **NoEcho**: in the following example, the parameter `DBPassword` will not be shown when someone is viewing the stack:
+    ```yaml
+    Parameters:
+        DBPassword:
+            Type: String
+            NoEcho: true
+
+    Resources:
+        MyDBInstance:
+            Type: AWS::RDS::DBInstance
+            Properties:
+                MasterUsername: admin
+                MasterUserPassword: !Ref DBPassword
+                Engine: mysql
+                DBInstanceClass: db.t2.micro
+                AllocatedStorage: 20
+    ```
+
+## 15.9 Pseudo Parameters
+
+AWS provides pseudo parameters in any CloudFormation template, which can be used at any time and are enabled by default. A few important pseudo parameters:
+
+| Reference value | Example of returned value |
+|------------------|------------------------|
+| AWS::AccountId   | 123456789012           |
+| AWS::Region      | us-east-1              |
+| AWS::StackId     | arn:aws:cloudformation:us-east-1:123456789012:stack/MyStack/1a2345b6-0c78-4d9d-8e7e-4f0123456789 |
+| AWS::StackName   | MyStack                |
+| AWS::NotificationARNs | [ "arn:aws:sns:us-east-1:123456789012:MyTopic" ] |
+| AWS::NoValue     | Does not return a value |
+
+For instance, `AWS::AccountId` returns your AWS account ID, `AWS::Region` returns the region where the stack is being created, etc.
