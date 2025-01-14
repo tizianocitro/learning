@@ -535,6 +535,8 @@ Conditions can be **applied** to resources, outputs, etc.
 
 ### 15.13.1 Must-Know Intrinsic Functions
 
+These are very **important to know for the exam**:
+
 | Function | Description |
 |----------|-------------|
 | `Fn::Ref`      | Used to reference resources, parameters, outputs, etc. |
@@ -732,3 +734,34 @@ Conditions:
     CreateProdResources:
         !Equals [ !Ref EnvType, prod ]
 ```
+
+## 15.14 Rollbacks
+
+1. **Stack creation fails**:
+    - Default: everything rolls back ands get deleted. You can look at logs to understand what happened but not at the resources.
+    - You can disable the rollback and troubleshoot what happened.
+2. **Stack update fails**:
+    - Default: everything rolls back to the previous known working state.
+    - You can investigate using the logs.
+
+When performing a rollback, there is a chance the **rollback can fail**. In this case, you can fix resources manually and continue with the rollback using the `ContinueUpdateRollback` API, CLI command, or console option.
+
+### 15.14.1 Triggering a Rollback
+
+To trigger a failure, you can just update an existing template containing a `MyEC2Instance` resource with a new template where the `MyEC2Instance` resource references a non-existing AMI ID, like this:
+```yaml
+MyEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+        AvailabilityZone: us-east-1a
+        ImageId: ami-12345678
+        InstanceType: t2.micro
+```
+
+When you do the upload on the console, you can configure **stack failure options**:
+
+![Stack Failure Options for Rollback](/assets/aws-certified-developer-associate/cf_stack_failure_options_rollback.png "Stack Failure Options for Rollback")
+
+Then, when you update the stack, it will fail and you can see the rollback in the *Events* tab of the stack:
+
+![Rollback Events](/assets/aws-certified-developer-associate/cf_rollback_events.png "Rollback Events")
