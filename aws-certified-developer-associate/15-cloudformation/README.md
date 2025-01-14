@@ -491,3 +491,42 @@ Resources:
 ```
 
 Given that **the imported value creates a dependency between the two stacks**, the stack that exports the value cannot be deleted before the stack that imports it.
+
+## 15.12 Conditions
+
+Conditions are used to **control the creation of resources or outputs based on a condition**. Each condition can reference another condition, parameter value or mapping.
+
+Conditions can be whatever you want them to be, but common ones are:
+- Environment: dev, test, prod.
+- AWS Region.
+- Any parameter value.
+
+For example, you can create a condition that checks whether the environment is `prod` or `dev` to create a resource or not (the EBS volume in this case):
+
+![Conditions](/assets/aws-certified-developer-associate/cf_conditions.png "Conditions")
+
+To define a condition, you can use the `Conditions` section in the template:
+```yaml
+Conditions:
+    CreateProdResources:
+        !Equals [ !Ref EnvType, prod ]
+```
+
+The **logical ID is how you name conditions** and is for you to choose it.
+
+The **intrinsic function (logical)** can be any of the following:
+- Fn::And (!And).
+- Fn::Equals (!Equals).
+- Fn::If (!If).
+- Fn::Not (!Not).
+- Fn::Or (!Or).
+
+Then, you can **use the condition** in the resources section to create the EBS volume only if the environment is `prod`:
+```yaml
+Resources:
+    MountPoint:
+        Type: AWS::EC2::VolumeAttachment
+        Condition: CreateProdResources
+```
+
+Conditions can be **applied** to resources, outputs, etc.
