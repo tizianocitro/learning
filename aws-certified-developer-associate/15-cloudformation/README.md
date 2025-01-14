@@ -515,11 +515,11 @@ Conditions:
 The **logical ID is how you name conditions** and is for you to choose it.
 
 The **intrinsic function (logical)** can be any of the following:
-- Fn::And (!And).
-- Fn::Equals (!Equals).
-- Fn::If (!If).
-- Fn::Not (!Not).
-- Fn::Or (!Or).
+- `Fn::And` (`!And`).
+- `Fn::Equals` (`!Equals`).
+- `Fn::If` (`!If`).
+- `Fn::Not` (`!Not`).
+- `Fn::Or` (`!Or`).
 
 Then, you can **use the condition** in the resources section to create the EBS volume only if the environment is `prod`:
 ```yaml
@@ -530,3 +530,205 @@ Resources:
 ```
 
 Conditions can be **applied** to resources, outputs, etc.
+
+## 15.13 Intrinsic Functions
+
+### 15.13.1 Must-Know Intrinsic Functions
+
+| Function | Description |
+|----------|-------------|
+| `Fn::Ref`      | Used to reference resources, parameters, outputs, etc. |
+| `Fn::GetAtt` | Used to get an attribute from a resource |
+| `Fn::FindInMap` | Used to find a value in a mapping |
+| `Fn::ImportValue` | Used to import values from another stack |
+| `Fn::Base64` | Used to encode to Base64 |
+| `Fn::And`, `Fn::Equals`, `Fn::If`, `Fn::Not`, `Fn::Or` | Condition functions used to conditionally create resources |
+
+### 15.13.2 Other Intrinsic Functions
+
+| Function | Description |
+|----------|-------------|
+| `Fn::Join` | Used to join values with a delimiter |
+| `Fn::Sub` | Used to substitute variables |
+| `Fn::ForEach` | Used to iterate over a list |
+| `Fn::ToJsonString` | Used to convert a JSON object to a string |
+| `Fn::Cidr` | Used to generate CIDR numbers |
+| `Fn::GetAZs` | Used to get availability zones |
+| `Fn::Select` | Used to select an element from a list |
+| `Fn::Split` | Used to split a string |
+| `Fn::Transform` | Used to transform a document |
+| `Fn::Length` | Used to get the length of a string |
+
+### 15.13.3 Fn::Ref
+
+The` Fn::Ref` function can be **leveraged to reference**:
+- **Parameters**: returns the value of the parameter.
+- **Resources**: returns the *physical ID* of the underlying resource (e.g., EC2 ID).
+
+The shorthand for this in YAML is `!Ref`.
+
+For example, you can reference the `InstanceType` parameter in the `MyEC2Instance` resource:
+```yaml
+Parameters:
+    InstanceType:
+        Type: String
+        Default: t2.micro
+        AllowedValues:
+            - t2.micro
+            - t2.small
+            - t2.medium
+        Default: t2.micro
+
+Resources:
+    MyEC2Instance:
+        Type: AWS::EC2::Instance
+        Properties:
+            # Reference the parameter above
+            InstanceType: !Ref InstanceType
+            ImageId: ami-0a3c3a20c09d6f377
+```
+
+### 15.13.4 Fn::GetAtt
+
+**Attributes are attached to any resources you create**. To know the attributes of your resources, the best place to look at is the documentation.
+- For example, the AZ of an EC2 instance.
+
+For example, create an EBS volime in the same AZ of `MyEC2Instance`:
+```yaml
+Resources:
+    Resources:
+    MyEC2Instance:
+        Type: AWS::EC2::Instance
+        Properties:
+            InstanceType: t2.micro
+            ImageId: ami-0a3c3a20c09d6f377
+
+    MyEBSVolume:
+        Type: AWS::EC2::Volume
+        Properties:
+            Size: 100
+            # Get the AZ of MyEC2Instance
+            # - MyEC2Instance is the logical ID of the EC2 instance,
+            # which is defined above in the template
+            # - AvailabilityZone is the attribute of the EC2 instance
+            AvailabilityZone:
+                !GetAtt MyEC2Instance.AvailabilityZone
+```
+
+### 15.13.5 Fn::FindInMap
+
+We use `Fn::FindInMap` to **return a named value from a specific key**.
+
+The function takes **three parameters**:
+- Name of the mapping.
+- Top-level key.
+- Second-level key.
+- Example usage: `!FindInMap [ RegionMap, us-west-1, HVM64 ]`.
+
+You **can use pseudo parameters in mappings as top-level or second-level keys**.
+
+For example, in a template you can use a `RegionMap` mapping like this:
+```yaml
+Mappings:
+    RegionMap:
+        us-east-1:
+            HVM64: ami-0ff8a91507f77f867
+            HVMG2: ami-0a584ac55a7631c0c
+        us-west-1:
+            HVM64: ami-0bdb828fd58c52235
+            HVMG2: ami-0e4176b225a5f442d
+        eu-west-1:
+            HVM64: ami-047bb4163c506cd98
+            HVMG2: ami-0a9d27a9f4f5c0efc
+
+Resources:
+    MyEC2Instance:
+        Type: AWS::EC2::Instance
+        Properties:
+            AvailabilityZone: us-east-1a
+            ImageId:
+                # Reference the mapping using the Aws::Region
+                # pseudo parameter as the top-level key to
+                # get the AMI ID for the current region
+                !FindInMap [ RegionMap, !Ref "AWS::Region", HVM64 ]
+            InstanceType: t2.micro
+```
+
+### 15.13.6 Fn::ImportValue
+
+Import values that are exported in other stacks. For this, we use the `Fn::ImportValue` function.
+
+For example, we can create an `SSHSecurityGroup` resource as part of one template, and create an `ReusableSSHSecurityGroup` output that references that security group and exports it as `CompanySSHSecurityGroup`:
+```yaml
+Resources:
+    SSHSecurityGroup:
+        Type: AWS::EC2::SecurityGroup
+        Properties:
+            GroupDescription: |
+                Enable SSH access via port 22
+            SecurityGroupIngress:
+                - CidrIp: 0.0.0.0/0
+                  FromPort: 22
+                  IpProtocol: tcp
+                  ToPort: 22
+
+Outputs:
+    ReusableSSHSecurityGroup:
+        Description: |
+            The SSH security group for the company
+        Value: !Ref SSHSecurityGroup
+        Export:
+            Name: CompanySSHSecurityGroup
+```
+
+The **export name has to be unique within the region**.
+
+Then, create a second template that leverages that security group by **importing the output** `CompanySSHSecurityGroup` via the `Fn::ImportValue` (shorthand `!ImportValue`) function:
+```yaml
+Resources:
+    MyEC2Instance:
+        Type: AWS::EC2::Instance
+        Properties:
+            AvailabilityZone: us-east-1a
+            ImageId: ami-0a3c3a20c09d6f377
+            InstanceType: t2.micro
+            SecurityGroups:
+                # Import the security group from
+                # the other template
+                - !ImportValue CompanySSHSecurityGroup
+```
+
+### 15.13.7 Fn::Base64
+
+Convert trings to their Base64 representation, e.g., `!Base64: "Encode me as Base64"`.
+
+A common use case is to encode user data for EC2 instances in the `UserData` property:
+```yaml
+WebServerInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+        # Other properties...
+        UserData:
+            !Base64: |
+                #!/bin/bash
+                yum update -y
+                yum install -y httpd
+```
+
+### 15.13.8 Condition Functions
+
+Condition functions are:
+- `Fn::And` (`!And`).
+- `Fn::Equals` (`!Equals`).
+- `Fn::If` (`!If`).
+- `Fn::Not` (`!Not`).
+- `Fn::Or` (`!Or`).
+
+And they can be used in the `Conditions` section of the template to conditionally create resources.
+
+For example, you can create a condition that checks if the environment is `prod` using the `!Equals` condition function:
+```yaml
+Conditions:
+    CreateProdResources:
+        !Equals [ !Ref EnvType, prod ]
+```
