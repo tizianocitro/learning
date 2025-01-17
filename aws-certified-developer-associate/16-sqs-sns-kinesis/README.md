@@ -16,3 +16,84 @@ To avoid this issue, we can **decouple our applications** using:
 - **Kinesis** for real-time streaming model.
 
 The important features is that these services can scale independently from our application.
+
+## 16.1 Simple Queue Service (SQS)
+
+**Simple Queue Service (SQS)** is a fully managed message queuing service that provides a distributed queue system that enables web service components to communicate in a loosely coupled way.
+
+An **SQS queue is a buffer** between the application components that receive data and the components that process the data.
+With SQS queues, you have:
+- **Producers**: one or more applications that send messages to the queue.
+- **Consumers**: one or more applications that poll and process messages from the queue.
+
+![SQS Queues](/assets/aws-certified-developer-associate/sqs_queues.png "SQS Queues")
+
+## 16.2 SQS Standard Queues
+
+It is the oldest offering of SQS (over 10 years ago) and it is the default queue type.
+
+It is a **fully managed service used to decouple applications**, so think of SQS whenever you read "decoupling" during the exam.
+
+**Attributes** of SQS Standard Queues:
+- **Unlimited throughput and unlimited number of messages** in a queue.
+- Default retention of messages: 4 days, up to a maximum of 14 days.
+- **Low latency**: <10 ms on publish and receive.
+- Limitation of 256KB per message sent.
+- **At least once delivery**: can have duplicate messages, occasionally. For example, if a consumer does not process a message fast enough. Another offering of SQS, FIFO queues, guarantees exactly once delivery to solve this issue.
+- **Best effort ordering**: can have out of order messages.
+
+## 16.3 Producing Messages to SQS
+
+Messages are produced to SQS using the SDK or API via the `SendMessage` API.
+
+A **message is persisted in SQS until a consumer reads and deletes it** to indicate that the message has been processed.
+
+For example, you may send a message to process an order, including the order ID, customer ID, and the items to be processed. The consumer will read the message, process the order, and then delete the message from the queue.
+
+## 16.4 Consuming Messages from SQS
+
+Consumers, which can run on EC2 instances, servers, or AWS Lambda, do:
+1. **Poll SQS for messages**: they can **receive up to 10 messages at a time**.
+2. **Process the messages**: for example, they can store the content of each message into an RDS database.
+3. **Delete the messages**: they use the `DeleteMessage` API to indicate that the message has been processed, thus **guaranteeing that no other consumer will process the same message**.
+
+![SQS Consumers](/assets/aws-certified-developer-associate/sqs_consumers.png "SQS Consumers")
+
+### 16.4.1 Multiple EC2 Instances Consumers
+
+An SQS queue can scale by having multiple consumers:
+- These **consumers receive and process messages in parallel**.
+- If somehow one consumer does not process a message fast enough, another consumer can process the message. Thus, you have at least once delivery and best effort ordering.
+- Consumers delete messages after processing them to avoid other consumers seeing the same messages.
+- We can **scale consumers horizontally to improve throughput of processing**.
+
+![Multiple EC2 Instances Consumers](/assets/aws-certified-developer-associate/sqs_multiple_ec2_instances_consumers.png "Multiple EC2 Instances Consumers")
+
+Given that we can scale consumers horizontally, we can **combine SQS with an ASG to scale the number of EC2 instances based on the number of messages in the queue** (queue's lenght: `ApproximateNumberOfMessages` CloudWatch metric):
+
+![Auto Scaling Group with SQS](/assets/aws-certified-developer-associate/sqs_auto_scaling_group_with_sqs.png "Auto Scaling Group with SQS")
+
+**SQS with ASG is a common architecture pattern in the exam**.
+
+## 16.5 SQS to Decouple between Application Tiers
+
+Consider having an application that processes videos comprising two tiers: a front-end tier (which handles user interaction) and a back-end tier (which processes videos).
+
+We can decouple these two tiers to avoid making the front-end tier wait for the back-end tier to process the videos because video processing can take a long time.
+
+![SQS to Decouple between Application Tiers](/assets/aws-certified-developer-associate/sqs_decouple_between_application_tiers.png "SQS to Decouple between Application Tiers")
+
+**This usage of SQS is important to know for the exam**.
+
+## 16.6 SQS Security
+
+**Encryption**:
+- In-flight encryption: using HTTPS APIs.
+- At-rest encryption: using KMS keys.
+- Client-side encryption: if the client wants to perform encryption/decryption itself but it is not native to SQS.
+
+**Access controls**: IAM policies to regulate access to SQS APIs.
+
+**SQS access policies** are similar to S3 bucket policies:
+- Useful for cross-account access to SQS queues.
+- Useful for allowing other services (e.g., SNS, S3, etc.) to write to an SQS queue.
