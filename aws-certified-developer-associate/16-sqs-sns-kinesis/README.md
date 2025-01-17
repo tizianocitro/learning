@@ -89,7 +89,7 @@ We can decouple these two tiers to avoid making the front-end tier wait for the 
 
 **Encryption**:
 - In-flight encryption: using HTTPS APIs.
-- At-rest encryption: using KMS keys.
+- At-rest encryption: using SQS keys (SSE-SQS) or KMS keys.
 - Client-side encryption: if the client wants to perform encryption/decryption itself but it is not native to SQS.
 
 **Access controls**: IAM policies to regulate access to SQS APIs.
@@ -97,3 +97,53 @@ We can decouple these two tiers to avoid making the front-end tier wait for the 
 **SQS access policies** are similar to S3 bucket policies:
 - Useful for cross-account access to SQS queues.
 - Useful for allowing other services (e.g., SNS, S3, etc.) to write to an SQS queue.
+
+## 16.7 Creating a Standard SQS Queue
+
+To create an SQS queue, go to the SQS service in the console and click on *Create Queue*.
+
+First things to do are selectin the **type (in this case queue)** and entering the **name**:
+
+![SQS Queue Name and Type](/assets/aws-certified-developer-associate/sqs_queue_name.png "SQS Queue Name and Type")
+
+Some **configuration options**: visibility timeout, message retention period, delivery delay, etc.
+
+![SQS Queue Configuration](/assets/aws-certified-developer-associate/sqs_queue_configuration.png "SQS Queue Configuration")
+
+Next are **encryption** settings (in this case SSE-SQS):
+
+![SQS Queue Encryption](/assets/aws-certified-developer-associate/sqs_queue_encryption.png "SQS Queue Encryption")
+
+Then, you can setup the **access policy**, which is a JSON document. You can define it in the editor (`Basic`) or use the policy generator (`Advanced`). The **policy defines**:
+- Who can send messages to the queue.
+- Who can receive messages from the queue.
+
+![SQS Queue Access Policy](/assets/aws-certified-developer-associate/sqs_queue_access_policy.png "SQS Queue Access Policy")
+
+Finally, you can configure some **advanced options** (which will be discussed in following sections) and **tags**:
+
+![SQS Queue Advanced Options and Tags](/assets/aws-certified-developer-associate/sqs_queue_advanced_options_tags.png "SQS Queue Advanced Options and Tags")
+
+Once the queue is created, if you have messages on it, you can delete all of them by clicking on *Purge*. You also have several tabs with information about the queue:
+
+![SQS Queue Tabs](/assets/aws-certified-developer-associate/sqs_queue_tabs.png "SQS Queue Tabs")
+
+### 16.7.1 Sending and Receiving Messages
+
+To send a message to the queue, click on *Send and Receive Messages*:
+
+![SQS Send and Receive Messages](/assets/aws-certified-developer-associate/sqs_send_and_receive_messages.png "SQS Send and Receive Messages")
+
+From there, you can **send a message** to the queue by typing the content of the message and clicking on *Send Message*:
+
+![SQS Send Message](/assets/aws-certified-developer-associate/sqs_send_message.png "SQS Send Message")
+
+Then, you will notice that the message will be counted in the *Messages Available* section and to **receive the message**, click on *Poll for Messages*:
+
+![SQS Poll for Messages](/assets/aws-certified-developer-associate/sqs_poll_for_messages.png "SQS Poll for Messages")
+
+To **access the content of the message**, click on the message ID. Metadata will be under *Details* and the content of the message (`Hello world!` in the example above) will be under *Body*:
+
+![SQS Message Content](/assets/aws-certified-developer-associate/sqs_message_content.png "SQS Message Content")
+
+The *Receive Count* attribute indicates how many times a message has been received. If a message is received more than once, it is because it was not deleted after processing. To delete a message, select it and click on *Delete*.
