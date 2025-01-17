@@ -765,3 +765,51 @@ When you do the upload on the console, you can configure **stack failure options
 Then, when you update the stack, it will fail and you can see the rollback in the *Events* tab of the stack:
 
 ![Rollback Events](/assets/aws-certified-developer-associate/cf_rollback_events.png "Rollback Events")
+
+## 15.15 Service Roles
+
+CloudFront uses service roles, which are IAM roles that allow CloudFormation to create/update/delete stack resources on your behalf.
+- For service roles to work, a user must have the `iam:PassRole` permissions.
+
+You can **use service roles to give ability to users to create/update/delete the stack resources even if they do not have permissions to work with the direct resources** in the stack.
+- For example, the user does not have permissions to create an S3 bucket, but they can create a CloudFormation stack that creates an S3 bucket.
+
+    ![Service Roles](/assets/aws-certified-developer-associate/cf_service_roles.png "Service Roles")
+
+**Use case**: you want to achieve the least privilege principle but you do not want to give the user all the required permissions to create the stack direct resources.
+
+### 15.15.1 Using Service Roles
+
+Go to IAM roles and create a new role for an AWS service. Then, **select CloudFormation as the service that will use this role**:
+
+![Creating a Service Role](/assets/aws-certified-developer-associate/cf_create_service_role.png "Creating a Service Role")
+
+Then, **attach the required policies** to the role. For example, you can attach the `AmazonS3FullAccess` policy to allow CloudFormation to work with S3 buckets (e.g., creation):
+
+![Attaching Policies to Service Role](/assets/aws-certified-developer-associate/cf_attach_policies_service_role.png "Attaching Policies to Service Role")
+
+Finally, give a **name** and **description** to the role and create it.
+
+![Service Role Creation](/assets/aws-certified-developer-associate/cf_service_role_creation.png "Service Role Creation")
+
+Then, when creating a stack, you can **select the service role** you created:
+
+![Selecting Service Role](/assets/aws-certified-developer-associate/cf_select_service_role.png "Selecting Service Role")
+
+## 15.16 Capabilities
+
+When using some CloudFormation features, you need to acknowledge that you are aware of the capabilities that you are enabling.
+
+1. **CAPABILITY_NAMED_IAM** and **CAPABILITY_IAM**:
+    - Necessary to enable when your CloudFormation template is creating or updating IAM resource. For example, IAM user, role, group, policy, access keys, instance profile, etc.
+    - Specify **CAPABILITY_NAMED_IAM if the resources are named**.
+
+2. **CAPABILITY_AUTO_EXPAND**:
+    - Necessary when your CloudFormation template includes **macros** or **nested stacks** (stacks within stacks) to perform dynamic transformations.
+    - You are basically acknowledging that your template may change before deploying.
+
+If you get `InsufficientCapabilitiesException` when launching a template, you need to add the necessary capabilities. It is a **security measure for CloudFormation to throw an exception if the capabilities have not been acknowledged** when deploying a template.
+
+For example if you upload a template that creates IAM resources via the console, you will be prompted to **acknowledge the capabilities**:
+
+![Acknowledging Capabilities](/assets/aws-certified-developer-associate/cf_acknowledge_capabilities.png "Acknowledging Capabilities")
