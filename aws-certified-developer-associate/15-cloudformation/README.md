@@ -926,3 +926,56 @@ You can enabled it in the console or using the CLI. From the console, go to the 
 After enabling termination protection, you will see a warning if you try to delete the stack:
 
 ![Termination Protection Warning](/assets/aws-certified-developer-associate/cf_termination_protection_warning.png "Termination Protection Warning")
+
+## 15.20 Custom Resources
+
+Custom resources are used to:
+- Define resources not yet supported by CloudFormation.
+- Define custom provisioning logic for resources can that be outside of CloudFormation: on-premises resources, 3rd party resources, etc.
+- **Have custom scripts run during create/update/delete through Lambda functions**: for example, running a Lambda function to empty an S3 bucket before being deleted. This is a **common use case in the exam**.
+
+### 15.20.1 How To Define Custom Resources
+
+You can **define custom resources** in the `Resources` section of the template using:
+- `AWS::CloudFormation::CustomResource`.
+- `Custom::MyCustomResourceTypeName`: this is the recommended approach.
+
+They are **backed by a Lambda function (most common) or an SNS topic**. For example, to define a custom resource that is backed by a Lambda function:
+```yaml
+Resources:
+    MyCustomResourceUsingLambda:
+        Type: Custom::MyLambdaResource
+        Properties:
+            # Service token has the form:
+            # - arn:aws:lambda:<region>:<account-id>:function:<function-name>
+            ServiceToken: |
+                arn:aws:lambda:us-east-1:123456789012:function:MyLambdaFunction
+            # Input to the Lambda function (optional)
+            ExampleProperty: ExampleValue
+```
+
+In the example above:
+- `ServiceToken` specifies where CloudFormation sends requests to, such as Lambda ARN or SNS ARN (required and must be in the same region)
+- **Input data parameters** (optional).
+
+### 15.20.2 Use Case: Deleting Content Before Deleting an S3 Bucket
+
+You can't delete a non-empty S3 bucket. So, to delete a non-empty S3 bucket, you must first delete all the objects inside it.
+
+You can use a custom resource to empty an S3 bucket before it gets deleted by CloudFormation. So, you can create a custom resource that when it gets deleted, it triggers a Lambda function that empties the bucket.
+
+![Custom Resource to Empty S3 Bucket](/assets/aws-certified-developer-associate/cf_custom_resource_empty_s3_bucket.png "Custom Resource to Empty S3 Bucket")
+
+## 15.21 StackSets
+
+**Stack sets allow you to create, update, or delete stacks across multiple accounts and regions with a single operation or template**.
+
+It uses target accounts to create, update, or delete stack instances in multiple regions from a stack set.
+
+When you update a stack set, it updates all the stack instances across all the accounts and regions.
+
+Usually, stack sets are applied into all accounts of an AWS Organization.
+
+**Only an administrator account (or delegated administrator) can create stack sets**.
+
+![StackSets](/assets/aws-certified-developer-associate/cf_stacksets.png "StackSets")
