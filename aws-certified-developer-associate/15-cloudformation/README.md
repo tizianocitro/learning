@@ -813,3 +813,116 @@ If you get `InsufficientCapabilitiesException` when launching a template, you ne
 For example if you upload a template that creates IAM resources via the console, you will be prompted to **acknowledge the capabilities**:
 
 ![Acknowledging Capabilities](/assets/aws-certified-developer-associate/cf_acknowledge_capabilities.png "Acknowledging Capabilities")
+
+## 15.17 Deletion Policy
+
+`DeletionPolicy` is a **safety measure to preserve and backup resources** in a template that you can apply to resources to **control what happens when the template is deleted or when a resource is removed from a template**.
+- **Default** is `Delete`: a resource is deleted when the stack is deleted.
+- Other options: `Retain` and `Snapshot`.
+
+### 15.17.1 Delete Option
+
+With `Delete`, a resource is deleted when the stack is deleted or in any case of deletion.
+
+The following is an example of a `DeletionPolicy: Delete` applied to an S3 bucket:
+```yaml
+Resources:
+    MyBucket:
+        Type: AWS::S3::Bucket
+        DeletionPolicy: Delete
+```
+
+**Delete won't work on an S3 bucket if the bucket is not empty**: it is up to you to implement a custom resource that empties the bucket before deletion.
+
+### 15.17.2 Retain Option
+
+`Retain` is another option for `DeletionPolicy` that **prevents the resource from being deleted in case of deletes**.
+- It works with any resource.
+
+For exaple, the following is an example of a `DeletionPolicy: Retain` applied to a DynamoDB table:
+```yaml
+Resources:
+    MyDynamoDBTable:
+        Type: AWS::DynamoDB::Table
+        Properties:
+            TableName: MyTable
+            AttributeDefinitions:
+                - AttributeName: "Name"
+                  AttributeType: "S"
+            KeySchema:
+                - AttributeName: "Name"
+                  KeyType: "HASH"
+            ProvisionedThroughput:
+                ReadCapacityUnits: 5
+                WriteCapacityUnits: 5
+        DeletionPolicy: Retain
+```
+
+### 15.17.3 Snapshot Option
+
+`Snapshot` allows you to create one final snapshot before deleting the resource. A few examples of supported resources are:
+- EBS Volume.
+- ElastiCache Cluster.
+- ElastiCache ReplicationGroup.
+- RDS DBInstance.
+- RDS DBCluster.
+- Redshift Cluster.
+- Neptune DBCluster.
+- DocumentDB DBCluster.
+- ...
+
+An example of a `DeletionPolicy: Snapshot` applied to an RDS DBInstance:
+```yaml
+Resources:
+    MyDBInstance:
+        Type: AWS::RDS::DBInstance
+        Properties:
+            DBInstanceClass: db.t2.micro
+            AllocatedStorage: 20
+            Engine: mysql
+            MasterUsername: admin
+            MasterUserPassword: password
+        DeletionPolicy: Snapshot
+```
+
+## 15.18 Stack Policies
+
+During a stack update, all update actions are allowed on all resources by default. However, you can use a stack policy to control what actions can be performed during a stack update.
+
+A **stack policy is a JSON document that defines the update actions that are allowed on specific resources during stack updates**.
+
+The following policy allows updates on all resources except the `ProductionDatanbase`:
+```json
+{
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": "Update:*",
+            "Principal": "*",
+            "Resource": "*"
+        },
+        {
+            "Effect": "Deny",
+            "Action": "Update:*",
+            "Principal": "*",
+            "Resource": "LogicalResourceId/ProductionDatabase"
+        }
+    ]
+}
+```
+
+The goal is to **protect resources from unintentional updates**.
+- When you set a stack policy, all resourced are protected, so all update actions are denied by default.
+- You need to explicitly allow the update actions on specific resources.
+
+## 15.19 Termination Protection
+
+`TerminationProtection` allows you to prevent accidental deletes of CloudFormation stacks.
+
+You can enabled it in the console or using the CLI. From the console, go to the stack details and click on *Edit Termination Protection* in the *Stack Actions* dropdown. This will open a modal where you can enable termination protection:
+
+![Termination Protection](/assets/aws-certified-developer-associate/cf_termination_protection.png "Termination Protection")
+
+After enabling termination protection, you will see a warning if you try to delete the stack:
+
+![Termination Protection Warning](/assets/aws-certified-developer-associate/cf_termination_protection_warning.png "Termination Protection Warning")
