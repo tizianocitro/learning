@@ -215,3 +215,24 @@ If a **message is not processed within the visibility timeout, it will be proces
 The visibility timeout can be configured when creating or editing a queue:
 
 ![SQS Queue Configuration](/assets/aws-certified-developer-associate/sqs_queue_configuration.png "SQS Queue Configuration")
+
+## 16.11 SQS Dead Letter Queue (DLQ)
+
+Consider that a consumer fails to process a message within the visibility timeout. Then,  the message goes back to the queue. If this happens multiple times, the message will keep going back to the queue and will never be processed, it will be stuck in the queue.
+
+We can **set a threshold of how many times a message can go back to the queue**. After the `MaximumReceives` threshold is exceeded, the message goes into a dead letter queue. A **dead letter queue is a queue for messages that could not be processed** and is useful for debugging.
+
+![SQS Dead Letter Queue](/assets/aws-certified-developer-associate/sqs_dead_letter_queue.png "SQS Dead Letter Queue")
+
+Important to **keep in mind**:
+- A DLQ of a FIFO queue must also be a FIFO queue.
+- A DLQ of a standard queue must also be a standard queue.
+- Ensure to process the messages in a DLQ before they expire. It is good to set long retention times (e.g., 14 days) for messages in the DLQ.
+
+### 16.11.1 SQS Redrive to Source
+
+Feature to help consume messages (for manual inspection and debugging) in a DLQ to understand what is wrong with them.
+
+When our code is fixed, we can **redrive messages from a DLQ back into the source queue (or any other queue) in batches without writing custom code**. Now the consumers can process the messages successfully without even knowing that the messages were in the DLQ.
+
+![SQS Redrive to Source](/assets/aws-certified-developer-associate/sqs_redrive_to_source.png "SQS Redrive to Source")
