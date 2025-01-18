@@ -236,3 +236,32 @@ Feature to help consume messages (for manual inspection and debugging) in a DLQ 
 When our code is fixed, we can **redrive messages from a DLQ back into the source queue (or any other queue) in batches without writing custom code**. Now the consumers can process the messages successfully without even knowing that the messages were in the DLQ.
 
 ![SQS Redrive to Source](/assets/aws-certified-developer-associate/sqs_redrive_to_source.png "SQS Redrive to Source")
+
+## 16.12 Using a Dead Letter Queue
+
+Create a queue like in [16.7 Creating a Standard SQS Queue](#167-creating-a-standard-sqs-queue) but be sure to **set a long retention time**, such as 14 days. For example, call this queue `DemoQueueDLQ`.
+
+Then, go to the queue you want to indicate a DLQ for (e.g., `DemoQueue`) and edit it to find the *Dead-letter Queue* section. In this section, you can:
+- **Enable the DLQ**, which is disabled by default.
+- **Select the queue to use as DLQ** (e.g., the `DemoQueueDLQ` created before) for the current queue.
+- **Set the number of times a message can be received before going to the DLQ** (e.g., 10 times in the image below).
+
+![SQS Enable Dead Letter Queue](/assets/aws-certified-developer-associate/sqs_enable_dead_letter_queue.png "SQS Enable Dead Letter Queue")
+
+To **test that it is working**, you can send a message to the `DemoQueue` queue and then poll for the message from the queue. If you do not delete the message and let the visibility timeout expire, it will go back to the queue and be received again. After 10 times, the message will go to the `DemoQueueDLQ` dead letter queue and will not be polled anymore by the queue.
+
+### 16.12.1 Redriving Messages from a Dead Letter Queue
+
+To **redrive messages from a DLQ back into the source queue**, go to the DLQ queue (e.g., `DemoQueueDLQ`) and click on *Start DLQ Redrive*:
+
+![SQS Start DLQ Redrive](/assets/aws-certified-developer-associate/sqs_start_dlq_redrive.png "SQS Start DLQ Redrive")
+
+Then, you can **select to redrive to the source queue**:
+
+![SQS Redrive to Source Queue](/assets/aws-certified-developer-associate/sqs_redrive_to_source_queue.png "SQS Redrive to Source Queue")
+
+You can also inspect the messages in DLQ before redriving them, or eventually send them to another queue via the **redrive to custom destination** option.
+
+Finally, click on *DLQ Redrive* to start the **redrive task**, which you can also inspect in the *Dead-letter Queue Redrive Tasks* tab:
+
+![SQS DLQ Redrive Task](/assets/aws-certified-developer-associate/sqs_dlq_redrive_task.png "SQS DLQ Redrive Task")
