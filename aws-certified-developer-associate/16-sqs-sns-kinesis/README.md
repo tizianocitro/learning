@@ -265,3 +265,30 @@ You can also inspect the messages in DLQ before redriving them, or eventually se
 Finally, click on *DLQ Redrive* to start the **redrive task**, which you can also inspect in the *Dead-letter Queue Redrive Tasks* tab:
 
 ![SQS DLQ Redrive Task](/assets/aws-certified-developer-associate/sqs_dlq_redrive_task.png "SQS DLQ Redrive Task")
+
+## 16.13 Delay in SQS Queues
+
+In SQS, you can **delay a message up to 15 minutes**, so that consumers do not see it immediately. The **default** is 0 seconds, so the message is available right away.
+
+You can **set a default at queue level** using the `Delivery Delay` setting:
+
+![SQS Delivery Delay at Queue Level](/assets/aws-certified-developer-associate/sqs_queue_configuration.png "SQS Delivery Delay at Queue Level")
+
+Or can **override the default when sending the message** using the `DelaySeconds` parameter. In the console, you can set the delay when sending a message using the `Delivery Delay` setting:
+
+![SQS Delivery Delay when Sending Message](/assets/aws-certified-developer-associate/sqs_send_message.png "SQS Delivery Delay when Sending Message")
+
+## 16.14 SQS Long Polling
+
+Long polling is when **a consumer requests messages from SQS but there are no messages in the queue, so the consumer can optionally wait for a message to arrive in the queue**. When the message arrives, it is sent to the consumer.
+- The wait time can be between 1 second to 20 seconds but 20 seconds is preferable.
+- It is preferable to short polling.
+- It can be **enabled at queue level or API level** using the `ReceiveMessageWaitTimeSeconds` parameter.
+
+You can **set long polling at queue level** using the `Receive Message Wait Time` setting:
+
+![SQS Receive Message Wait Time at Queue Level](/assets/aws-certified-developer-associate/sqs_queue_configuration.png "SQS Receive Message Wait Time at Queue Level")
+
+Long polling is **useful because it decreases the number of API calls made to SQS while increasing the efficiency and decreasing the latency of your application**. Use it when:
+- A consumer is making too many requests to SQS.
+- Your application has too much latency.
