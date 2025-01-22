@@ -292,3 +292,27 @@ You can **set long polling at queue level** using the `Receive Message Wait Time
 Long polling is **useful because it decreases the number of API calls made to SQS while increasing the efficiency and decreasing the latency of your application**. Use it when:
 - A consumer is making too many requests to SQS.
 - Your application has too much latency.
+
+## 16.15 SQS Extended Client
+
+The message size limit is 256KB but you may need to send larger messages (e.g. 1GB). To do so, you can use the **SQS Extended Client**, which is a Java library that allows you to send large messages to SQS.
+
+This library does something very simple: it **uploads the message to S3 and sends a reference to the message in SQS**. The consumer will then retrieve the message from S3 using the reference in the message it consumes.
+
+![SQS Extended Client](/assets/aws-certified-developer-associate/sqs_extended_client.png "SQS Extended Client")
+
+## 16.16 SQS Must Know APIs
+
+This table describes APIs that is important to know for the exam.
+
+| API | Description |
+| --- | ----------- |
+| `CreateQueue` | Creates a new queue. You can use the `MessageRetentionPeriod` parameter to set the retention period of messages in the queue. |
+| `DeleteQueue` | Deletes the queue and all the messages in the queue. |
+| `PurgeQueue` | Deletes all the messages in the queue but not the queue itself. |
+| `SendMessage` | Sends a message to the queue. You can use the `DelaySeconds` parameter to set the delay of the message. |
+| `ReceiveMessage` | Receives messages from the queue (polling). You can use the **1.** `ReceiveMessageWaitTimeSeconds` parameter to set the long polling. Use the **2.** `MaxNumberOfMessages` parameter to receive up to 10 messages at a time. By default, it receives 1 message. |
+| `DeleteMessage` | Deletes a message from the queue. |
+| `ChangeMessageVisibility` | Changes the message visibility timeout in case the consumer needs more time to process the message. |
+
+You can **use batch APIs** for `SendMessage`, `DeleteMessage`, and `ChangeMessageVisibility`, which helps decrease your costs.
