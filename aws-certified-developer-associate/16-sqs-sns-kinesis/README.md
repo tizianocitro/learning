@@ -316,3 +316,58 @@ This table describes APIs that is important to know for the exam.
 | `ChangeMessageVisibility` | Changes the message visibility timeout in case the consumer needs more time to process the message. |
 
 You can **use batch APIs** for `SendMessage`, `DeleteMessage`, and `ChangeMessageVisibility`, which helps decrease your costs.
+
+## 16.16 SQS FIFO Queues
+
+FIFO stands for First In First Out and corresponds to the ordering of messages in the queue that is guaranteed by these queues.
+
+![SQS FIFO Queues](/assets/aws-certified-developer-associate/sqs_fifo_queues.png "SQS FIFO Queues")
+
+FIFO queues have:
+- **Limited throughput**:
+    - 300 msg/s without batching.
+    - 3000 msg/s with batching.
+- **Exactly-once send capability**: duplicates are removed using a `MessageDeduplicationID` parameter.
+- **Messages are processed in order by the consumer**: following the FIFO principle.
+- **Ordering by `MessageGroupID`**: all messages in the same group are ordered and `MessageGroupID` is a mandatory parameter that you need to send every time you send a message on a FIFO queue.
+
+### 16.16.1 Creating a FIFO SQS Queue
+
+It is almost the same as creating a standard queue, but you need to select the `FIFO` queue type and **give a name that ends with `.fifo`**:
+
+![SQS FIFO Queue Type](/assets/aws-certified-developer-associate/sqs_fifo_queue_type.png "SQS FIFO Queue Type")
+
+You can also set the **content-based deduplication** feature, which is useful to avoid duplicates:
+
+![SQS FIFO Queue Content-Based Deduplication](/assets/aws-certified-developer-associate/sqs_fifo_queue_content_based_deduplication.png "SQS FIFO Queue Content-Based Deduplication")
+
+### 16.16.2 Sending Messages to a FIFO SQS Queue
+
+When sending messages to a FIFO queue, you need to set the `MessageGroupId` and `MessageDeduplicationID` (this is mandatory only if content-based deduplication is not enabled) parameter to ensure that messages are ordered:
+
+![SQS FIFO Queue Send Message](/assets/aws-certified-developer-associate/sqs_fifo_queue_send_message.png "SQS FIFO Queue Send Message")
+
+If you send and then poll messages from this FIFO queue, you will see that they are ordered in a FIFO order.
+
+## 16.17 FIFO SQS Queues Deduplication
+
+There is a **deduplication interval of 5 minutes**, meaning that if you send the same message twice during this interval, the second message will be discarded.
+
+**Two deduplication methods**:
+1. Content-based deduplication: builds a `MessageDeduplicationID` by doing a SHA-256 hash of the message body to check for duplicates.
+2. Explicitly provide a `MessageDeduplicationID` to uniquely identify a message, so that if the same deduplication ID is sent again, it will be discarded.
+
+For example, with content-based deduplication:
+
+![SQS FIFO Queue Content-Based Deduplication Example](/assets/aws-certified-developer-associate/sqs_fifo_queue_content_based_deduplication_example.png "SQS FIFO Queue Content-Based Deduplication Example")
+
+## 16.18 FIFO SQS Message Grouping
+
+If you specify the same value of `MessageGroupID` in an SQS FIFO queue, you can only have one consumer, and all the messages are in order for that one consumer.
+
+**Specify different values for `MessageGroupID` to get ordering at the level of a subset of messages**:
+- Messages that share a common `MessageGroupID` will be in order within the group.
+- Ordering across groups is not guaranteed.
+- Each `MessageGroupID` can have a different consumer, which **enables parallel processing**.
+
+![SQS FIFO Queue Message Grouping](/assets/aws-certified-developer-associate/sqs_fifo_queue_message_grouping.png "SQS FIFO Queue Message Grouping")
