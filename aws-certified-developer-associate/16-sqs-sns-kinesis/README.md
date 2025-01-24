@@ -371,3 +371,51 @@ If you specify the same value of `MessageGroupID` in an SQS FIFO queue, you can 
 - Each `MessageGroupID` can have a different consumer, which **enables parallel processing**.
 
 ![SQS FIFO Queue Message Grouping](/assets/aws-certified-developer-associate/sqs_fifo_queue_message_grouping.png "SQS FIFO Queue Message Grouping")
+
+
+## 16.19 Simple Notification Service (SNS)
+
+SNS providers support for **push-based delivery of messages (pub/sub)**. It is a fully managed service that allows you to send messages to a large number of subscribers through topics.
+
+![SNS Pub/Sub](/assets/aws-certified-developer-associate/sns_pub_sub.png "SNS Pub/Sub")
+
+In SNS:
+1. The **event producer** only sends message to one SNS topic.
+2. As many **event receivers (subscribers)** as we want can listen to the SNS topic notifications.
+3. Each subscriber to the topic will get all the messages (except if we use the feature to filter messages).
+
+SNS offers up to 12,500,000 subscriptions per topic with a maximum of 100,000 topics.
+
+With SNS you can **send messages to many destinations**:
+
+![SNS Destinations](/assets/aws-certified-developer-associate/sns_destinations.png "SNS Destinations")
+
+At the same time, you can **receive messages from many sources** as many AWS services can send data directly to SNS for notifications:
+
+![SNS Sources](/assets/aws-certified-developer-associate/sns_sources.png "SNS Sources")
+
+### 16.19.1 How to Publish on SNS
+
+Topic publishing using the SDK:
+- Create a topic.
+- Create a subscription (or many).
+- Publish to the topic and all subscribers will receive the message.
+
+Direct publishing for mobile applications SDK:
+- Create a platform application.
+- Create a platform endpoint.
+- Publish to the platform endpoint.
+- Works with Google GCM, Apple APNS, Amazon ADM, etc.
+
+### 16.19.2 SNS Security
+
+**Encryption**:
+- In-flight encryption: using HTTPS APIs.
+- At-rest encryption: using KMS keys.
+- Client-side encryption: if the client wants to perform encryption/decryption itself but it is not native to SNS.
+
+**Access controls**: IAM policies to regulate access to SNS APIs.
+
+**SNS access policies** are similar to S3 bucket policies:
+- Useful for cross-account access to SNS topics.
+- Useful for allowing other services (e.g., S3, etc.) to write to an SNS topic.
