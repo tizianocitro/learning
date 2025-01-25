@@ -419,3 +419,58 @@ Direct publishing for mobile applications SDK:
 **SNS access policies** are similar to S3 bucket policies:
 - Useful for cross-account access to SNS topics.
 - Useful for allowing other services (e.g., S3, etc.) to write to an SNS topic.
+
+## 16.20 Fan Out Using SQS and SNS
+
+With this pattern, you **push once in SNS and receive in all SQS queues that are subscribed to the SNS topic**.
+
+![Fan Out Using SQS and SNS](/assets/aws-certified-developer-associate/fan_out_using_sqs_and_sns.png "Fan Out Using SQS and SNS")
+
+In this way, you can have:
+1. A **fully decoupled model with no data loss** because:
+    - SQS allows for data persistence, delayed processing and retries of work.
+    - You can add more SQS subscribers over time.
+    - The other queues can still process messages if one queue fails.
+2. **Cross-region delivery**: the SNS topic can send messages to SQS queues in other regions.
+
+For this pattern to work, you need to make sure that your **SQS queue access policy allows for SNS to write** to it.
+
+### 16.20.1 Fan Out For S3 Events to Multiple Queues
+
+You can have only one S3 event rule for the same combination of event type and prefix. If you want **to send the same S3 event to many SQS queues, use fan out**.
+
+With fan out, you can have one S3 event rule that sends the event to an SNS topic and then have many SQS queues (but also other destinations, e.g., a Lambda function) subscribed to the SNS topic to receive the S3 event:
+
+![Fan Out For S3 Events to Multiple Queues](/assets/aws-certified-developer-associate/fan_out_for_s3_events_to_multiple_queues.png "Fan Out For S3 Events to Multiple Queues")
+
+### 16.20.2 Fan Out For SNS to S3 through Kinesis Data Firehose
+
+SNS has direct integration with Kinesis Data Firehose, so SNS can send to Kinesis and then Kinesis can send to S3 (or any supported destination for Kinesis Data Firehose):
+
+![Fan Out For SNS to S3 through Kinesis Data Firehose](/assets/aws-certified-developer-associate/fan_out_for_sns_to_s3_through_kinesis_data_firehose.png "Fan Out For SNS to S3 through Kinesis Data Firehose")
+
+## 16.21 SNS FIFO Topics
+
+**SNS FIFO topics are similar in features to SQS FIFO queues**:
+- Ordering by `MessageGroupID`: all messages in the same group are ordered.
+- Deduplication using a `DeduplicationI`D or content-based deduplication.
+- The name of a SNS FIFO topic must end in `.fifo`.
+
+![SNS FIFO Topics](/assets/aws-certified-developer-associate/sns_fifo_topics.png "SNS FIFO Topics")
+
+**SNS FIFO topics can have SQS standard and FIFO queues as subscribers**.
+
+SNS FIFO topics have **limited throughput** (same throughput as SQS FIFO).
+
+### 16.21.1 Combining SNS FIFO Topics and SQS FIFO Queues
+
+By combining SNS FIFO topics and SQS FIFO queues, you can **have fan out, ordering, and deduplication** all at the same time.
+
+![Combining SNS FIFO Topics and SQS FIFO Queues](/assets/aws-certified-developer-associate/combining_sns_fifo_topics_and_sqs_fifo_queues.png "Combining SNS FIFO Topics and SQS FIFO Queues")
+
+## 16.22 SNS Message Filtering
+
+In SNS, you can use **JSON policies to filter messages sent to SNS topics' subscriptions**.
+- If a subscription does not have a filter policy, it receives every message.
+
+![SNS Message Filtering](/assets/aws-certified-developer-associate/sns_message_filtering.png "SNS Message Filtering")
