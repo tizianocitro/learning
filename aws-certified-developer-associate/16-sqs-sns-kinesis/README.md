@@ -474,3 +474,53 @@ In SNS, you can use **JSON policies to filter messages sent to SNS topics' subsc
 - If a subscription does not have a filter policy, it receives every message.
 
 ![SNS Message Filtering](/assets/aws-certified-developer-associate/sns_message_filtering.png "SNS Message Filtering")
+
+## 16.23 Creating an SNS Topic
+
+To do so, go to the SNS service in the console and click on *Create Topic* by entering a **name**.
+
+![SNS Create Topic](/assets/aws-certified-developer-associate/sns_create_topic.png "SNS Create Topic")
+
+Then, select whether the **topic type** is standard or FIFO:
+
+![SNS Topic Type](/assets/aws-certified-developer-associate/sns_topic_type.png "SNS Topic Type")
+
+Finally, you can configure other **advanced options**, such as encryption, access policy, tags:
+
+![SNS Advanced Options](/assets/aws-certified-developer-associate/sns_advanced_options.png "SNS Advanced Options")
+
+### 16.23.1 Subscribing to an SNS Topic
+
+After you create a topic, you can subscribe to it by clicking on *Create Subscription*:
+
+![SNS Create Subscription](/assets/aws-certified-developer-associate/sns_create_subscription.png "SNS Create Subscription")
+
+Then, chose the **protocol** (e.g., email, SMS, Lambda, SQS, etc.). **Remember the protocols because they are tested in the exam**.
+
+![SNS Subscription Protocol](/assets/aws-certified-developer-associate/sns_subscription_protocol.png "SNS Subscription Protocol")
+
+Then, enter the **endpoint**, which depends on the protocol. For example, for an email, you need to enter the email address.
+
+You can also configure a **subscription filter policy** to filter messages sent to the subscription:
+
+![SNS Subscription Filter Policy](/assets/aws-certified-developer-associate/sns_subscription_filter_policy.png "SNS Subscription Filter Policy")
+
+Finally, create the subscription and it will appear in the list of subscriptions for the topic.
+
+To **realize the fan out pattern, you can just create multiple SQS queues and subscribe them to the SNS topic**.
+
+### 16.23.2 Publishing to an SNS Topic
+
+To publish a message to a topic, click on *Publish Message* with the topic selected:
+
+![SNS Publish Message](/assets/aws-certified-developer-associate/sns_publish_message.png "SNS Publish Message")
+
+And enter the **message content**:
+
+![SNS Publish Message Content](/assets/aws-certified-developer-associate/sns_publish_message_content.png "SNS Publish Message Content")
+
+Finally, add **attributes** or send the message:
+
+![SNS Publish Message Attributes](/assets/aws-certified-developer-associate/sns_publish_message_attributes.png "SNS Publish Message Attributes")
+
+When you send the message, all the subscribers to the topic will receive the message. For example, if have configured an email subscription, you will receive the message in your email.
