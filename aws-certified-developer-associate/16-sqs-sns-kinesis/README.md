@@ -524,3 +524,41 @@ Finally, add **attributes** or send the message:
 ![SNS Publish Message Attributes](/assets/aws-certified-developer-associate/sns_publish_message_attributes.png "SNS Publish Message Attributes")
 
 When you send the message, all the subscribers to the topic will receive the message. For example, if have configured an email subscription, you will receive the message in your email.
+
+## 16.24 Kinesis Data Streams
+
+Kinesis Data Streams is a service that allows you to **collect and store streaming data in real-time**.
+- **Real-time is the keyword to look for in the exam**.
+
+**Real-time data** can be anything like website clickstreams, IoT telemetry data, application metrics and logs, etc.
+
+To send real-time data to Kinensis Data Streams, you need **producers** like an application or Kinesis Agent (e.g., for application metrics and logs).
+- Use *Kinesis Producer Library (KPL)* to write an optimized producer application.
+
+To process the data, you need **consumers** like EC2 instances, Lambda functions, Kinesis Data Firehose, etc.
+- Use *Kinesis Client Library (KCL)* to write an optimized consumer application.
+
+![Kinesis Data Streams](/assets/aws-certified-developer-associate/kinesis_data_streams.png "Kinesis Data Streams")
+
+Some **features**:
+- Data retention is up to 365 days.
+- You can reprocess (replay) data by consumers.
+- Data cannot be deleted from Kinesis until it expires.
+- You can send data up to 1MB but the **typical use case is to send lot of small real-time data**.
+- **Data ordering is preserved** for data with the same `PartitionID`.
+- You have KMS encryption at-rest and HTTPS encryption in-flight.
+
+### 16.24.1 Two Capacity Modes in Kinesis Data Streams
+
+**Provisioned mode**:
+- You need to choose the number of shards because the more shards you have, the higher the throughput:
+    - Each shard gets 1MB/s in, or 1000 records per second.
+    - Each shard gets 2MB/s out.
+- You pay per shard provisioned per hour.
+- You can manually scale to increase or decrease the number of shards.
+
+**On-demand mode**:
+- No need to provision or manage the capacity.
+- You have a default provisioned capacity of 4 MB/s in, or 4000 records per second.
+- It scales automatically based on observed throughput peak during the last 30 days.
+- You pay per stream per hour, and data in/out per GB.
