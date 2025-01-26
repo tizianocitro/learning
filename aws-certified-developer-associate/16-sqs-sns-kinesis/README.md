@@ -562,3 +562,73 @@ Some **features**:
 - You have a default provisioned capacity of 4 MB/s in, or 4000 records per second.
 - It scales automatically based on observed throughput peak during the last 30 days.
 - You pay per stream per hour, and data in/out per GB.
+
+## 16.25 Creating a Kinesis Data Stream
+
+To create a Kinesis Data Stream, go to the Kinesis service in the console and click on *Create Data Stream*.
+- In this page, you also get some information about the service and pricing.
+
+![Kinesis Create Data Stream](/assets/aws-certified-developer-associate/kinesis_create_data_stream.png "Kinesis Create Data Stream")
+
+Then, enter the **name** and select the **capacity mode** (provisioned or on-demand):
+
+![Kinesis Data Stream Name and Capacity Mode](/assets/aws-certified-developer-associate/kinesis_data_stream_name_capacity_mode.png "Kinesis Data Stream Name and Capacity Mode")
+
+If you choose the **provisioned mode**, you need to enter the **number of shards** and you can use the estimator to help you:
+
+![Kinesis Data Stream Provisioned Mode](/assets/aws-certified-developer-associate/kinesis_data_stream_provisioned_mode.png "Kinesis Data Stream Provisioned Mode")
+
+Finally, create the data stream and it will appear in the list of data streams. You can see its details by clicking on it:
+
+![Kinesis Data Stream Details](/assets/aws-certified-developer-associate/kinesis_data_stream_details.png "Kinesis Data Stream Details")
+
+### 16.25.1 Sending Data to a Kinesis Data Stream
+
+To send data to a Kinesis Data Stream, you can use the AWS CLI or the SDK.
+
+For example, you can use the `PutRecord` API to **send a record to the stream**:
+
+```bash
+aws kinesis put-record \
+    --stream-name DemoStream \
+    --partition-key partition1 \
+    --data "user signup" \
+    --cli-binary-format raw-in-base64-out
+```
+
+If you run the above command, you will get a response with the `ShardID` and `SequenceNumber` of the record:
+
+![Kinesis Put Record](/assets/aws-certified-developer-associate/kinesis_put_record.png "Kinesis Put Record")
+
+### 16.25.2 Consuming Data from a Kinesis Data Stream
+
+To consume data from a Kinesis Data Stream, you can use the AWS CLI or the SDK.
+
+With the CLI, the first thing is to **get information about the stream**:
+
+```bash
+aws kinesis describe-stream \
+    --stream-name DemoStream
+```
+
+Then, you can use the `GetShardIterator` API to **get a shard iterator**:
+
+```bash
+aws kinesis get-shard-iterator \
+    --stream-name DemoStream \
+    --shard-id shardId-000000000000 \
+    --shard-iterator-type TRIM_HORIZON
+```
+
+Which will return a shard iterator in a response like this:
+
+![Kinesis Get Shard Iterator](/assets/aws-certified-developer-associate/kinesis_get_shard_iterator.png "Kinesis Get Shard Iterator")
+
+Finally, you can use the `GetRecords` API to **get records from the stream**. Instead of `<shard-iterator>`, use the shard iterator you got in the response before:
+
+```bash
+aws kinesis get-records \
+    --shard-iterator <shard-iterator>
+```
+
+The response will contain the records in the shard.
