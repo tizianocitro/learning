@@ -58,5 +58,5 @@ AWS free tier allows us to have 10 detailed monitoring metrics.
 
 **Note**: EC2 memory usage is by default not pushed, thus it must be pushed from inside the instance as a custom metric.
 
-## 17.2.2 CloudWatch Custom Metrics
+### 17.2.2 CloudWatch Custom Metrics
 
