@@ -1,8 +1,8 @@
 # 16 Integration and Messaging: Simple Queue Service, Simple Notification Service, and Kinesis
 
 This section is really important because **the exam asks a lot of questions on these services, particularly SQS**.
-
 When we start deploying multiple applications, they will inevitably need to communicate with one another. There are **two patterns of application communication**:
+
 - **Synchronous communication**: application A sends a request to application B and waits for a response.
 - **Asynchronous/event-based communication**: application A sends a message to a queue and application B processes the message from the queue.
 
@@ -317,7 +317,7 @@ This table describes APIs that is important to know for the exam.
 
 You can **use batch APIs** for `SendMessage`, `DeleteMessage`, and `ChangeMessageVisibility`, which helps decrease your costs.
 
-## 16.16 SQS FIFO Queues
+## 16.17 SQS FIFO Queues
 
 FIFO stands for First In First Out and corresponds to the ordering of messages in the queue that is guaranteed by these queues.
 
@@ -331,7 +331,7 @@ FIFO queues have:
 - **Messages are processed in order by the consumer**: following the FIFO principle.
 - **Ordering by `MessageGroupID`**: all messages in the same group are ordered and `MessageGroupID` is a mandatory parameter that you need to send every time you send a message on a FIFO queue.
 
-### 16.16.1 Creating a FIFO SQS Queue
+### 16.17.1 Creating a FIFO SQS Queue
 
 It is almost the same as creating a standard queue, but you need to select the `FIFO` queue type and **give a name that ends with `.fifo`**:
 
@@ -341,7 +341,7 @@ You can also set the **content-based deduplication** feature, which is useful to
 
 ![SQS FIFO Queue Content-Based Deduplication](/assets/aws-certified-developer-associate/sqs_fifo_queue_content_based_deduplication.png "SQS FIFO Queue Content-Based Deduplication")
 
-### 16.16.2 Sending Messages to a FIFO SQS Queue
+### 16.17.2 Sending Messages to a FIFO SQS Queue
 
 When sending messages to a FIFO queue, you need to set the `MessageGroupId` and `MessageDeduplicationID` (this is mandatory only if content-based deduplication is not enabled) parameter to ensure that messages are ordered:
 
@@ -349,7 +349,7 @@ When sending messages to a FIFO queue, you need to set the `MessageGroupId` and 
 
 If you send and then poll messages from this FIFO queue, you will see that they are ordered in a FIFO order.
 
-## 16.17 FIFO SQS Queues Deduplication
+## 16.18 FIFO SQS Queues Deduplication
 
 There is a **deduplication interval of 5 minutes**, meaning that if you send the same message twice during this interval, the second message will be discarded.
 
@@ -361,7 +361,7 @@ For example, with content-based deduplication:
 
 ![SQS FIFO Queue Content-Based Deduplication Example](/assets/aws-certified-developer-associate/sqs_fifo_queue_content_based_deduplication_example.png "SQS FIFO Queue Content-Based Deduplication Example")
 
-## 16.18 FIFO SQS Message Grouping
+## 16.19 FIFO SQS Message Grouping
 
 If you specify the same value of `MessageGroupID` in an SQS FIFO queue, you can only have one consumer, and all the messages are in order for that one consumer.
 
@@ -373,7 +373,7 @@ If you specify the same value of `MessageGroupID` in an SQS FIFO queue, you can 
 ![SQS FIFO Queue Message Grouping](/assets/aws-certified-developer-associate/sqs_fifo_queue_message_grouping.png "SQS FIFO Queue Message Grouping")
 
 
-## 16.19 Simple Notification Service (SNS)
+## 16.20 Simple Notification Service (SNS)
 
 SNS providers support for **push-based delivery of messages (pub/sub)**. It is a fully managed service that allows you to send messages to a large number of subscribers through topics.
 
@@ -394,7 +394,7 @@ At the same time, you can **receive messages from many sources** as many AWS ser
 
 ![SNS Sources](/assets/aws-certified-developer-associate/sns_sources.png "SNS Sources")
 
-### 16.19.1 How to Publish on SNS
+### 16.20.1 How to Publish on SNS
 
 Topic publishing using the SDK:
 - Create a topic.
@@ -407,7 +407,7 @@ Direct publishing for mobile applications SDK:
 - Publish to the platform endpoint.
 - Works with Google GCM, Apple APNS, Amazon ADM, etc.
 
-### 16.19.2 SNS Security
+### 16.20.2 SNS Security
 
 **Encryption**:
 - In-flight encryption: using HTTPS APIs.
@@ -420,9 +420,10 @@ Direct publishing for mobile applications SDK:
 - Useful for cross-account access to SNS topics.
 - Useful for allowing other services (e.g., S3, etc.) to write to an SNS topic.
 
-## 16.20 Fan Out Using SQS and SNS
+## 16.21 Fan Out Using SQS and SNS
 
-With this pattern, you **push once in SNS and receive in all SQS queues that are subscribed to the SNS topic**.
+With this pattern, you push once in SNS and receive in all SQS queues that are subscribed to the SNS topic.
+- This is a **common pattern where only one message is sent to an SNS topic and then fan-out to multiple SQS queues**.
 
 ![Fan Out Using SQS and SNS](/assets/aws-certified-developer-associate/fan_out_using_sqs_and_sns.png "Fan Out Using SQS and SNS")
 
@@ -435,7 +436,7 @@ In this way, you can have:
 
 For this pattern to work, you need to make sure that your **SQS queue access policy allows for SNS to write** to it.
 
-### 16.20.1 Fan Out For S3 Events to Multiple Queues
+### 16.21.1 Fan Out For S3 Events to Multiple Queues
 
 You can have only one S3 event rule for the same combination of event type and prefix. If you want **to send the same S3 event to many SQS queues, use fan out**.
 
@@ -443,13 +444,13 @@ With fan out, you can have one S3 event rule that sends the event to an SNS topi
 
 ![Fan Out For S3 Events to Multiple Queues](/assets/aws-certified-developer-associate/fan_out_for_s3_events_to_multiple_queues.png "Fan Out For S3 Events to Multiple Queues")
 
-### 16.20.2 Fan Out For SNS to S3 through Kinesis Data Firehose
+### 16.21.2 Fan Out For SNS to S3 through Kinesis Data Firehose
 
 SNS has direct integration with Kinesis Data Firehose, so SNS can send to Kinesis and then Kinesis can send to S3 (or any supported destination for Kinesis Data Firehose):
 
 ![Fan Out For SNS to S3 through Kinesis Data Firehose](/assets/aws-certified-developer-associate/fan_out_for_sns_to_s3_through_kinesis_data_firehose.png "Fan Out For SNS to S3 through Kinesis Data Firehose")
 
-## 16.21 SNS FIFO Topics
+## 16.22 SNS FIFO Topics
 
 **SNS FIFO topics are similar in features to SQS FIFO queues**:
 - Ordering by `MessageGroupID`: all messages in the same group are ordered.
@@ -462,20 +463,20 @@ SNS has direct integration with Kinesis Data Firehose, so SNS can send to Kinesi
 
 SNS FIFO topics have **limited throughput** (same throughput as SQS FIFO).
 
-### 16.21.1 Combining SNS FIFO Topics and SQS FIFO Queues
+### 16.22.1 Combining SNS FIFO Topics and SQS FIFO Queues
 
 By combining SNS FIFO topics and SQS FIFO queues, you can **have fan out, ordering, and deduplication** all at the same time.
 
 ![Combining SNS FIFO Topics and SQS FIFO Queues](/assets/aws-certified-developer-associate/combining_sns_fifo_topics_and_sqs_fifo_queues.png "Combining SNS FIFO Topics and SQS FIFO Queues")
 
-## 16.22 SNS Message Filtering
+## 16.23 SNS Message Filtering
 
 In SNS, you can use **JSON policies to filter messages sent to SNS topics' subscriptions**.
 - If a subscription does not have a filter policy, it receives every message.
 
 ![SNS Message Filtering](/assets/aws-certified-developer-associate/sns_message_filtering.png "SNS Message Filtering")
 
-## 16.23 Creating an SNS Topic
+## 16.24 Creating an SNS Topic
 
 To do so, go to the SNS service in the console and click on *Create Topic* by entering a **name**.
 
@@ -489,7 +490,7 @@ Finally, you can configure other **advanced options**, such as encryption, acces
 
 ![SNS Advanced Options](/assets/aws-certified-developer-associate/sns_advanced_options.png "SNS Advanced Options")
 
-### 16.23.1 Subscribing to an SNS Topic
+### 16.24.1 Subscribing to an SNS Topic
 
 After you create a topic, you can subscribe to it by clicking on *Create Subscription*:
 
@@ -509,7 +510,7 @@ Finally, create the subscription and it will appear in the list of subscriptions
 
 To **realize the fan out pattern, you can just create multiple SQS queues and subscribe them to the SNS topic**.
 
-### 16.23.2 Publishing to an SNS Topic
+### 16.24.2 Publishing to an SNS Topic
 
 To publish a message to a topic, click on *Publish Message* with the topic selected:
 
@@ -525,7 +526,7 @@ Finally, add **attributes** or send the message:
 
 When you send the message, all the subscribers to the topic will receive the message. For example, if have configured an email subscription, you will receive the message in your email.
 
-## 16.24 Kinesis Data Streams
+## 16.25 Kinesis Data Streams
 
 Kinesis Data Streams is a service that allows you to **collect and store streaming data in real-time**.
 - **Real-time is the keyword to look for in the exam**.
@@ -547,8 +548,9 @@ Some **features**:
 - You can send data up to 1MB but the **typical use case is to send lot of small real-time data**.
 - **Data ordering is preserved** for data with the same `PartitionID`.
 - You have KMS encryption at-rest and HTTPS encryption in-flight.
+- **Shard splitting**: if you have a hot shard in a Kinesis Data Stream that is causing many `ProvisionedThroughputExceededException` exceptions, you can increase the number of shards to increase the throughput by splitting the shard.
 
-### 16.24.1 Two Capacity Modes in Kinesis Data Streams
+### 16.25.1 Two Capacity Modes in Kinesis Data Streams
 
 **Provisioned mode**:
 - You need to choose the number of shards because the more shards you have, the higher the throughput:
@@ -563,7 +565,7 @@ Some **features**:
 - It scales automatically based on observed throughput peak during the last 30 days.
 - You pay per stream per hour, and data in/out per GB.
 
-## 16.25 Creating a Kinesis Data Stream
+## 16.26 Creating a Kinesis Data Stream
 
 To create a Kinesis Data Stream, go to the Kinesis service in the console and click on *Create Data Stream*.
 - In this page, you also get some information about the service and pricing.
@@ -582,7 +584,7 @@ Finally, create the data stream and it will appear in the list of data streams. 
 
 ![Kinesis Data Stream Details](/assets/aws-certified-developer-associate/kinesis_data_stream_details.png "Kinesis Data Stream Details")
 
-### 16.25.1 Sending Data to a Kinesis Data Stream
+### 16.26.1 Sending Data to a Kinesis Data Stream
 
 To send data to a Kinesis Data Stream, you can use the AWS CLI or the SDK.
 
@@ -600,7 +602,7 @@ If you run the above command, you will get a response with the `ShardID` and `Se
 
 ![Kinesis Put Record](/assets/aws-certified-developer-associate/kinesis_put_record.png "Kinesis Put Record")
 
-### 16.25.2 Consuming Data from a Kinesis Data Stream
+### 16.26.2 Consuming Data from a Kinesis Data Stream
 
 To consume data from a Kinesis Data Stream, you can use the AWS CLI or the SDK.
 
@@ -632,3 +634,79 @@ aws kinesis get-records \
 ```
 
 The response will contain the records in the shard.
+
+## 16.27 Amazon Data Firehose (Previously Kinesis Data Firehose)
+
+It is a **fully-managed serverless service to send data from sources to destinations**.
+- It provides automatic scaling with a pay-as-you-go pricing model (you pay for what you use).
+- It is a **near real-time service (this is the keyword to look for in the exam)** because of buffering capability based on size/time.
+- It supports CSV, JSON, Apache Parquet, Avro, raw text, and binary data.
+- It offers **data conversions** to Apache Parquet and Apache ORC but allows for custom conversions via Lambda functions (e.g., CSV to JSON).
+- It comes with **data compression** with GZIP and Snappy.
+
+You need **producers** to send data to Data Firehose, which can be AWS services, custom applications, etc.
+
+**Destinations** can be:
+1. **AWS services (important for the exam)**: S3, Redshift, OpenSearch.
+2. Third party partner destinations: for example, Splunk, Datadog, MongoDB.
+3. Custom destinations via HTTP endpoints.
+
+![Amazon Data Firehose](/assets/aws-certified-developer-associate/amazon_data_firehose.png "Amazon Data Firehose")
+
+Some **features** that you can see in the image above:
+- You can perform **data transformation** before sending data to the destination via Lambda functions.
+- You can **store all or failed data in S3 for backup and reprocessing**.
+- **Data are accumulated in a buffer and then sent to the destination in batches**, thus making it near real-time.
+
+## 16.28 Creating a Data Firehose
+
+**Note**: some things have changed in the console since the images were taken, but the process is still the same. For example, delivery streams are now called data firehoses.
+
+To do so, go to the Kinesis service in the console and click on *Create Delivery Stream*. You will be provided with an explanation of how it works:
+
+![Create Delivery Stream](/assets/aws-certified-developer-associate/create_delivery_stream.png "Create Delivery Stream")
+
+Then, choose the **source** and the **destination**:
+
+![Delivery Stream Source and Destination](/assets/aws-certified-developer-associate/delivery_stream_source_destination.png "Delivery Stream Source and Destination")
+
+And configure the **source settins (based on the selected source)**, while the **delivery stream name** can be autogenerated like in the image below:
+
+![Delivery Stream Source Settings](/assets/aws-certified-developer-associate/delivery_stream_source_settings.png "Delivery Stream Source Settings")
+
+Optionally, configure **data transformation**:
+
+![Delivery Stream Data Transformation](/assets/aws-certified-developer-associate/delivery_stream_data_transformation.png "Delivery Stream Data Transformation")
+
+Then configure **destination settings (based on the selected destination)**:
+
+![Delivery Stream Destination Settings](/assets/aws-certified-developer-associate/delivery_stream_destination_settings.png "Delivery Stream Destination Settings")
+
+In the destination settings, you can also configure **buffering hints**. Based on the configuration below Data Firehose will buffer data until the buffer size reaches 5MB or the buffer interval reaches 100 seconds if the buffer size is not reached.
+
+![Delivery Stream Destination Buffering Hints](/assets/aws-certified-developer-associate/delivery_stream_destination_settings_2.png "Delivery Stream Destination Buffering Hints")
+
+Again, in the destination settings, you can configure **data compression and encryption**:
+
+![Delivery Stream Data Compression and Encryption](/assets/aws-certified-developer-associate/delivery_stream_data_compression_encryption.png "Delivery Stream Data Compression and Encryption")
+
+In the **advanced settings**, you can configure **error logging** and **permissions**. As you can see, it automatically creates an IAM role for you to write to the destination:
+
+![Delivery Stream Advanced Settings](/assets/aws-certified-developer-associate/delivery_stream_advanced_settings.png "Delivery Stream Advanced Settings")
+
+Finally, create the delivery stream and it will appear in the list of delivery streams. You can see its details by clicking on it.
+
+Since we have configured the delivery stream to send data from a Kinesis Data Stream to S3:
+- To send data, we can just use the same CLI command as in [16.25.1 Sending Data to a Kinesis Data Stream](#16251-sending-data-to-a-kinesis-data-stream).
+- Sent data can be seen in the S3 bucket that was configured as the destination after Data Firehose flushes the buffer.
+
+## 16.29 Kinesis Data Streams vs Amazon Data Firehose
+
+| Kinesis Data Streams | Amazon Data Firehose |
+| -------------------- | -------------------- |
+| Streaming data collection | Load streaming data into S3/Redshift/OpenSearch/3rd party/custom HTTP |
+| Write producer/consumer code | Fully managed service |
+| Real-time data processing | Near real-time data processing |
+| Provisioned/on-demand capacity | Automatic scaling |
+| Data storage up to 365 days | No data storage |
+| Replay capability | No support for replay capability |
