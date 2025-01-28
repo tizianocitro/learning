@@ -710,3 +710,46 @@ Since we have configured the delivery stream to send data from a Kinesis Data St
 | Provisioned/on-demand capacity | Automatic scaling |
 | Data storage up to 365 days | No data storage |
 | Replay capability | No support for replay capability |
+
+## 16.30 Amazon Managed Service for Apache Flink
+
+Previously named *Kinesis Data Analytics for Apache Flink*. Flink (Java, Scala or SQL) is a framework for processing data streams in real-time.
+
+**Run any Apache Flink application on a managed cluster on AWS**.
+- It offers provisioned compute resources, parallel computation, automatic scaling,
+- It provides application backups implemented as checkpoints and snapshots.
+- Allows you to use any Apache Flink programming features to transform data.
+
+Amazon Managed Service for Apache Flink can **read only from Kinesis Data Streams and Amazon Managed Streaming for Apache Kafka**. However, it **cannot read from Amazon Data Firehose (this can a tricky thing to look for in the exam**).
+
+![Amazon Managed Service for Apache Flink](/assets/aws-certified-developer-associate/amazon_managed_service_for_apache_flink.png "Amazon Managed Service for Apache Flink")
+
+## 16.31 SQS vs SNS vs Kinesis Data Streams
+
+**SQS**:
+- **Consumers pull data from queues**.
+- **Data is deleted after being consumed**, so it is persisted until it is processed and deleted by the consumer.
+- It can have as many workers (consumers) as we want.
+- No need to provision throughput.
+- Ordering guaranteed only on FIFO queues.
+- Individual message delay capability.
+
+**SNS**:
+- **Pub/Sub**: push data to many subscribers.
+- Up to 12,500,000 subscribers.
+- Up to 100,000 topics.
+- **Data is not persisted, so it can be lost if not delivered**.
+- No need to provision throughput.
+- It integrates with SQS for fan-out architecture pattern.
+- FIFO capability for SQS FIFO.
+
+**Kinesis Data Streams**:
+- It is **meant for real-time big data, analytics and ETL**.
+- **Standard mode**: consumers pull data from streams.
+    - 2 MB per shard.
+- **Enhanced-fan out mode**: push data to consumers.
+    - 2 MB per shard per consumer.
+- Possibility to **replay data because data are persisted** for up to X days.
+- Ordering at the shard level.
+- Data expires after X days.
+- Two capacity modes: provisioned mode or on-demand mode.
