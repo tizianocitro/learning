@@ -101,3 +101,32 @@ Then, when you click on the dimensions, you can see the **metric** that was defi
 ![CloudWatch Custom Metrics Metric](/assets/aws-certified-developer-associate/cloudwatch_custom_metric.png "CloudWatch Custom Metrics Metric")
 
 If you click on the metric, you can see that the **graph of the metric** updates.
+
+## 17.4 CloudWatch Logs
+
+CloudWatch Logs is the place where you can **store logs from your application**. To do so, you need to define:
+1. **Log groups**: they usually represent an application, you can give them an arbitrary name.
+2. **Log streams**: they organize log streams within a log group, usually one log stream per instance within the application/log file/container.
+3. **Log expiration policies**: never expire, or anywhere from 1 day to 10 years.
+
+CloudWatch Logs can send logs to:
+- S3 (exports).
+- Kinesis Data Streams.
+- Amazon Data Firehose.
+- Lambda.
+- OpenSearch.
+
+**Logs are encrypted by default** and you **can also setup KMS-based encryption with your own keys**.
+
+### 17.4.1 Sources to Send Logs to CloudWatch
+
+- SDK.
+- CloudWatch Logs Agent.
+- CloudWatch Unified Agent: this is now sort of deprecated.
+- Elastic Beanstalk: sends collection of logs from application.
+- ECS: sends collection of logs from containers.
+- Lambda: sends collection of logs from functions.
+- VPC Flow Logs: sends VPC specific logs.
+- API Gateway: sends all the requests made to the API gateway.
+- CloudTrail: sends logs based on filters.
+- Route53: logs DNS queries.
