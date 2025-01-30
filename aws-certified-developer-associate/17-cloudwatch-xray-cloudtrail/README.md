@@ -130,3 +130,21 @@ CloudWatch Logs can send logs to:
 - API Gateway: sends all the requests made to the API gateway.
 - CloudTrail: sends logs based on filters.
 - Route53: logs DNS queries.
+
+### 17.4.2 CloudWatch Logs Insights to Query Logs
+
+It is an interactive, pay-as-you-go, and integrated **log analytics capability for CloudWatch Logs**. The visualizations it generates can also be exported or added to dashboards (CloudWatch Dashboards).
+
+![CloudWatch Logs Insights](/assets/aws-certified-developer-associate/cloudwatch_logs_insights.png "CloudWatch Logs Insights")
+
+It allows you to **search and analyze log data** stored in CloudWatch Logs. For example, you can find a specific IP inside a log, count occurrences of *ERROR* in your logs, etc.
+
+![CloudWatch Logs Insights Query](/assets/aws-certified-developer-associate/cloudwatch_logs_insights_query.png "CloudWatch Logs Insights Query")
+
+CloudWatch Logs Insights **provides a purpose-built query language**, which:
+- Automatically discovers fields from AWS services and JSON log events.
+- Fetches desired event fields, filters based on conditions, calculates aggregate statistics, sorts events, limits the number of events, and more.
+- Can save queries and add them to CloudWatch Dashboards.
+- Can query multiple log groups in different AWS accounts.
+
+CloudWatch Logs Insights is a **query engine, not a real-time engine, so it will only query historical data when you run a query**.
