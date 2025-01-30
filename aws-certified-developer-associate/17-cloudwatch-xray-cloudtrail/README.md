@@ -180,3 +180,77 @@ For it to work, you need to:
 - Create an IAM role in the destination account that allows it to put records in Kinesis Data Streams or Firehose.
 
 ![CloudWatch Logs Aggregation Policy and Role](/assets/aws-certified-developer-associate/cloudwatch_logs_aggregation_policy_role.png "CloudWatch Logs Aggregation Policy and Role")
+
+## 17.5 Using CloudWatch Logs
+
+In the CloudWatch console, you can see the **log groups** that were defined. From the group name, you can see the service/application that is being logged. By clicking on a group, you can see the **log streams** within the group.
+
+![CloudWatch Logs Log Groups](/assets/aws-certified-developer-associate/cloudwatch_log_groups.png "CloudWatch Logs Log Groups")
+
+By clicking on a log stream, you can see the **log events** that were logged. You can also search for specific log events.
+
+![CloudWatch Logs Log Streams](/assets/aws-certified-developer-associate/cloudwatch_log_events.png "CloudWatch Logs Log Streams")
+
+From within the log group details, you can edit the **retention settings**:
+
+![CloudWatch Logs Retention Settings](/assets/aws-certified-developer-associate/cloudwatch_retention_settings.png "CloudWatch Logs Retention Settings")
+
+### 17.5.1 Creating a Log Group
+
+To create a log group, click on *Create LogGgroup* and define the **log group name** and **retention settings**:
+
+![CloudWatch Logs Log Group Creation](/assets/aws-certified-developer-associate/cloudwatch_log_group_creation.png "CloudWatch Logs Log Group Creation")
+
+From the log group, you can create a log stream by clicking on *Create Log Stream* in the *Log Streams* tab.
+
+### 17.5.2 Creating a Metric Filter
+
+In a log group, you can define **metric filters** to extract metric data from logs and create alarms for these metrics. To do so, go into the *Metric Filters* tab and click on *Create Metric Filter*.
+
+First, define the **filter pattern**:
+
+![CloudWatch Logs Metric Filters](/assets/aws-certified-developer-associate/cloudwatch_metric_filters.png "CloudWatch Logs Metric Filters")
+
+You can also test the pattern to see if it matches any log events:
+
+![CloudWatch Logs Metric Filters Test](/assets/aws-certified-developer-associate/cloudwatch_metric_filters_test.png "CloudWatch Logs Metric Filters Test")
+
+Then, you define the filter's **name** and the **metric details**, such as the namespace, metric name, value, and unit:
+
+![CloudWatch Logs Metric Filters Details](/assets/aws-certified-developer-associate/cloudwatch_metric_filters_details.png "CloudWatch Logs Metric Filters Details")
+
+After creating the metric filter, you can see the metric in CloudWatch Metrics.
+
+To **create an alarm for a metric filter**, go into the *Metric Filters* tab and click on the metric filter. Then, click on *Create Alarm*.
+
+![CloudWatch Logs Metric Filters Alarm](/assets/aws-certified-developer-associate/cloudwatch_metric_filters_alarm.png "CloudWatch Logs Metric Filters Alarm")
+
+### 17.5.3 Creating a Subscription Filter
+
+To create a **subscription filter**, go into the *Subscription Filters* tab and click on *Create* to see the options:
+
+![CloudWatch Logs Subscription Filters Creation](/assets/aws-certified-developer-associate/cloudwatch_subscription_filters_creation.png "CloudWatch Logs Subscription Filters Creation")
+
+You **can create up to 20 subscription filters per log group**.
+
+### 17.5.4 Exporting Data to S3
+
+To export data to S3, go into the *Actions* dropdown and click on *Export Data to Amazon S3*:
+
+![CloudWatch Logs Export to S3](/assets/aws-certified-developer-associate/cloudwatch_export_to_s3.png "CloudWatch Logs Export to S3")
+
+And configure the data export by choosing the **S3 bucket** and the **time range**:
+
+![CloudWatch Logs Export to S3 Configuration](/assets/aws-certified-developer-associate/cloudwatch_export_to_s3_configuration.png "CloudWatch Logs Export to S3 Configuration")
+
+### 17.5.5 Querying Data with CloudWatch Logs 
+
+To query data with CloudWatch Logs, go into the *Logs Insights* tab and **run a query**:
+
+![CloudWatch Logs Insights Query](/assets/aws-certified-developer-associate/cloudwatch_logs_insights_querying.png "CloudWatch Logs Insights Query")
+
+Using the *Export Results* feature, you can export query results.
+
+You can also **save queries** and look at sample queries:
+
+![CloudWatch Logs Insights Save Query](/assets/aws-certified-developer-associate/cloudwatch_logs_insights_save_query.png "CloudWatch Logs Insights Save Query")
