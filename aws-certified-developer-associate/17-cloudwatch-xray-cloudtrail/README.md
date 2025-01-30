@@ -148,3 +148,35 @@ CloudWatch Logs Insights **provides a purpose-built query language**, which:
 - Can query multiple log groups in different AWS accounts.
 
 CloudWatch Logs Insights is a **query engine, not a real-time engine, so it will only query historical data when you run a query**.
+
+### 17.4.3 S3 Exports for CloudWatch Logs
+
+This feature allows you to **batch export log data from CloudWatch Logs to S3**.
+- Log data can take up to 12 hours to become available for export.
+- The API call to intiate this process is `CreateExportTask`.
+- It is batched, so it is not near-real time nor real-time.
+- For real-time, use *Logs Subscriptions* instead.
+
+### 17.4.4 CloudWatch Logs Subscriptions
+
+This feature allows you to **get real-time log events from CloudWatch Logs for processing and analysis**. You can:
+- Send logs to Kinesis Data Streams, Amazon Data Firehose, or Lambda.
+- Use **Subscription Filters** to filter which logs are delivered to your destination.
+
+![CloudWatch Logs Subscriptions](/assets/aws-certified-developer-associate/cloudwatch_logs_subscriptions.png "CloudWatch Logs Subscriptions")
+
+### 17.4.5 CloudWatch Logs Aggregation Multi-Account and Multi-Region Using Subscription Filters
+
+You can **use subscription filters (with Kinesis Data Streams or Amazon Data Firehose) to aggregate logs from multiple accounts and regions into a single account**. For example:
+
+![CloudWatch Logs Aggregation](/assets/aws-certified-developer-associate/cloudwatch_logs_aggregation.png "CloudWatch Logs Aggregation")
+
+The way it works behind the scenes is that you have **a subscription filter in the source account that sends log in a subscription destination in the destination account**.
+
+![CloudWatch Logs Aggregation Inner Workings](/assets/aws-certified-developer-associate/cloudwatch_logs_aggregation_inner_workings.png "CloudWatch Logs Aggregation Inner Workings")
+
+For it to work, you need to:
+- **Attach a destination access policy to the subscription destination**.
+- Create an IAM role in the destination account that allows it to put records in Kinesis Data Streams or Firehose.
+
+![CloudWatch Logs Aggregation Policy and Role](/assets/aws-certified-developer-associate/cloudwatch_logs_aggregation_policy_role.png "CloudWatch Logs Aggregation Policy and Role")
