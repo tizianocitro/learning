@@ -58,5 +58,46 @@ AWS free tier allows us to have 10 detailed monitoring metrics.
 
 **Note**: EC2 memory usage is by default not pushed, thus it must be pushed from inside the instance as a custom metric.
 
-### 17.2.2 CloudWatch Custom Metrics
+## 17.3 CloudWatch Custom Metrics
 
+**For all metrics that are not provided by services, you can define and send your own custom metrics to CloudWatch**. For example, memory (RAM) usage, disk space, number of logged in users, etc.
+
+To do so, use the `PutMetricData` API. And you can **use dimensions (attributes) to categorize and filter metrics**:
+- `Instance.id`.
+- `Environment.name`.
+- ...
+
+You can specify a **metric resolution** using the `StorageResolution` API parameter with two possible values:
+- **Standard**: 60 seconds.
+- **High Resolution**: 1/5/10/30 second(s) but you will incur higher costs.
+
+**Important for the exam**: you can push metric data points up until two weeks in the past or two hours in the future (make sure to configure your EC2 instance time correctly).
+
+### 17.3.1 Pushing Custom Metrics
+
+To push a custom metric to CloudWatch, you can use the AWS CLI:
+
+```bash
+aws cloudwatch put-metric-data \
+    --namespace MyNameSpace \
+    --metric-name Buffers \
+    --value 123456 \
+    --unit Count \
+    --dimensions InstanceID=1-23456789,InstanceType=m1.small \
+    --timestamp "$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+    --region us-east-1
+```
+
+Then, when you go in the CloudWatch console, you can see the **custom namespace** that was defined with `--namespace MyNameSpace`:
+
+![CloudWatch Custom Metrics Namespace](/assets/aws-certified-developer-associate/cloudwatch_custom_namespace.png "CloudWatch Custom Metrics Namespace")
+
+If you click on it, you can see the **dimensions** that were defined with `--dimensions InstanceID=1-23456789,InstanceType=m1.small`:
+
+![CloudWatch Custom Metrics Dimensions](/assets/aws-certified-developer-associate/cloudwatch_custom_dimensions.png "CloudWatch Custom Metrics Dimensions")
+
+Then, when you click on the dimensions, you can see the **metric** that was defined with `--metric-name Buffers`:
+
+![CloudWatch Custom Metrics Metric](/assets/aws-certified-developer-associate/cloudwatch_custom_metric.png "CloudWatch Custom Metrics Metric")
+
+If you click on the metric, you can see that the **graph of the metric** updates.
