@@ -122,7 +122,7 @@ CloudWatch Logs can send logs to:
 
 - SDK.
 - CloudWatch Logs Agent.
-- CloudWatch Unified Agent: this is now sort of deprecated.
+- CloudWatch Unified Agent.
 - Elastic Beanstalk: sends collection of logs from application.
 - ECS: sends collection of logs from containers.
 - Lambda: sends collection of logs from functions.
@@ -195,13 +195,15 @@ From within the log group details, you can edit the **retention settings**:
 
 ![CloudWatch Logs Retention Settings](/assets/aws-certified-developer-associate/cloudwatch_retention_settings.png "CloudWatch Logs Retention Settings")
 
-### 17.5.1 Creating a Log Group
+### 17.5.1 Creating a Log Group and Stream
 
 To create a log group, click on *Create LogGgroup* and define the **log group name** and **retention settings**:
 
 ![CloudWatch Logs Log Group Creation](/assets/aws-certified-developer-associate/cloudwatch_log_group_creation.png "CloudWatch Logs Log Group Creation")
 
-From the log group, you can create a log stream by clicking on *Create Log Stream* in the *Log Streams* tab.
+From the log group, you can create a log stream by clicking on *Create Log Stream* in the *Log Streams* tab:
+
+![CloudWatch Logs Log Stream Creation](/assets/aws-certified-developer-associate/cloudwatch_log_stream_creation.png "CloudWatch Logs Log Stream Creation")
 
 ### 17.5.2 Creating a Metric Filter
 
@@ -254,3 +256,19 @@ Using the *Export Results* feature, you can export query results.
 You can also **save queries** and look at sample queries:
 
 ![CloudWatch Logs Insights Save Query](/assets/aws-certified-developer-associate/cloudwatch_logs_insights_save_query.png "CloudWatch Logs Insights Save Query")
+
+### 17.5.6 CloudWatch Logs Live Tail
+
+Choose a log group and a stream in it. Then, on the stream details, click on *Start Tailing* to see the live tail console:
+
+![CloudWatch Logs Live Tail](/assets/aws-certified-developer-associate/cloudwatch_live_tail.png "CloudWatch Logs Live Tail")
+
+From this console, click on *Apply Filter* to filter the logs and the **live tail console will start waiting for events that match the filter**.
+
+To test it, go into the log stream and use the *Actions* dropdown to click *Create Log Event* to **log an event**:
+
+![CloudWatch Logs Live Tail Test](/assets/aws-certified-developer-associate/cloudwatch_live_tail_test.png "CloudWatch Logs Live Tail Test")
+
+Then, go back to the live tail console and you will see the event that was logged:
+
+![CloudWatch Logs Live Tail Event](/assets/aws-certified-developer-associate/cloudwatch_live_tail_event.png "CloudWatch Logs Live Tail Event")
