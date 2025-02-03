@@ -272,3 +272,39 @@ To test it, go into the log stream and use the *Actions* dropdown to click *Crea
 Then, go back to the live tail console and you will see the event that was logged:
 
 ![CloudWatch Logs Live Tail Event](/assets/aws-certified-developer-associate/cloudwatch_live_tail_event.png "CloudWatch Logs Live Tail Event")
+
+## 17.6 CloudWatch Logs For EC2
+
+By default, no logs from your EC2 machine will go to CloudWatch. You need to **run a CloudWatch logs agent on EC2 to push the log files you want to CloudWatch**.
+- Make sure IAM permissions are correct.
+- The CloudWatch logs agent can be setup on-premise resources too.
+
+![CloudWatch Logs Agent](/assets/aws-certified-developer-associate/cloudwatch_logs_agent.png "CloudWatch Logs Agent")
+
+### 17.6.1 CloudWatch Logs Agent vs CloudWatch Unified Agent
+
+They are both for virtual servers (e.g., EC2 instances, on-premise servers, etc.).
+
+**CloudWatch Logs Agent**:
+- Old version of the agent.
+- Can only send to CloudWatch Logs.
+
+**CloudWatch Unified Agent** (unified because it **can do both logs and metrics**):
+- Collects additional system-level metrics, such as RAM, processes, etc.
+- Collects logs to send to CloudWatch Logs.
+- Centralized configuration using SSM Parameter Store (makes it easier to manage).
+
+### 17.6.2 CloudWatch Unified Agent
+
+It can do both logs and metrics. It collects metrics directly on your Linux servers/EC2 instances.
+
+It can **collect a lot more metrics and at a higher granularity level than the old logs agent**:
+- CPU: active, guest, idle, system, user, steal.
+- Disk metrics: free, used, total.
+- Disk IO: writes, reads, bytes, iops.
+- RAM: free, inactive, used, total, cached.
+- Netstat: number of TCP and UDP connections, net packets, bytes.
+- Processes: total, dead, bloqued, idle, running, sleep.
+- Swap Space: free, used, used percentage.
+
+**Out-of-the-box metrics for EC2 are for disk, CPU, and network but at a high level**. So, **if you are asked for more detailed and granular metrics, think of CloudWatch Unified Agent**.
