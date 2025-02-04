@@ -440,3 +440,46 @@ aws cloudwatch set-alarm-state \
     --state-value ALARM \
     --state-reason "testing purposes"
 ```
+
+## 17.10 Creating a CloudWatch Alarm
+
+We will **create an alarm that terminates an EC2 instance when the CPU utilization goes above 95% for 15 consecutive minutes**.
+
+Create an EC2 instance and go into the CloudWatch console. Click on *Alarms* and then *Create Alarm*.
+
+**Select a metric** (in this case, `CPUUtilization`):
+
+![CloudWatch Alarm Select Metric](/assets/aws-certified-developer-associate/cloudwatch_alarm_select_metric.png "CloudWatch Alarm Select Metric")
+
+And you will get something like in the below image. We have set the **evaluation period** to 5 minutes, which means that a new data point is evaluated every 5 minutes:
+
+![CloudWatch Alarm Select Metric Selected](/assets/aws-certified-developer-associate/cloudwatch_alarm_select_metric_selected.png "CloudWatch Alarm Select Metric Selected")
+
+Then, set the **conditions** for the alarm:
+
+![CloudWatch Alarm Conditions](/assets/aws-certified-developer-associate/cloudwatch_alarm_conditions.png "CloudWatch Alarm Conditions")
+
+In the additional configuration, you can **set the number of data points within the evaluation period that must be breaching the threshold to trigger the alarm**. In this case, we are indicating 3 out of 3 data points, meaning that the CPU utilization must be above 95% for 15 consecutive minutes to cause the alarm to trigger:
+
+![CloudWatch Alarm Additional Configuration](/assets/aws-certified-developer-associate/cloudwatch_alarm_additional_configuration.png "CloudWatch Alarm Additional Configuration")
+
+Next, we **configure the action to take when the alarm is triggered**. In this case, we want to stop the EC2 instance, so we configure an **EC2 action to terminate the instance**:
+
+![CloudWatch Alarm EC2 Action Configuration](/assets/aws-certified-developer-associate/cloudwatch_alarm_ec2_action.png "CloudWatch Alarm EC2 Action Configuration")
+
+Finally, give a **name** (e.g., `TerminateEC2OnHighCPU`), and optionally description, to the alarm and create it. Right after creation, the alarm will be in the `INSUFFICIENT_DATA` state:
+
+![CloudWatch Alarm Insufficient Data State](/assets/aws-certified-developer-associate/cloudwatch_alarm_insufficient_data_state.png "CloudWatch Alarm Insufficient Data State")
+
+As soon as the alarm has enough data to evaluate the metric, it will go into the `OK` or `ALARM` state. However, to **test the alarm and trigger it** (set to `ALARM` state), you can use the CLI command presented in [17.9.4 Good To Know](#1794-good-to-know):
+
+```bash
+aws cloudwatch set-alarm-state \
+    --alarm-name TerminateEC2OnHighCPU \
+    --state-value ALARM \
+    --state-reason "testing purposes"
+```
+
+The state will then change to `ALARM` and the **action will be taken** (in this case, the EC2 instance will be terminated):
+
+![CloudWatch Alarm Alarm State](/assets/aws-certified-developer-associate/cloudwatch_alarm_alarm_state.png "CloudWatch Alarm Alarm State")
