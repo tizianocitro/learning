@@ -483,3 +483,27 @@ aws cloudwatch set-alarm-state \
 The state will then change to `ALARM` and the **action will be taken** (in this case, the EC2 instance will be terminated):
 
 ![CloudWatch Alarm Alarm State](/assets/aws-certified-developer-associate/cloudwatch_alarm_alarm_state.png "CloudWatch Alarm Alarm State")
+
+## 17.11 CloudWatch Synthetics Canary
+
+It is a **scripted monitoring tool** that allows you to monitor your endpoints and APIs using configurable scripts.
+
+You can have a configurable script that monitors your APIs, URLs, websites, and more. This **allows you to reproduce what your customers do programmatically to find issues** before they are impacting your customers.
+
+**CloudWatch Synthetics Canary checks the availability and latency of your endpoints and can store load time data and screenshots of the UI**.
+- It can run once or on a schedule.
+- It has integration with CloudWatch Alarms.
+- It offers programmatic access to a headless Google Chrome browser.
+- Scripts can be written in Node.js or Python.
+
+![CloudWatch Synthetics Canary](/assets/aws-certified-developer-associate/cloudwatch_synthetics_canary.png "CloudWatch Synthetics Canary")
+
+### 17.11.1 CloudWatch Synthetics Canary Blueprints
+
+Some blueprints are available to help you get started with CloudWatch Synthetics Canary:
+- Heartbeat Monitor: load URL, store screenshot, and an HTTP archive file.
+- API Canary: test basic read and write functions of REST APIs.
+- Broken Link Checker: check all links inside the URL that you are testing.
+- Visual Monitoring: compare a screenshot taken during a canary run with a baseline screenshot.
+- Canary Recorder: used with CloudWatch Synthetics Recorder is a way to record your actions on a website and automatically generate a script for that.
+- GUI Workflow Builder: verifies that actions can be taken on your webpage (e.g., test a webpage with a login form).
