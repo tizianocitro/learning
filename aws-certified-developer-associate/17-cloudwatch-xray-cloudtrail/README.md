@@ -387,3 +387,56 @@ After creating the alarm, you can see it in CloudWatch Alarms:
 And it will also be **linked to the metric filter** and appear in the *Metric Filters* tab:
 
 ![CloudWatch Logs Metric Filters Alarm Linked](/assets/aws-certified-developer-associate/cloudwatch_metric_filters_alarm_linked.png "CloudWatch Logs Metric Filters Alarm Linked")
+
+## 17.9 CloudWatch Alarms
+
+Alarms are used to **trigger notifications for any metric** with various options, such as sampling, percentage, max, and min.
+
+An alarm has the following **states**:
+- `OK`: the alarm is not triggered, so the threshold is not breached.
+- `ALARM`: the alarm is triggered, so the threshold is breached.
+- `INSUFFICIENT_DATA`: the alarm does not have enough data to decide if it is in `OK` or `ALARM` state.
+
+There is **period to specify how many data points to evaluate before triggering the alarm**:
+    - Length of time in seconds to evaluate the metric.
+    - Can apply to high resolution custom metrics: 10 seconds, 30 seconds or multiples of 60 seconds.
+
+### 17.9.1 Alarm Targets
+
+1. **EC2**: stop, terminate, reboot, or recover an EC2 instance.
+2. **Auto Scaling**: increase or decrease the desired capacity of an ASG.
+3. **SNS**: send notification to an SNS topic, from which you can do pretty much anything (e.g., send an email, trigger a Lambda function, etc.).
+
+### 17.9.2 Composite Alarms
+
+Alarms are on a single metric but you can use **composite alarms to monitor the states of multiple other alarms** using `AND` and `OR` conditions.
+
+They are helpful to reduce alarm noise by creating complex composite alarms. For example, instead of being alerted when either the CPU is high or the disk is full, you can create a composite alarm that triggers only when both conditions are met.
+
+![CloudWatch Composite Alarms](/assets/aws-certified-developer-associate/cloudwatch_composite_alarms.png "CloudWatch Composite Alarms")
+
+### 17.9.3 EC2 Instance Recovery
+
+A **status check** alarm checks:
+- **Instance status**: checks the EC2 VM.
+- **System status**: checks the underlying hardware.
+- **Attached EBS status**: checks attached EBS volumes.
+
+When this alarm is breached, you can **recover the instance**, for example, by migrating it. When you perform a recovery, you get the same:
+- Private, public, and elastic IP.
+- Metadata.
+- Placement group.
+
+![CloudWatch EC2 Instance Recovery](/assets/aws-certified-developer-associate/cloudwatch_ec2_instance_recovery.png "CloudWatch EC2 Instance Recovery")
+
+### 17.9.4 Good To Know
+
+1. Alarms can be created based on CloudWatch Logs metrics filters.
+2. To test alarms and notifications, set the alarm state to `Alarm` using CLI:
+
+```bash
+aws cloudwatch set-alarm-state \
+    --alarm-name MyAlarm \
+    --state-value ALARM \
+    --state-reason "testing purposes"
+```
