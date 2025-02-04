@@ -308,3 +308,82 @@ It can **collect a lot more metrics and at a higher granularity level than the o
 - Swap Space: free, used, used percentage.
 
 **Out-of-the-box metrics for EC2 are for disk, CPU, and network but at a high level**. So, **if you are asked for more detailed and granular metrics, think of CloudWatch Unified Agent**.
+
+## 17.7 CloudWatch Logs Metric Filters
+
+CloudWatch Logs can use filter expressions to **search for data from log events and make metrics out of it**.
+- For example, find a specific IP inside of a log or count occurrences of *ERROR* in your logs.
+- You can specify up to 3 simensions for the metric filter, optionally.
+
+**Metric filters can be used to trigger alarms**. For example, you can have a filter that counts the number of *ERROR* messages in your logs and triggers an alarm if the count is greater than 10, which then sends an SNS notification:
+
+![CloudWatch Logs Metric Filters Alarm](/assets/aws-certified-developer-associate/cloudwatch_metric_filters_alarm_sns.png "CloudWatch Logs Metric Filters Alarms")
+
+Filters do not retroactively filter data. **Filters only publish the metric data points for events that are ingested after the filter was created**.
+
+## 17.8 Using CloudWatch Logs Metric Filters
+
+In a log stream, you can define **metric filters** to extract metric data from logs and create alarms for these metrics. To do so, go to the *Log Events* in the stream and click on *Create Metric Filter*.
+- As presented in [17.5.2 Creating a Metric Filter](#1752-creating-a-metric-filter), filters can be created also from the *Metric Filters* tab in the log group.
+
+![CloudWatch Logs Metric Filters Creation in Stream](/assets/aws-certified-developer-associate/cloudwatch_metric_filters_creation_stream.png "CloudWatch Logs Metric Filters Creation in Stream")
+
+As you can see, in the image above, we were filtering for `404` errors in the logs. So, we want to create a metric filter for this. First, we define the **filter pattern**:
+
+![CloudWatch Logs Metric Filters Pattern](/assets/aws-certified-developer-associate/cloudwatch_metric_filters_pattern.png "CloudWatch Logs Metric Filters Pattern")
+
+And test the pattern with data from the log stream:
+
+![CloudWatch Logs Metric Filters Test](/assets/aws-certified-developer-associate/cloudwatch_metric_filters_test_with_logs.png "CloudWatch Logs Metric Filters Test")
+
+Then, enter the filter's **name**:
+
+![CloudWatch Logs Metric Filters Name](/assets/aws-certified-developer-associate/cloudwatch_metric_filters_name.png "CloudWatch Logs Metric Filters Name")
+
+And **metric details**:
+
+![CloudWatch Logs Metric Filters Details](/assets/aws-certified-developer-associate/cloudwatch_metric_filters_metric_details.png "CloudWatch Logs Metric Filters Details")
+
+Finally, create the metric filter, and it will appear in the *Metric Filters* tab:
+
+![CloudWatch Logs Metric Filters Tab](/assets/aws-certified-developer-associate/cloudwatch_metric_filters_tab.png "CloudWatch Logs Metric Filters Tab")
+
+### 17.8.1 Testing the Metric Filter
+
+To make the metric filter work, we need ot generate some events in the log stream. After doing so, a custom namespace called `MetricFilters` (as defined in metric details) will appear in CloudWatch Metrics:
+
+![CloudWatch Logs Metric Filters Namespace](/assets/aws-certified-developer-associate/cloudwatch_metric_filters_namespace.png "CloudWatch Logs Metric Filters Namespace")
+
+By clicking on it, you can see the metrics' dimensions and by clicking on the dimensions, you can see the metrics (this will track only values from this point on):
+
+![CloudWatch Logs Metric Filters Metrics](/assets/aws-certified-developer-associate/cloudwatch_metric_filters_metrics.png "CloudWatch Logs Metric Filters Metrics")
+
+### 17.8.2 Creating an Alarm for the Metric Filter
+
+To create an alarm for a metric filter, go into the *Metric Filters* tab and click on the metric filter. Then, click on *Create Alarm*:
+
+![CloudWatch Logs Metric Filters Alarm](/assets/aws-certified-developer-associate/cloudwatch_metric_filters_alarm_creation.png "CloudWatch Logs Metric Filters Alarm")
+
+This will redirect you to the CloudWatch Alarms creation page, where you can **define the alarm details** in terms of **metric**:
+
+![CloudWatch Logs Metric Filters Alarm Details](/assets/aws-certified-developer-associate/cloudwatch_metric_filters_alarm_details.png "CloudWatch Logs Metric Filters Alarm Details")
+
+And **conditions**. In this case, the condition is that when the metric is greater than 50, the alarm should trigger:
+
+![CloudWatch Logs Metric Filters Alarm Conditions](/assets/aws-certified-developer-associate/cloudwatch_metric_filters_alarm_conditions.png "CloudWatch Logs Metric Filters Alarm Conditions")
+
+Then, you need to configure the **actions (in this case an SNS action)**, such as sending a notification to an SNS topic:
+
+![CloudWatch Logs Metric Filters Alarm Actions](/assets/aws-certified-developer-associate/cloudwatch_metric_filters_alarm_actions.png "CloudWatch Logs Metric Filters Alarm Actions")
+
+Before creation, give the alarm a **name** and **description**:
+
+![CloudWatch Logs Metric Filters Alarm Name Description](/assets/aws-certified-developer-associate/cloudwatch_metric_filters_alarm_name_description.png "CloudWatch Logs Metric Filters Alarm Name Description")
+
+After creating the alarm, you can see it in CloudWatch Alarms:
+
+![CloudWatch Logs Metric Filters Alarm Created](/assets/aws-certified-developer-associate/cloudwatch_metric_filters_alarm_created.png "CloudWatch Logs Metric Filters Alarm Created")
+
+And it will also be **linked to the metric filter** and appear in the *Metric Filters* tab:
+
+![CloudWatch Logs Metric Filters Alarm Linked](/assets/aws-certified-developer-associate/cloudwatch_metric_filters_alarm_linked.png "CloudWatch Logs Metric Filters Alarm Linked")
