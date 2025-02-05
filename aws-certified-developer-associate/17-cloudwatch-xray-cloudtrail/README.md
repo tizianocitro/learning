@@ -507,3 +507,68 @@ Some blueprints are available to help you get started with CloudWatch Synthetics
 - Visual Monitoring: compare a screenshot taken during a canary run with a baseline screenshot.
 - Canary Recorder: used with CloudWatch Synthetics Recorder is a way to record your actions on a website and automatically generate a script for that.
 - GUI Workflow Builder: verifies that actions can be taken on your webpage (e.g., test a webpage with a login form).
+
+## 17.12 EventBridge (Previously CloudWatch Events)
+
+With EventBridge, you can:
+- **Schedule cron jobs** (scheduled scripts).
+    ![EventBridge Schedule Cron Jobs](/assets/aws-certified-developer-associate/eventbridge_schedule_cron_jobs.png "EventBridge Schedule Cron Jobs")
+- **Use event pattern**: use event rules to react to a service doing something. For example, send an SNS email when someone signs in as the root user.
+    ![EventBridge Event Pattern](/assets/aws-certified-developer-associate/eventbridge_event_pattern.png "EventBridge Event Pattern")
+- **Use triggers**: trigger Lambda functions, SQS, SNS, Kinesis Data Streams, etc.
+
+The way it works is that you have a **source that generates events** and these **events are routed to destinations** using **rules**:
+
+![EventBridge Working](/assets/aws-certified-developer-associate/eventbridge_working.png "EventBridge Working")
+
+**EventBridge is the default event bus** where AWS services push events. However, there are also **partner event buses** that can be used to receive events from SaaS partners, thus reacting to events happening outside of AWS. The same is possible for **custom event buses**, where you can have custom applications pushing events.
+- **Event buses can be accessed by other AWS accounts using resource-based policies**.
+
+![EventBridge Buses](/assets/aws-certified-developer-associate/eventbridge_buses.png "EventBridge Buses")
+
+Useful features of EventBridge:
+- You can **archive events** (all/filtered) sent to an event bus indefinitely or for a period.
+- You can **replay archived events**, for example, to test your application with historical data.
+
+### 17.12.1 EventBridge Schema Registry
+
+EventBridge can analyze the events in your bus and infer the schema. The **schema registry allows you to generate code for your application that will know in advance how data is structured in the event bus**.
+- Schema can be versioned.
+
+![EventBridge Schema Registry](/assets/aws-certified-developer-associate/eventbridge_schema_registry.png "EventBridge Schema Registry")
+
+### 17.12.2 EventBridge Resource-based Policies
+
+Resource-based policies allow you to **manage permissions for a event bus**.
+- You can **allow/deny events from another AWS account or AWS region**.
+- By default, only the account that owns the event bus can send events to it.
+
+A **use case** is to aggregate all events from your AWS Organization in a single AWS account or region for auditing purposes.
+
+![EventBridge Resource-based Policies Use Case](/assets/aws-certified-developer-associate/eventbridge_resource_based_policies.png "EventBridge Resource-based Policies Use Case")
+
+What we can do is defining a **resource-based policy on a central event bus to allow another account to send events to it**:
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": "events:PutEvents",
+            "Principal": {
+                "AWS": "111122223333"
+            },
+            "Resource": "arn:aws:events:us-east-1:123456789012:event-bus/central-event-bus"
+        }
+    ]
+}
+```
+
+### 17.12.3 Multi-Account Aggregation with EventBridge
+
+The **target of an event rule in an account can be an event bus in another account**, which **allows you to aggregate events from multiple accounts in a single account**.
+- In the single destination account, you can then create an event rule to trigger something based on the aggregated events.
+- You need a resource-based policy on the target event bus to allow the source accounts to send events to it.
+
+![EventBridge Multi-Account Aggregation](/assets/aws-certified-developer-associate/eventbridge_multi_account_aggregation.png "EventBridge Multi-Account Aggregation")
