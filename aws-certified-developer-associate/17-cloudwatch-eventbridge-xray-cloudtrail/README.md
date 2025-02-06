@@ -1,4 +1,4 @@
-# 17 Monitoring and Audit: CloudWatch, X-Ray, and CloudTrail
+# 17 Monitoring and Audit: CloudWatch, EventBridge, X-Ray, and CloudTrail
 
 Users care that the application is working:
 - Application latency: avoid it increasing over time.
