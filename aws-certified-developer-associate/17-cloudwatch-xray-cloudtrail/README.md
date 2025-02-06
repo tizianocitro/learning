@@ -572,3 +572,82 @@ The **target of an event rule in an account can be an event bus in another accou
 - You need a resource-based policy on the target event bus to allow the source accounts to send events to it.
 
 ![EventBridge Multi-Account Aggregation](/assets/aws-certified-developer-associate/eventbridge_multi_account_aggregation.png "EventBridge Multi-Account Aggregation")
+
+## 17.13 Using EventBridge
+
+### 17.13.1 Accessing and Creating Event Buses
+
+In the EventBridge console, you can go into the *Event buses* tab to see the **default event bus** and any **custom event buses** that were created:
+
+![EventBridge Event Buses](/assets/aws-certified-developer-associate/eventbridge_event_buses.png "EventBridge Event Buses")
+
+In the same page, you can also create a new custom event bus by clicking on *Create Event Bus*. You start by giving it a **name**:
+
+![EventBridge Create Event Bus](/assets/aws-certified-developer-associate/eventbridge_create_event_bus.png "EventBridge Create Event Bus")
+
+If you need cross-account access, you can define a **resource-based policy**:
+
+![EventBridge Resource-based Policy](/assets/aws-certified-developer-associate/eventbridge_resource_based_policy.png "EventBridge Resource-based Policy")
+
+Create the bus and it will appear in the list of custom event buses.
+
+### 17.13.2 Using Partner Event Sources
+
+In the EventBridge console, you can go into the *Partner Event Sources* tab to see the **partner event buses** that are available:
+
+![EventBridge Partner Event Sources](/assets/aws-certified-developer-associate/eventbridge_partner_event_sources.png "EventBridge Partner Event Sources")
+
+For example, you can use the one to catch all the events from Auth0:
+
+![EventBridge Auth0 Partner Event Source](/assets/aws-certified-developer-associate/eventbridge_auth0_partner_event_source.png "EventBridge Auth0 Partner Event Source")
+
+### 17.13.3 Creating an EventBridge Rule
+
+To create an EventBridge rule, go into the *Rules* tab and click on *Create Rule*:
+
+![EventBridge Create Rule](/assets/aws-certified-developer-associate/eventbridge_create_rule.png "EventBridge Create Rule")
+
+Then, give the rule a **name** and **description**, select the **event bus**, and specify the **rule type**:
+
+![EventBridge Rule Name Description](/assets/aws-certified-developer-associate/eventbridge_rule_name_description.png "EventBridge Rule Name Description")
+
+**Based on the rule type, the second step is either to build the event pattern or to schedule the rule**. In this casem we need to build the event pattern.
+
+First, specify the **event source**:
+
+![EventBridge Rule Event Source](/assets/aws-certified-developer-associate/eventbridge_rule_event_source.png "EventBridge Rule Event Source")
+
+Then, define the **event pattern**. In this case, we are looking for events from EC2 instances with a state change to `stopped` or `terminated`:
+
+![EventBridge Rule Event Pattern](/assets/aws-certified-developer-associate/eventbridge_rule_event_pattern.png "EventBridge Rule Event Pattern")
+
+As you can see in the image above, you **can test the pattern against some sample events to see if it matches** what you want.
+
+In the next step, **select target(s)** for the rule. In this case, we are going to send the event to an SNS topic:
+
+![EventBridge Rule Targets](/assets/aws-certified-developer-associate/eventbridge_rule_targets.png "EventBridge Rule Targets")
+
+Lastly, you can add some **tags** and create the rule. After creation, the rule will appear in the list of rules.
+
+### 17.13.4 Accessing EventBridge Archives and Replays
+
+In the EventBridge console, you can go into the *Archives* tab to see the **event archives** that were created or create new ones:
+
+![EventBridge Archives](/assets/aws-certified-developer-associate/eventbridge_archives.png "EventBridge Archives")
+
+From the console, you can also go into the *Replays* tab to see the **event replays** that were created or create new ones.
+
+### 17.13.5 Accessing the EventBridge Schema Registry
+
+In the EventBridge console, you can go into the *Schema Registry* tab to see the **schemas** that were created or create new ones:
+
+![EventBridge Access Schema Registry](/assets/aws-certified-developer-associate/eventbridge_access_schema_registry.png "EventBridge Access Schema Registry")
+
+You can also search for specific schemas and see the schema details. For example, the schema for an EC2 instance state change event.
+
+![EventBridge Schema Registry EC2 Schema](/assets/aws-certified-developer-associate/eventbridge_schema_registry_ec2_schema.png "EventBridge Schema Registry EC2 Schema")
+
+And **download the bindings for the schema in different languages**:
+
+![EventBridge Schema Registry Bindings](/assets/aws-certified-developer-associate/eventbridge_schema_registry_bindings.png "EventBridge Schema Registry Bindings")
+
