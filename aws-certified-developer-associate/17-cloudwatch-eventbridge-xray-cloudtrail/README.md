@@ -651,3 +651,45 @@ And **download the bindings for the schema in different languages**:
 
 ![EventBridge Schema Registry Bindings](/assets/aws-certified-developer-associate/eventbridge_schema_registry_bindings.png "EventBridge Schema Registry Bindings")
 
+## 17.14 X-Ray
+
+X-Ray is a tracing service that **provides you a visual analysis of your applications**.
+
+X-Ray service **collects data from all the different services** and **computes a service map from all the segments and traces** (discussed in [17.14.2 X-Ray Leverages Tracing](#17142-x-ray-leverages-tracing)).
+
+![X-Ray Visual Analysis](/assets/aws-certified-developer-associate/xray_visual_analysis.png "X-Ray Visual Analysis")
+
+Benefits and usages:
+- Troubleshoot performance (bottlenecks).
+- Understand dependencies in a microservice architecture.
+- Pinpoint service issues.
+- Review request behaviors.
+- Find errors and exceptions.
+- Evaluate compliancy with the SLA?
+- Identify users that are impacted by errors.
+
+### 17.14.1 X-Ray Compatibility
+
+X-Ray is compatible with:
+- AWS Lambda.
+- Elastic Beanstalk.
+- ECS.
+- ELB.
+- API Gateway.
+- EC2 instances or any application server, even on premise.
+
+### 17.14.2 X-Ray Leverages Tracing
+
+Tracing is the **process of end-to-end following a request as it travels through your application**.
+
+Each **component dealing with the request adds its own trace segment to the request**. So, tracing is made of segments, which can contain subsegments.
+
+**Annotations can be added to traces to provide extra-information**.
+
+**X-Ray can trace**:
+- Every request.
+- A sample of requests: for exampple, a percentage or a rate per minute.
+
+**X-Ray security**:
+- IAM for authorization.
+- KMS for encryption at rest.
