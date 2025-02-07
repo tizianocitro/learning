@@ -693,3 +693,34 @@ Each **component dealing with the request adds its own trace segment to the requ
 **X-Ray security**:
 - IAM for authorization.
 - KMS for encryption at rest.
+
+### 17.14.3 How to Enable X-Ray
+
+Two important steps to enable X-Ray. **This is very important for the exam**.
+
+1. **Your code must import the AWS X-Ray SDK**.
+    - This requires little code modification.
+    - The application SDK will then capture:
+        - Calls to AWS services.
+        - HTTP/HTTPS requests.
+        - Database calls (e.g., MySQL, PostgreSQL, DynamoDB).
+        - Queue calls (SQS).
+
+2. **Install the X-Ray daemon or enable X-Ray AWS integration**.
+    - X-Ray daemon works as a low level UDP packet interceptor.
+    - AWS Lambda (and other AWS services) already run the X-Ray daemon for you.
+    - **Each application must have the IAM rights to write data to X-Ray**.
+    - If everything works on your local machine but not when on EC2, check that the deamon is installed/running.
+
+![X-Ray Working](/assets/aws-certified-developer-associate/xray_working.png "X-Ray Working")
+
+### 17.14.4 X-Ray Troubleshooting
+
+If X-Ray is **not working on EC2**:
+- Ensure the EC2 IAM role has the proper permissions.
+- Ensure the EC2 instance is running the X-Ray daemon.
+
+To **enable X-Ray on AWS Lambda**:
+- Ensure the function has an IAM execution role with proper policy: `AWSX-RayWriteOnlyAccess`.
+- Ensure that X-Ray is imported in the code.
+- Enable the *Lambda X-Ray Active Tracing* option.
