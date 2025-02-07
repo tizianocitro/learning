@@ -737,3 +737,36 @@ To **enable X-Ray on AWS Lambda**:
 The **X-Ray daemon has a config to send traces cross account**:
 - Make sure the IAM permissions are correct: the agent will assume the role.
 - This allows you to **have a central account for all application tracing**.
+
+## 17.15 Tracing Using X-Ray
+
+X-Ray console is now part of the CloudWatch console. This is because it is helpful to have it alongside metrics, logs, and alarms.
+
+You can access it by going into the *X-Ray Traces* section and there you will find the *Service Map* menu entry to **see the service map**.
+- To see a service map, you need at least an application that uses X-Ray already running.
+
+![X-Ray Service Map](/assets/aws-certified-developer-associate/xray_service_map.png "X-Ray Service Map")
+
+By clicking on nodes, you can access its **details**, such as metrics and alerts:
+
+![X-Ray Service Map Node Details](/assets/aws-certified-developer-associate/xray_service_map_node_details.png "X-Ray Service Map Node Details")
+
+In case there are are **issues** with a node, you can see it highlighted and in its details. For example, the SNS node has 100% errors:
+
+![X-Ray Service Map Node Issues](/assets/aws-certified-developer-associate/xray_service_map_node_issues.png "X-Ray Service Map Node Issues")
+
+And, to gather more information, you can click on the *View Traces* button to get to a console in CloudWatch where you can **run queries to see the traces** (also filtering by node of interest):
+
+![X-Ray Service Map Node Traces](/assets/aws-certified-developer-associate/xray_service_map_node_traces.png "X-Ray Service Map Node Traces")
+
+After running a query, this **how traces will look like**:
+
+![X-Ray Service Map Node Traces Results](/assets/aws-certified-developer-associate/xray_service_map_node_traces_results.png "X-Ray Service Map Node Traces Results")
+
+If you click on any of the traces, you can see the **trace details in terms of segments and logs**. For example, you can see how a POST request generated many requests to DynamoDB:
+
+![X-Ray Service Map Node Trace Details](/assets/aws-certified-developer-associate/xray_service_map_node_trace_details.png "X-Ray Service Map Node Trace Details")
+
+If you click on a segment, you can see the **segment details**:
+
+![X-Ray Service Map Node Segment Details](/assets/aws-certified-developer-associate/xray_service_map_node_segment_details.png "X-Ray Service Map Node Segment Details")
