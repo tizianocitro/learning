@@ -655,7 +655,7 @@ And **download the bindings for the schema in different languages**:
 
 X-Ray is a tracing service that **provides you a visual analysis of your applications**.
 
-X-Ray service **collects data from all the different services** and **computes a service map from all the segments and traces** (discussed in [17.14.2 X-Ray Leverages Tracing](#17142-x-ray-leverages-tracing)).
+X-Ray service **collects data from all the different services** and **computes a service map from all the traces** (discussed in [17.14.2 X-Ray Leverages Tracing](#17142-x-ray-leverages-tracing)).
 
 ![X-Ray Visual Analysis](/assets/aws-certified-developer-associate/xray_visual_analysis.png "X-Ray Visual Analysis")
 
@@ -678,7 +678,16 @@ X-Ray is compatible with:
 - API Gateway.
 - EC2 instances or any application server, even on premise.
 
-### 17.14.2 X-Ray Leverages Tracing
+### 17.14.2 X-Ray Concepts
+
+- **Segments**: each application/service sends them.
+- **Subsegments**: if you need more details in your segment.
+- **Trace**: segments collected together to form an end-to-end trace.
+- **Sampling**: decrease the amount of requests sent to X-Ray to reduce cost.
+- **Annotations**: key/value pairs used to index traces and use with filters.
+- **Metadata**: key/value pairs but not indexed, so they cannot be used for searching.
+
+### 17.14.3 X-Ray Leverages Tracing
 
 Tracing is the **process of end-to-end following a request as it travels through your application**.
 
@@ -694,7 +703,7 @@ Each **component dealing with the request adds its own trace segment to the requ
 - IAM for authorization.
 - KMS for encryption at rest.
 
-### 17.14.3 How to Enable X-Ray
+### 17.14.4 How to Enable X-Ray
 
 Two important steps to enable X-Ray. **This is very important for the exam**.
 
@@ -714,7 +723,7 @@ Two important steps to enable X-Ray. **This is very important for the exam**.
 
 ![X-Ray Working](/assets/aws-certified-developer-associate/xray_working.png "X-Ray Working")
 
-### 17.14.4 X-Ray Troubleshooting
+### 17.14.5 X-Ray Troubleshooting and Tips
 
 If X-Ray is **not working on EC2**:
 - Ensure the EC2 IAM role has the proper permissions.
@@ -724,3 +733,7 @@ To **enable X-Ray on AWS Lambda**:
 - Ensure the function has an IAM execution role with proper policy: `AWSX-RayWriteOnlyAccess`.
 - Ensure that X-Ray is imported in the code.
 - Enable the *Lambda X-Ray Active Tracing* option.
+
+The **X-Ray daemon has a config to send traces cross account**:
+- Make sure the IAM permissions are correct: the agent will assume the role.
+- This allows you to **have a central account for all application tracing**.
