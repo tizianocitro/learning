@@ -770,3 +770,25 @@ If you click on any of the traces, you can see the **trace details in terms of s
 If you click on a segment, you can see the **segment details**:
 
 ![X-Ray Service Map Node Segment Details](/assets/aws-certified-developer-associate/xray_service_map_node_segment_details.png "X-Ray Service Map Node Segment Details")
+
+## 17.16 X-Ray Instrumentation
+
+Instrumentation means measuring a product’s performance, diagnosing errors, and writing trace information.
+
+**Use the X-Ray SDK to instrument your application code**. For example, to instrument an Express application:
+
+```javascript
+const AWSXRay = require('aws-xray-sdk');
+const express = require('express');
+
+const app = express();
+app.use(AWSXRay.express.openSegment('MyApp'));
+
+app.get('/', (req, res) => {
+    res.render('index');
+});
+
+app.use(AWSXRay.express.closeSegment());
+```
+
+As you can see from the example above, **many SDKs require only configuration changes**. However, you **can modify your application code to customize and annotate the data that the SDK sends to X-Ray**. For this, you can use interceptors, filters, handlers, middleware, and more.
