@@ -792,3 +792,57 @@ app.use(AWSXRay.express.closeSegment());
 ```
 
 As you can see from the example above, **many SDKs require only configuration changes**. However, you **can modify your application code to customize and annotate the data that the SDK sends to X-Ray**. For this, you can use interceptors, filters, handlers, middleware, and more.
+
+## 17.17 X-Ray Sampling Rules
+
+With sampling rules, you **control the amount of data that you record** because the more you record, the more you pay.
+
+You can modify sampling rules without changing your code. The deamon automatically downloads the new rules.
+
+**By default, the X-Ray SDK records the first request each second, and five percent of any additional requests**.
+- One request per second is the **reservoir**, which ensures that at least one trace is recorded each second as long the service is serving requests.
+- Five percent is the **rate** at which additional requests beyond the reservoir size are sampled.
+
+### 17.17.1 Custom Sampling Rules
+
+You can create your own rules with specified reservoir and rate.
+- **Reservoir**: the number of maximum requests per second to record.
+- **Rate**: the percentage of additional requests to record after exceeding the reservoir size.
+
+For example, you can create the following rule where 10 requests per second will be sent to X-Ray (reservoir) and then 10% of the other ones will be sent (rate):
+
+![X-Ray Custom Sampling Rule 1](/assets/aws-certified-developer-associate/xray_custom_sampling_rule_1.png "X-Ray Custom Sampling Rule 1")
+
+Or, you can create a rule where all requests are sent to X-Ray by setting both the reservoir and rate to 1 (this is very expensive):
+
+![X-Ray Custom Sampling Rule 2](/assets/aws-certified-developer-associate/xray_custom_sampling_rule_2.png "X-Ray Custom Sampling Rule 2")
+
+### 17.17.2 Defining Sampling Rules
+
+Go to the CloudWatch console and click on *Settings* and then on *Traces* to see the *Sampling Rules* property:
+
+![X-Ray Sampling Rules](/assets/aws-certified-developer-associate/xray_sampling_rules.png "X-Ray Sampling Rules")
+
+Click on *View Settings* to **see the current sampling rules**. In this case, there is only the default rule, which specifies 1 request per second (reservoir) and 5% of the other requests (rate):
+
+![X-Ray Sampling Rules View Settings](/assets/aws-certified-developer-associate/xray_sampling_rules_view_settings.png "X-Ray Sampling Rules View Settings")
+
+You can edit the default rule, to **change the reservoir and rate or other settings**:
+
+![X-Ray Sampling Rules Edit](/assets/aws-certified-developer-associate/xray_sampling_rules_edit.png "X-Ray Sampling Rules Edit")
+
+But you can also **create a new rule** by clicking on *Create Sampling Rule*. Start by giving the rule a **name** and **priority**:
+
+![X-Ray Sampling Rules Create Rule](/assets/aws-certified-developer-associate/xray_sampling_rules_create_rule.png "X-Ray Sampling Rules Create Rule")
+
+Then, define the **reservoir** and **rate**:
+
+![X-Ray Sampling Rules Define Reservoir Rate](/assets/aws-certified-developer-associate/xray_sampling_rules_edit.png "X-Ray Sampling Rules Define Reservoir Rate")
+
+Finally, set the **matching criteria** for the rule, which is **useful if you want to apply the rule only to specific requests** (e.g., only POST or GET requests, a specific URL path like `/api/`, etc.) **or services** (e.g., `MYSERVICE` service).
+
+For example, in this case, we are matching POST requests to the `MYSERVICE` service:
+
+![X-Ray Sampling Rules Matching Criteria](/assets/aws-certified-developer-associate/xray_sampling_rules_matching_criteria.png "X-Ray Sampling Rules Matching Criteria")
+
+Create the rule and the X-Ray deamon will automatically start using it.
