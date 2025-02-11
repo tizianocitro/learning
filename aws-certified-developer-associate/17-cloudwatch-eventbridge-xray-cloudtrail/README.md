@@ -846,3 +846,73 @@ For example, in this case, we are matching POST requests to the `MYSERVICE` serv
 ![X-Ray Sampling Rules Matching Criteria](/assets/aws-certified-developer-associate/xray_sampling_rules_matching_criteria.png "X-Ray Sampling Rules Matching Criteria")
 
 Create the rule and the X-Ray deamon will automatically start using it.
+
+## 17.18 X-Ray APIs
+
+It is important to know them because **the exam can test you about the right API to use for some tasks**.
+
+### 17.18.1 X-Ray Write APIs
+
+| API | Description |
+| --- | ----------- |
+| `PutTraceSegments` | Uploads segment documents to X-Ray. |
+| `PutTelemetryRecords` | Used by the X-Ray daemon to send telemetry records: `SegmentsReceivedCount`, `SegmentsRejectedCounts`, `BackendConnectionErrors`, etc. |
+| `GetSamplingRules` | Retrieves all sampling rules. This is crucial to allow the deamon to download the latest rules, so that it can sample correctly without the need to restart the application. |
+| `GetSamplingTargets` | Retrieves information about the number of requests that X-Ray instrumented services received and the number of requests that were sampled. |
+| `GetSamplingStatisticSummaries` | Retrieves information about the number of requests recorded, sampled, or dropped. |
+
+The X-Ray daemon needs to have an **IAM policy authorizing it to use these APIs to function correctly**. The following is the `AWSXRayWriteOnlyAccess` policy:
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+                "xray:GetSamplingRules",
+                "xray:GetSamplingTargets",
+                "xray:GetSamplingStatisticSummaries"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+```
+
+### 17.18.2 X-Ray Read APIs
+
+| API | Description |
+| --- | ----------- |
+| `GetServiceGraph` | Retrieves the service map that we saw before. |
+| `BatchGetTraces` | Retrieves a list of traces specified by ID. Each trace is a collection of segments that originates from a single request. |
+| `GetTraceSummaries` | Retrieves IDs and annotations for traces available for a specified time frame using an optional filter. To get the full traces, use `BatchGetTraces`. |
+| `GetTraceGraph` | Retrieves a service map for one or more specific trace IDs. |
+
+The following policy allows the X-Ray deamon to use the above APIs and more:
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "xray:GetSamplingRules",
+                "xray:GetSamplingTargets",
+                "xray:GetSamplingStatisticSummaries"
+                "xray:GetServiceGraph",
+                "xray:GetTraceGraph"
+                "xray:BatchGetTraces",
+                "xray:GetTraceSummaries",
+                "xray:GetGroups",
+                "xray:GetGroup",
+                "xray:GetTimeSeriesServiceStatistics",
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+```
