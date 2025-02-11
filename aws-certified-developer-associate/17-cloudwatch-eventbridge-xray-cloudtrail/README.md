@@ -916,3 +916,37 @@ The following policy allows the X-Ray deamon to use the above APIs and more:
     ]
 }
 ```
+
+## 17.19 Integrate X-Ray with Elastic Beanstalk
+
+Elastic Beanstalk platforms include the X-Ray daemon, so no need to manually install/configure it.
+
+You can **run the daemon by setting an option** in the Elastic Beanstalk console **or with a configuration file in** `.ebextensions/xray-daemon.config`:
+
+```yaml
+option_settings:
+  aws:elasticbeanstalk:xray:
+    XRayEnabled: true
+```
+
+For it to work properly, you need to make sure:
+- To assign to your EC2 instances an instance profile with the correct IAM permissions, so that the X-Ray daemon can function correctly.
+- That your application code is instrumented with the X-Ray SDK.
+
+**Note**: the X-Ray daemon is not provided for multi-container Docker, so you need to install it manually.
+
+### 17.19.1 Elastic Beanstalk X-Ray Configuration
+
+When creating an application, find the *Software* configuration section and click on *Edit*:
+
+![Elastic Beanstalk X-Ray Configuration](/assets/aws-certified-developer-associate/eb_xray_configuration.png "Elastic Beanstalk X-Ray Configuration")
+
+And **enable the X-Ray daemon**:
+
+![Elastic Beanstalk X-Ray Configuration Enable the Deamon](/assets/aws-certified-developer-associate/eb_xray_configuration_enable.png "Elastic Beanstalk X-Ray Configuration Enable the Deamon")
+
+Then, find the *Security* configuration section and click on *Edit* to **add a proper instance profile for EC2 instances**:
+
+![Elastic Beanstalk X-Ray Configuration Instance Profile](/assets/aws-certified-developer-associate/eb_xray_configuration_instance_profile.png "Elastic Beanstalk X-Ray Configuration Instance Profile")
+
+If you look at the roles in the instance profile in the IAM console, you will see that the **instance profile has a role with the permissions to access the X-Ray APIs** discussed before.
