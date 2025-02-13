@@ -950,3 +950,74 @@ Then, find the *Security* configuration section and click on *Edit* to **add a p
 ![Elastic Beanstalk X-Ray Configuration Instance Profile](/assets/aws-certified-developer-associate/eb_xray_configuration_instance_profile.png "Elastic Beanstalk X-Ray Configuration Instance Profile")
 
 If you look at the roles in the instance profile in the IAM console, you will see that the **instance profile has a role with the permissions to access the X-Ray APIs** discussed before.
+
+## 17.20 Integrate X-Ray with ECS
+
+You have three options to do so:
+1. **X-Ray Container as a Daemon in ECS Cluster**: X-Ray daemon running on each ECS instance.
+![X-Ray Container as a Daemon in ECS Cluster](/assets/aws-certified-developer-associate/xray_container_daemon_ecs_cluster.png "X-Ray Container as a Daemon in ECS Cluster")
+
+2. **X-Ray Container as a Sidecar in ECS Cluster**: X-Ray daemon running as a sidecar container in each ECS task (side-to-side with application containers).
+![X-Ray Container as a Sidecar in ECS Cluster](/assets/aws-certified-developer-associate/xray_container_sidecar_ecs_cluster.png "X-Ray Container as a Sidecar in ECS Cluster")
+
+3. **X-Ray Container as a Sidecar in Fargate Cluster**: X-Ray daemon running as a sidecar container in each Fargate task (side-to-side with application containers).
+![X-Ray Container as a Sidecar in Fargate Cluster](/assets/aws-certified-developer-associate/xray_container_sidecar_fargate_cluster.png "X-Ray Container as a Sidecar in Fargate Cluster")
+
+### 17.20.1 Example of X-Ray Container as a Sidecar in ECS Cluster
+
+Full example is at [https://docs.aws.amazon.com/xray/latest/devguide/xray-daemon-ecs.html](https://docs.aws.amazon.com/xray/latest/devguide/xray-daemon-ecs.html).
+
+**Important to know for the exam**, you need to:
+- Expose the X-Ray daemon port (e.g., 2000) over UDP in the task definition using the `portMappings` field.
+- Set the `AWS_XRAY_DAEMON_ADDRESS` environment variable in the application container to the X-Ray daemon address (e.g., `xray-daemon:2000`).
+- Link the X-Ray daemon container to the application container using the `links` field.
+
+```json
+{
+    "name": "xray-daemon",
+    "image": "123456789012.dkr.ecr.us-east-2.amazonaws.com/xray-daemon",
+    "cpu": 32,
+    "memoryReservation": 256,
+    // this is crucial to allow other containers
+    // to communicate with the X-Ray daemon
+    "portMappings": [
+        {
+            "hostPort": 0,
+            "containerPort": 2000,
+            "protocol": "udp"
+        }
+    ]
+},
+{
+    "name": "scorekeep-api",
+    "image": "123456789012.dkr.ecr.us-east-2.amazonaws.com/scorekeep-api",
+    "cpu": 192,
+    "memoryReservation": 512,
+    "environment": [
+        {
+            "name": "AWS_REGION",
+            "value": "us-east-2",
+        },
+        {
+            "name": "NOTIFICATION_TOPIC",
+            "value": "arn:aws:sns:us-east-2:123456789012:scorekeep-notifications"
+        },
+        // this indicates the X-Ray daemon address to the application
+        // uses the port 2000 (as specified above) to communicate
+        {
+            "name": "AWS_XRAY_DAEMON_ADDRESS",
+            "value": "xray-daemon:2000"
+        }
+    ],
+    "portMappings": [
+        {
+            "hostPort": 5000,
+            "containerPort": 5000
+        }
+    ],
+    // this links the X-Ray daemon container to the application container
+    "links": [
+        "xray-daemon"
+    ]
+}
+```
