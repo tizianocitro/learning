@@ -51,8 +51,8 @@ For example, the `CPUCreditBalance` metric for an EC2 instance (you can also dow
 
 ### 17.2.1 EC2 Detailed Monitoring
 
-By default, EC2 instance metrics have metrics every 5 minutes, but with detailed monitoring enabled (for a cost), you get data every 1 minute.
-- **Use detailed monitoring if you want to scale faster for your ASG**.
+By default, EC2 instance metrics have metrics every 5 minutes, but **with detailed monitoring enabled (for a cost), you get data every 1 minute**.
+- Use detailed monitoring if you want to scale faster for your ASG.
 
 AWS free tier allows us to have 10 detailed monitoring metrics.
 
@@ -69,7 +69,7 @@ To do so, use the `PutMetricData` API. And you can **use dimensions (attributes)
 
 You can specify a **metric resolution** using the `StorageResolution` API parameter with two possible values:
 - **Standard**: 60 seconds.
-- **High Resolution**: 1/5/10/30 second(s) but you will incur higher costs.
+- **High-resolution**: 1/5/10/30 second(s) but you will incur higher costs. The **minimum resulution for high-resolution custom metrics is then 1 second**.
 
 **Important for the exam**: you can push metric data points up until two weeks in the past or two hours in the future (make sure to configure your EC2 instance time correctly).
 
@@ -117,6 +117,8 @@ CloudWatch Logs can send logs to:
 - OpenSearch.
 
 **Logs are encrypted by default** and you **can also setup KMS-based encryption with your own keys**.
+
+**By default, logs in CloudWatch Logs never expire**. Using log retention policies, you can define how long you want to keep the logs, thus customizing this setting.
 
 ### 17.4.1 Sources to Send Logs to CloudWatch
 
@@ -399,7 +401,7 @@ An alarm has the following **states**:
 
 There is **period to specify how many data points to evaluate before triggering the alarm**:
     - Length of time in seconds to evaluate the metric.
-    - Can apply to high resolution custom metrics: 10 seconds, 30 seconds or multiples of 60 seconds.
+    - Can apply to high resolution custom metrics: 10 seconds, 30 seconds or multiples of 60 seconds. So, **an alarm set on a high-resolution custom metric can be triggered as often as 10 seconds**.
 
 ### 17.9.1 Alarm Targets
 
@@ -1021,3 +1023,18 @@ Full example is at [https://docs.aws.amazon.com/xray/latest/devguide/xray-daemon
     ]
 }
 ```
+
+## 17.21 AWS Disto for OpenTelemetry
+
+Secure and production-ready AWS-supported distribution of the open-source OpenTelemetry project.
+
+**OpenTelemetry is a set of APIs, libraries, agents, and instrumentation to collect distributed traces and metrics for application monitoring**. It also allows you to:
+- Collect metadata from your AWS resources and services.
+- Send traces and metrics to multiple AWS services and partner solutions: X-Ray, CloudWatch, Prometheus, etc.
+- Instrument your applications running on AWS (e.g., EC2, ECS, EKS, Fargate, Lambda, etc.) as well as on-premises and use the OpenTelemetry standard to send traces and metrics to AWS or other third-party solutions.
+
+It is very similar to X-Ray but open-source. It offers **auto-instrumentation agents to collect traces without changing your code**.
+
+You may want to **use AWS Distro for OpenTemeletry over X-Ray if you want to standardize with open-source APIs or send traces to multiple destinations simultaneously**, which is not possible with X-Ray.
+
+![AWS Distro for OpenTelemetry](/assets/aws-certified-developer-associate/aws_disto_opentelemetry.png "AWS Distro for OpenTelemetry")
