@@ -1038,3 +1038,115 @@ It is very similar to X-Ray but open-source. It offers **auto-instrumentation ag
 You may want to **use AWS Distro for OpenTemeletry over X-Ray if you want to standardize with open-source APIs or send traces to multiple destinations simultaneously**, which is not possible with X-Ray.
 
 ![AWS Distro for OpenTelemetry](/assets/aws-certified-developer-associate/aws_disto_opentelemetry.png "AWS Distro for OpenTelemetry")
+
+## 17.22 CloudTrail
+
+CloudTrail is a service that **provides governance, compliance, and audit for your AWS Account**.
+
+CloudTrail is enabled by default and allows you to **get an history of events/API calls made within your AWS account** via:
+- Console.
+- SDK.
+- CLI.
+- AWS services.
+
+You can put logs from CloudTrail into CloudWatch Logs or S3.
+
+A **trail can be applied to all regions (default) or a single region**, if you want to group all the events across all regions in a single place (e.g., S3 bucket).
+
+**If a resource is deleted in AWS and you want to investigate how and why did it happen, check CloudTrail**.
+
+All actions from SDK, CLI, console, and other AWS services are recorded in CloudTrail and sent to CloudWatch Logs or S3:
+
+![CloudTrail Working](/assets/aws-certified-developer-associate/cloudtrail_working.png "CloudTrail Working")
+
+### 17.22.1 CloudTrail Events
+
+**Management events**: they **represent operations that are performed on resources in your AWS account**:
+- By default, trails are configured to log management events.
+- You can separate them between **read events** that do not modify resources from **write events** that may modify resources.
+- A few examples of management events are:
+    - Configuring security: IAM `AttachRolePolicy` API call.
+    - Configuring rules for routing data: EC2 `CreateSubnet` API call.
+    - Setting up logging: CloudTrail `CreateTrail` API call.
+
+**Data events**:
+- By default, data events are not logged because **they are high volume operations**.
+- **S3 object-level activity**: `GetObject`, `DeleteObject`, `PutObject`. You **can separate read and write events**.
+- Lambda function execution activity using the `Invoke` API call.
+
+**CloudTrail Insights events**: more on this in [17.22.2 CloudTrail Insights](#17222-cloudtrail-insights).
+
+### 17.22.2 CloudTrail Insights
+
+Enable CloudTrail Insights to **detect unusual activity in your account**. For example:
+- Inaccurate resource provisioning.
+- Hitting service limits.
+- Bursts of AWS IAM actions.
+- Gaps in periodic maintenance activity.
+
+CloudTrail Insights **analyzes normal management events to create a baseline of expected activity**. Then, it **continuously analyzes write events to detect unusual patterns**.
+- **Anomalies generate CloudTrail Insights events** and appear in the CloudTrail console.
+- Events are sent to Amazon S3.
+- An **EventBridge event is generated in case you have automation needs**, such as sending an email.
+
+![CloudTrail Insights](/assets/aws-certified-developer-associate/cloudtrail_insights.png "CloudTrail Insights")
+
+### 17.22.3 CloudTrail Events Retention
+
+Events are stored for 90 days in CloudTrail, by default. To keep events beyond this period, log them to S3 and use Athena to query them.
+- Athena is a serverless service to query data in S3 using SQL.
+
+![CloudTrail Events Retention](/assets/aws-certified-developer-associate/cloudtrail_events_retention.png "CloudTrail Events Retention")
+
+### 17.22.4 Using CloudTrail
+
+Go to the CloudTrail console and click on *Event History* to see the **history of events** in the last 90 days:
+
+![CloudTrail Event History](/assets/aws-certified-developer-associate/cloudtrail_event_history.png "CloudTrail Event History")
+
+For example, if you terminate an EC2 instance, you will see that a `TerminateInstances` event was recorded and appears in the event history:
+
+![CloudTrail Event History Terminate Instances](/assets/aws-certified-developer-associate/cloudtrail_event_history_terminate_instances.png "CloudTrail Event History Terminate Instances")
+
+If you click on the event, you can see the **details of the event** (e.g., who did it, when, from where, etc.):
+
+![CloudTrail Event Details](/assets/aws-certified-developer-associate/cloudtrail_event_details.png "CloudTrail Event Details")
+
+You can also see the resorces referenced in the event, such as the EC2 instance that was terminated:
+
+![CloudTrail Event Resources](/assets/aws-certified-developer-associate/cloudtrail_event_resources.png "CloudTrail Event Resources")
+
+And you can see the whole event in JSON format.
+
+### 17.22.5 Integrate CloudTrail with EventBridge
+
+This integration allows you to **intercep any API call**.
+
+For example, you can create a rule to watch for the `DeleteTable` DynamoDB API call and sent an email via SNS every time someone uses it to delete a table in DynamoDB:
+
+![CloudTrail EventBridge Integration](/assets/aws-certified-developer-associate/cloudtrail_eventbridge_integration.png "CloudTrail EventBridge Integration")
+
+Another example is to be notified every time a user assumes an IAM role with the `AssumeRole` API call:
+
+![CloudTrail EventBridge Integration Assume Role](/assets/aws-certified-developer-associate/cloudtrail_eventbridge_integration_assume_role.png "CloudTrail EventBridge Integration Assume Role")
+
+Yet another example is to be notified every time a user changes the security group of an EC2 instance. For instance, by changing the inbound rules using the EC2 `AuthorizeSecurityGroupIngress` API call:
+
+![CloudTrail EventBridge Integration Security Group](/assets/aws-certified-developer-associate/cloudtrail_eventbridge_integration_security_group.png "CloudTrail EventBridge Integration Security Group")
+
+## 17.23 CloudWatch vs CloudTrail vs X-Ray
+
+**CloudWatch** is for monitoring and allows you to monitor your applications, respond to system-wide performance changes, optimize resource utilization, and get a unified view of operational health.
+- CloudWatch Metrics over time for monitoring.
+- CloudWatch Logs for storing application logs.
+- CloudWatch Alarms to send notifications in case of unexpected metrics.
+
+**CloudTrail** is for auditing and allows you to log, continuously monitor, and retain account activity related to actions across your AWS infrastructure.
+- Provides the event history of your AWS account activity.
+- Audit API calls made by users, services, and AWS console.
+- Useful to detect unauthorized calls or root cause of changes (e.g., changes to a resource that make it not compliant with organization rules).
+
+**X-Ray** is a trace-oriented service for distributed applications.
+- Automated trace analysis and central service map visualizatio, making it useful when you have distributed systems.
+- Request tracking across distributed systems.
+- Latency, errors and fault analysis.
