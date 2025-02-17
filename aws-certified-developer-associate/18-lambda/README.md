@@ -92,3 +92,23 @@ For example, consider the following **architecture to create a thumbnail when an
 Another example is to have **serverless CRON jobs** using EventBridge and Lambda:
 
 ![Lambda CRON Jobs](/assets/aws-certified-developer-associate/lambda_cron_jobs.png "Lambda CRON Jobs")
+
+## 18.2 Using Lambda
+
+Go to the Lambda service in the console:
+
+![Lambda Console](/assets/aws-certified-developer-associate/lambda_service.png "Lambda Console")
+
+### 18.2.1 Testing and How It Works
+
+From the console, you can already **test a function** in the *How it works* section (this section also offers indications on what Lambda is and how it works):
+
+![Lambda Test](/assets/aws-certified-developer-associate/lambda_test.png "Lambda Test")
+
+And also **simulate events to a function** (by clicking on clients on the left) and **see how the function scales** (number of boxes on the right):
+
+![Lambda Events](/assets/aws-certified-developer-associate/lambda_events.png "Lambda Events")
+
+You can also get information about the **traffic** and the **cost** of the function:
+
+![Lambda Traffic and Cost](/assets/aws-certified-developer-associate/lambda_traffic_cost.png "Lambda Traffic and Cost")
