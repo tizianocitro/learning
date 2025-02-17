@@ -171,3 +171,56 @@ Next tab is the *Monitoring* tab, where you can see the **function's metrics, lo
 ![Lambda Monitoring in Details](/assets/aws-certified-developer-associate/lambda_monitoring_details.png "Lambda Monitoring in Details")
 
 The **reason we can write logs to CloudWatch is that the function has an execution role that allows it to write logs to CloudWatch**.
+
+## 18.3 Lambda Synchronous Invocation
+
+You are making a **synchronous invocation** when you call the Lambda function directly. For example, via CLI, SDK, API Gateway, and Application Load Balancer.
+
+With synchronous invocation:
+- Results are returned right away.
+- **Error handling must happen client-side**: retries, exponential backoff, etc.
+
+![Lambda Synchronous Invocation](/assets/aws-certified-developer-associate/lambda_synchronous_invocation.png "Lambda Synchronous Invocation")
+
+### 18.3.1 When Is a Lambda Function Invoked Synchronously
+
+Every time it is **user invoked**:
+- Elastic Load Balancing: Application Load Balancer.
+- API Gateway.
+- CloudFront: Lambda@Edge.
+- S3 Batch.
+- Testing in the console: for example, the *Test* button in functions' *Code* tab.
+
+**Service invoked**:
+- Cognito.
+- Step Functions.
+
+Other services:
+- Amazon Lex
+- Amazon Alexa
+- Amazon Data Firehose
+
+#### 18.3.2 Synchronous Invocation via CLI
+
+Use the following command to **list all functions**:
+
+```bash
+aws lambda list-functions --region us-east-1
+```
+
+This will return a response with all the functions in the region:
+
+![Lambda List Functions CLI](/assets/aws-certified-developer-associate/lambda_list_functions_cli.png "Lambda List Functions CLI")
+
+To **synchronously invoke a function**, use the following command:
+
+```bash
+aws lambda invoke \
+    --function-name demo-lambda \
+    --cli-binary-format raw-in-base64-out \ 
+    --region us-east-1 \
+    --payload '{"key1": "value1", "key2": "value2", "key3": "value3"}' \
+    response.json
+```
+
+The response of the command will be written to the `response.json` file, which you can read using `cat response.json`.
