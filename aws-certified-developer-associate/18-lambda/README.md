@@ -112,3 +112,62 @@ And also **simulate events to a function** (by clicking on clients on the left) 
 You can also get information about the **traffic** and the **cost** of the function:
 
 ![Lambda Traffic and Cost](/assets/aws-certified-developer-associate/lambda_traffic_cost.png "Lambda Traffic and Cost")
+
+### 18.2.2 Creating a Lambda Function using a Blueprint
+
+To create a Lambda function, click on *Create a Function* in the console and **choose one of the following creation options**:
+
+![Lambda Create Function](/assets/aws-certified-developer-associate/lambda_create_function.png "Lambda Create Function")
+
+In this case, we will **use a blueprint to quickly spin up a function**. For example, the `Hello World` function in python. So, we will:
+- Give it a **name**: `demo-lambda`.
+- Choose to **create a new role with basic Lambda permissions**.
+
+![Lambda Blueprint](/assets/aws-certified-developer-associate/lambda_blueprint.png "Lambda Blueprint")
+
+Then, we can have a look at the **function code**:
+
+![Lambda Function Code](/assets/aws-certified-developer-associate/lambda_function_code.png "Lambda Function Code")
+
+Finally, create the function.
+
+### 18.2.3 Accessing the Details of a Lambda Function
+
+After creating the function, it appears in the console and by clicking on it, you can see the **function details**:
+
+![Lambda Function Details](/assets/aws-certified-developer-associate/lambda_function_details.png "Lambda Function Details")
+
+Like the **function code** in a code editor (so that you can also modify it):
+
+![Lambda Function Code in Details](/assets/aws-certified-developer-associate/lambda_function_code_details.png "Lambda Function Code in Details")
+
+If you change the code, you can **deploy the changes** by clicking on *Deploy*.
+
+In the *Code* tab, you can check the **runtime settings**, which also **indicate the function that is executed and in which file it is**. In this case, it is the `lambda_handler` function in the `lambda_function.py` file:
+
+![Lambda Function Runtime Settings](/assets/aws-certified-developer-associate/lambda_function_runtime_settings.png "Lambda Function Runtime Settings")
+
+
+By clicking on *Test* in the *Code* tab, you can also **test the function**. It will prompt you to **create and give a name to a new test event** (the format depends on the funtion):
+
+![Lambda Test Function in Details](/assets/aws-certified-developer-associate/lambda_test_function_details.png "Lambda Test Function in Details")
+
+Then, you can see the **execution result** from the same tab with also information about the **duration, memory used, and build time**:
+
+![Lambda Test Function Result in Details](/assets/aws-certified-developer-associate/lambda_test_function_result_details.png "Lambda Test Function Result in Details")
+
+Another important tab is the **Configuration** tab, where you can see the **function configuration**:
+
+![Lambda Function Configuration in Details](/assets/aws-certified-developer-associate/lambda_function_configuration_details.png "Lambda Function Configuration in Details")
+
+From the *Configuration* tab, you can also **edit the function** and configure the **memory**, **timeout**, and **execution role**:
+
+![Lambda Edit Function Configuration](/assets/aws-certified-developer-associate/lambda_edit_function_configuration.png "Lambda Edit Function Configuration")
+
+However, you can also **configure triggers** and more.
+
+Next tab is the *Monitoring* tab, where you can see the **function's metrics, logs, and traces**. For example, logs look like this and when you click on a stream, you can see it in CloudWatch:
+
+![Lambda Monitoring in Details](/assets/aws-certified-developer-associate/lambda_monitoring_details.png "Lambda Monitoring in Details")
+
+The **reason we can write logs to CloudWatch is that the function has an execution role that allows it to write logs to CloudWatch**.
