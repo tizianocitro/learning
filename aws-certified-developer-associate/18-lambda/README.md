@@ -224,3 +224,41 @@ aws lambda invoke \
 ```
 
 The response of the command will be written to the `response.json` file, which you can read using `cat response.json`.
+
+## 18.4 Lambda Integration with ALB
+
+To **expose a Lambda function as an HTTP(S) endpoint**, you can **use an ALB or API Gateway**.
+- The Lambda function must be registered in a target group.
+
+**With the ALB**, clients will send requests to the ALB, which will then synchronously invoke the Lambda function within a target group. The Lambda function will then send the response back to the ALB, which will send it back to the client:
+
+![Lambda ALB Integration](/assets/aws-certified-developer-associate/lambda_alb_integration.png "Lambda ALB Integration")
+
+### 18.4.1 How the ALB Transforms HTTP Requests into Lambda Invocation
+
+**When a client sends an HTTP request to the ALB, the ALB will transform the request into a JSON object that is sent to the Lambda function**.
+
+The JSON object will contain the following information:
+
+![Lambda ALB Request](/assets/aws-certified-developer-associate/lambda_alb_request.png "Lambda ALB Request")
+
+The crucial thing is that **query string parameters, headers, and body are all converted**.
+
+### 18.4.2 Lambda Function Response to the ALB
+
+The **function must return a JSON to the ALB, so that the ALB can transform it back into an HTTP response to the client**.
+
+The response must contain the following information:
+
+![Lambda ALB Response](/assets/aws-certified-developer-associate/lambda_alb_response.png "Lambda ALB Response")
+
+### 18.4.3 ALB Multi-Value Headers
+
+**ALB can support multi-value headers**, which can be enabled in the ALB settings.
+- It is called multi-value headers but applies to query string parameters as well.
+
+When you enable multi-value headers, **HTTP headers and query string parameters that are sent with multiple values are shown as arrays within the Lambda event and response objects**.
+
+For example, the following image shows how the `name` parameter in the query string is sent as an array in the Lambda event's `queryStringParameters` object:
+
+![Lambda ALB Multi-Value Headers](/assets/aws-certified-developer-associate/lambda_alb_multi_value_headers.png "Lambda ALB Multi-Value Headers")
