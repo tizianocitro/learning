@@ -256,9 +256,80 @@ The response must contain the following information:
 
 **ALB can support multi-value headers**, which can be enabled in the ALB settings.
 - It is called multi-value headers but applies to query string parameters as well.
+- It is a **feature that you need to enable in the target group**.
 
 When you enable multi-value headers, **HTTP headers and query string parameters that are sent with multiple values are shown as arrays within the Lambda event and response objects**.
 
 For example, the following image shows how the `name` parameter in the query string is sent as an array in the Lambda event's `queryStringParameters` object:
 
 ![Lambda ALB Multi-Value Headers](/assets/aws-certified-developer-associate/lambda_alb_multi_value_headers.png "Lambda ALB Multi-Value Headers")
+
+## 18.5 Creating a Lambda Function Integrating with ALB
+
+### 18.5.1 Creating the Lambda Function
+
+Go to the Lambda console and create a new function by choosing the option *Author from scratch* and giving it a nime of `lambda-alb`:
+
+![Lambda ALB Create Function](/assets/aws-certified-developer-associate/lambda_alb_create_function.png "Lambda ALB Create Function")
+
+And create the function.
+
+### 18.5.2 Creating the ALB and Its Target Group
+
+Create a `demo-lambda-alb` ALB that we will need to integrate with the function.
+
+The crucial step is to create the **target group** that will be used to register the Lambda function. To do so, **select *Lambda Function* as the target type** and give the target group a name of `demo-tg-lambda`:
+
+![Lambda ALB Create Target Group](/assets/aws-certified-developer-associate/lambda_alb_create_target_group.png "Lambda ALB Create Target Group")
+
+Then, **register the `lambda-alb` function as the target of the target group**:
+
+![Lambda ALB Register Target](/assets/aws-certified-developer-associate/lambda_alb_register_target.png "Lambda ALB Register Target")
+
+And **assign this target group to the ALB**:
+
+![Lambda ALB Assign Target Group](/assets/aws-certified-developer-associate/lambda_alb_assign_target_group.png "Lambda ALB Assign Target Group")
+
+After that, you can **see the ALB in the function's details**:
+
+![Lambda ALB in Function Details](/assets/aws-certified-developer-associate/lambda_alb_in_function_details.png "Lambda ALB in Function Details")
+
+And also see the ALB in the *Configuration* tab of the function:
+
+![Lambda ALB in Function Configuration](/assets/aws-certified-developer-associate/lambda_alb_in_function_configuration.png "Lambda ALB in Function Configuration")
+
+### 18.5.3 Invoking the Function via the ALB
+
+After the ALB is created, you can access its DNS name and check that the returned response is the one from the Lambda function. However, **to have the response shown in the browser, the function must to return a proper response in JSON**, which format is shown in section [18.4.2 Lambda Function Response to the ALB](#1842-lambda-function-response-to-the-alb). For example, to have the response shown as HTML it should be:
+
+```json
+{
+    "statusCode": 200,
+    "statusDescription": "200 OK",
+    "headers": {
+        "Content-Type": "text/html"
+    },
+    "body": "<h1>Hello from Lambda!</h1>",
+    "isBase64Encoded": false,
+}
+```
+
+All of this **works because the ALB has a resource-based policy that allows it to invoke the Lambda function**.
+
+From the *Monitoring* tab of the function, you can also see the logs to check the events that the ALB sends to the function:
+
+![Lambda ALB Monitoring](/assets/aws-certified-developer-associate/lambda_alb_monitoring.png "Lambda ALB Monitoring")
+
+And you can see it has the fields indicated in section [18.4.1 How the ALB Transforms HTTP Requests into Lambda Invocation](#1841-how-the-alb-transforms-http-requests-into-lambda-invocation).
+
+### 18.5.4 Configure Multi-Value Headers in the Target Group
+
+To enable multi-value headers, go to the target group and **edit the target group attributes**:
+
+![ALB Target Group Multi-Value Headers](/assets/aws-certified-developer-associate/alb_target_group_multi_value_headers.png "ALB Target Group Multi-Value Headers")
+
+Then, **enable the multi-value headers**:
+
+![ALB Target Group Enable Multi-Value Headers](/assets/aws-certified-developer-associate/alb_target_group_enable_multi_value_headers.png "ALB Target Group Enable Multi-Value Headers")
+
+Keep in mind that enabling multi-value headers will require you to change the Lambda function to handle the multi-value headers both in the request and the response.
