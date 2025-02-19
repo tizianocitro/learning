@@ -415,3 +415,45 @@ However, before you can save these changes, you need to **add the correct permis
 If you do not do this, you will get an error when trying to set the dead-letter queue.
 
 In case a message fails a number of times greater than the **retry attempts** property specified in the function's asynchronous settings, it will be sent to the dead-letter queue.
+
+## 18.7 Lambda Integration with EventBridge
+
+1. Create an **EventBridge rule to trigger a function on a time-based schedule or when an event happens**.
+![Lambda EventBridge Time-based Rule](/assets/aws-certified-developer-associate/lambda_eventbridge_time_based_rule.png "Lambda EventBridge Time-based Rule")
+
+2. Create a **CodePipeline EventBridge rule to trigger a function when a pipeline state changes**.
+![Lambda EventBridge CodePipeline Rule](/assets/aws-certified-developer-associate/lambda_eventbridge_codepipeline_rule.png "Lambda EventBridge CodePipeline Rule")
+
+## 18.8 Creating a Lambda Function Integrating with EventBridge
+
+Create a new function called `lambda-demo-eventbridge`.
+
+Create a new EventBridge **rule that triggers the function every minute** and call it `invokeLambdaEveryMinute`:
+
+![Lambda EventBridge Rule](/assets/aws-certified-developer-associate/lambda_eventbridge_rule.png "Lambda EventBridge Rule")
+
+And define the **rule's schedule**:
+
+![Lambda EventBridge Rule Schedule](/assets/aws-certified-developer-associate/lambda_eventbridge_rule_schedule.png "Lambda EventBridge Rule Schedule")
+
+Next, select the **target for the rule**, which is the `lambda-demo-eventbridge` function:
+
+![Lambda EventBridge Rule Target](/assets/aws-certified-developer-associate/lambda_eventbridge_rule_target.png "Lambda EventBridge Rule Target")
+
+**EventBridge will automatically configure the necessary permissions for the targets to be triggered by the rule**. You can also configure some additional settings for the target, such as the retry policy and the dead-letter queue:
+
+![Lambda EventBridge Rule Target Settings](/assets/aws-certified-developer-associate/lambda_eventbridge_rule_target_settings.png "Lambda EventBridge Rule Target Settings")
+
+Finally, create the rule and go to the `lambda-demo-eventbridge` function to **see the new trigger**:
+
+![Lambda EventBridge Trigger](/assets/aws-certified-developer-associate/lambda_eventbridge_trigger.png "Lambda EventBridge Trigger")
+
+And see the trigger's details in the *Configuration* tab:
+
+![Lambda EventBridge Trigger Details](/assets/aws-certified-developer-associate/lambda_eventbridge_trigger_details.png "Lambda EventBridge Trigger Details")
+
+All the invocations can be see in the function's log stream in CloudWatch Logs. In the function's code, you can **log the input event to see what is being sent to the function**. For example, you can see the time the function was invoked.
+
+![Lambda EventBridge Log Stream](/assets/aws-certified-developer-associate/lambda_eventbridge_log_stream.png "Lambda EventBridge Log Stream")
+
+You can also see that the `lambda-demo-eventbridge` **function has a resource-based policy that allows EventBridge to invoke it** (`lambda:invokeFunction` permission).
