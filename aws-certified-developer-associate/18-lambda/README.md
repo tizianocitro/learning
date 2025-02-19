@@ -333,3 +333,85 @@ Then, **enable the multi-value headers**:
 ![ALB Target Group Enable Multi-Value Headers](/assets/aws-certified-developer-associate/alb_target_group_enable_multi_value_headers.png "ALB Target Group Enable Multi-Value Headers")
 
 Keep in mind that enabling multi-value headers will require you to change the Lambda function to handle the multi-value headers both in the request and the response.
+
+## 18.6 Lambda Asynchronous Invocation
+
+This is **for services that invoke Lambda functions asynchronously via events**. For example, S3, SNS, and EventBridge.
+- The events are placed in an **internal event queue**.
+
+Lambda attempts to **retry when an error happens during processing**.
+- 3 tries total with 1 minute wait after the first try, then 2 minutes wait.
+- **Make sure the function processing is idempotent, so that it can be retried without side effects**.
+- If the function is retried, you will see duplicate logs entries in CloudWatch Logs.
+- You can define a **dead-letter queue via SNS or SQS for failed processing**, but this needs the correct IAM permissions to work.
+
+Asynchronous invocations allow you to **speed up the processing of events through parallel processing if you do not need to wait for the response**.
+- For example, if you have a large number of files to process in S3, you can trigger a Lambda function for each file and process them in parallel.
+
+### 18.6.1 Asynchronous Invocation for S3 Event
+
+S3 can trigger a Lambda function when an object event happens. In that case, a new event is generated and sent to an internal event queue from which the Lambda function is reading for events to process.
+
+If something goes wrong, the funtion will retry a few times. If it fails, the event is sent to a dead-letter queue (via SQS or SNS)
+
+![Lambda Asynchronous Invocation](/assets/aws-certified-developer-associate/lambda_asynchronous_invocation.png "Lambda Asynchronous Invocation")
+
+### 18.6.2 Services that Invoke Lambda Asynchronously
+
+- **S3**: react to objects being created, modified, or deleted.
+- **SNS**: react to messages being sent to a topic.
+- **EventBridge**: react to events from AWS services.
+- CodeCommit: react to events such as new branch, new tag, and new push.
+- CodePipeline: invoke a Lambda function during the pipeline, Lambda must callback.
+- CloudWatch Logs: for log processing.
+- Simple Email Service.
+- CloudFormation.
+- Config.
+- IoT.
+- IoT Events.
+
+**For the exam, it is crucial to know how Lambda integrates with S3, SNS, and EventBridge**.
+
+### 18.6.3 Asynchronous Invocation via CLI
+
+Use the following command to **list all functions** (the output is like the one shown in section [18.3.2 Synchronous Invocation via CLI](#1832-synchronous-invocation-via-cli)):
+
+```bash
+aws lambda list-functions --region us-east-1
+```
+
+To **asynchronously invoke a function**, use the following command with the `--invocation-type Event` flag that makes the invocation asynchronous:
+
+```bash
+aws lambda invoke \
+    --function-name demo-lambda \
+    --cli-binary-format raw-in-base64-out \ 
+    --region us-east-1 \
+    --payload '{"key1": "value1", "key2": "value2", "key3": "value3"}' \
+    --invocation-type Event \
+    response.json
+```
+
+The response of the command will have a `StatusCode: 202`, which means that the invocation was successful. To see the response, you can use CloudWatch Logs, for example.
+
+### 18.6.4 Setting Up a Dead-Letter Queue for Asynchronous Invocation
+
+To do so, go into the function's *Configuration* tab and scroll down to the *Asynchronous invocation* section, where you can see the *Dead-letter Queue Service* option:
+
+![Lambda Dead-Letter Queue](/assets/aws-certified-developer-associate/lambda_dead_letter_queue.png "Lambda Dead-Letter Queue")
+
+Click *Edit* to change the asynchronous invocation settings:
+
+![Lambda Dead-Letter Queue Edit](/assets/aws-certified-developer-associate/lambda_dead_letter_queue_edit.png "Lambda Dead-Letter Queue Edit")
+
+Then select the **dead-letter queue** that you want to use (you need to create it first on SQS or SNS). In this case, we have a SQS queue called `lambda-dlq`:
+
+![Lambda Dead-Letter Queue Selection](/assets/aws-certified-developer-associate/lambda_dead_letter_queue_selection.png "Lambda Dead-Letter Queue Selection")
+
+However, before you can save these changes, you need to **add the correct permissions to the Lambda function to send messages to the dead-letter queue**. To do so, you can attach a policy to the function's execution role that allows it to send messages to the dead-letter queue. This role can be found in the *Permissions* section in the *Configuration* tab of the function:
+
+![Lambda Dead-Letter Queue Permissions](/assets/aws-certified-developer-associate/lambda_dead_letter_queue_permissions.png "Lambda Dead-Letter Queue Permissions")
+
+If you do not do this, you will get an error when trying to set the dead-letter queue.
+
+In case a message fails a number of times greater than the **retry attempts** property specified in the function's asynchronous settings, it will be sent to the dead-letter queue.
