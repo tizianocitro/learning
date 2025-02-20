@@ -504,3 +504,99 @@ To **test that it is working**, upload an object to the bucket and see the funct
 ![Lambda S3 Event Notification Log Stream](/assets/aws-certified-developer-associate/lambda_s3_event_notification_log_stream.png "Lambda S3 Event Notification Log Stream")
 
 Also in this case, the `lambda-s3` **function has a resource-based policy that allows S3 to invoke it** (`lambda:invokeFunction` permission).
+
+## 18.11 Lambda Event Source Mapping
+
+The **exam may ask very precise and deep questions about Lambda event source mapping**, so it is important to know very well sections:
+- [18.11 Lambda Event Source Mapping](#1811-lambda-event-source-mapping).
+- [18.12 Streams (a.k.a Kinesis/DynamoDB) with Lambda](#1812-streams-aka-kinesisdynamodb-with-lambda).
+- [18.13 Queues (a.k.a SQS/SNS) with Lambda](#1813-queues-aka-sqssns-with-lambda).
+
+This is the last way Lambda can process events. It can be **used by**:
+- Kinesis Data Streams.
+- SQS and SQS FIFO queue.
+- DynamoDB streams.
+
+**Common denominator of this feature is that records need to be polled from the source**, meaning that the Lambda function asks one of the services to get the records.
+- The **function polls the records and processes them**.
+- The **function is invoked synchronously**.
+
+### 18.11.1 Lambda Event Source Mapping with Kinesis Data Streams
+
+**With Kinesis Data Streams**, an internal event source mapping is created and is responsible for polling the records from the stream and getting them back as batches. When the event source mapping has an event batch, it invokes the function synchronously and sends the event batch to it.
+
+![Lambda Event Source Mapping](/assets/aws-certified-developer-associate/lambda_event_source_mapping.png "Lambda Event Source Mapping")
+
+## 18.12 Streams (a.k.a Kinesis/DynamoDB) with Lambda
+
+In case of streams, **an event source mapping creates an iterator for each shard and processes items in order at shard level**.
+- **Processed items are not removed from the stream, meaning that other consumers can read them**.
+
+Read operations can start:
+- With new items.
+- From the beginning.
+- From timestamp.
+
+Depeding on the stream's traffic:
+- If you have a **low traffic stream**, you can use a batch window to accumulate records before processing. In this way, you can ensure to invoke the function efficiently.
+- If you have a **high traffic stream**, you can process multiple batches in parallel at shard level using *record processors*.
+    - You can have up to 10 batches per shard.
+    - For each batch, in-order processing is still guaranteed at partition key level.
+![Lambda Event Source Mapping High Traffic](/assets/aws-certified-developer-associate/lambda_event_source_mapping_high_traffic.png "Lambda Event Source Mapping High Traffic")
+
+### 18.12.1 Error Handling with Streams
+
+By default, **if your function returns an error, the entire batch is reprocessed until the function succeeds, or the items in the batch expire**.
+- So, having an error in a batch can block processing.
+
+**Processing for the affected shard is paused until the error is resolved to ensure in-order processing**.
+
+To handle errors, you can configure the the event source mapping to:
+- Discard old events: **discarded events can go to a specified destination**.
+- Restrict the number of retries.
+- **Split the batch on errors**: this to **work around Lambda timeout issues** when your function does not have enough time to process the whole batch, you can split the batch into smaller ones.
+
+## 18.13 Queues (a.k.a SQS/SNS) with Lambda
+
+In case of queues, **an event source mapping polls the queue and sends messages to the function synchronously**.
+- The event source mapping polls the queue using long polling for efficiency.
+- You can specify batch size from 1 to 10 messages per batch.
+
+![Lambda Event Source Mapping Queues](/assets/aws-certified-developer-associate/lambda_event_source_mapping_queues.png "Lambda Event Source Mapping Queues")
+
+The **configuration** to use is very simple, you just need to specify the queue or topic and the batch size:
+
+![Lambda Event Source Mapping Queues Configuration](/assets/aws-certified-developer-associate/lambda_event_source_mapping_queues_configuration.png "Lambda Event Source Mapping Queues Configuration")
+
+**Recommendations**:
+- Set the queue visibility timeout to 6 times the timeout of the Lambda function.
+- To use a DLQ to capture failed messages, set up it on the source queue and not on the Lambda function because the DLQ on functions is only for asynchronous invocations (and this is a synchronous invocation).
+- Alternatively to a DQL, use a Lambda destination to capture failed messages.
+
+### 18.13.1 More on Queues and Lambda
+
+Order of processing and scaling:
+- Lambda supports in-order processing for FIFO queues, scaling up to the number of active message groups.
+- For standard queues, items are not necessarily processed in order.
+- Lambda scales up to process a standard queue as quickly as possible.
+
+Errors and delivery:
+- When an error occurs in a queue, batches are returned to the queue as individual items and might be processed in a different grouping than the original batch.
+- Occasionally, the event source mapping might receive the same item from the same queue twice, even if no function error occurred. So, make sure to idempotent processing in Lambda functions.
+- Lambda deletes items from the queue after they are processed successfully.
+- You can configure the source queue to send items to a dead-letter queue if
+they cannot be processed.
+
+### 18.13.2 Event Source Mapping Scaling
+
+**Kinesis Data Streams** and **DynamoDB Streams**:
+- One Lambda invocation per stream shard.
+- If you use parallelization, you can have up to 10 batches processed per shard simultaneously.
+
+**SQS Standard**:
+- Lambda adds 60 more instances per minute to scale up.
+- Up to 1000 batches of messages processed simultaneously.
+
+**SQS FIFO**:
+- Messages with the same `GroupID` will be processed in order.
+- The Lambda function scales to the number of active message groups.
