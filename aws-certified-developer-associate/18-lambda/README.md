@@ -600,3 +600,42 @@ they cannot be processed.
 **SQS FIFO**:
 - Messages with the same `GroupID` will be processed in order.
 - The Lambda function scales to the number of active message groups.
+
+## 18.14 Using Event Source Mapping for Lambda and SQS Integration
+
+Create a new function called `lambda-sqs` and a new standard SQS queue called `lambda-demo-sqs`.
+
+Then, in the `lambda-sqs` function, click *Add Trigger* to add a new trigger. The first thing is to select the **trigger configuration**:
+
+![Lambda Trigger Configuration](/assets/aws-certified-developer-associate/lambda_trigger_configuration.png "Lambda Trigger Configuration")
+
+Select SQS, so you will need to enter the **SQS queue**, **batch size (how many messages to poll at once)**, and **maximum batch window (how long to gather records before invoking the function)**, and **enable the trigger**:
+
+![Lambda SQS Trigger Configuration](/assets/aws-certified-developer-associate/lambda_sqs_trigger_configuration.png "Lambda SQS Trigger Configuration")
+
+Keep in mind that to add the trigger successfully, you need to **add the necessary permissions to the function's execution role to allow it to poll the queue** (`ReceiveMessage` permission). Otherwise, you will get an error:
+
+![Lambda SQS Trigger Permissions Error](/assets/aws-certified-developer-associate/lambda_sqs_trigger_permissions_error.png "Lambda SQS Trigger Permissions Error")
+
+After adding the permissions and saving, the trigger gets added to the function and can be seen in the function's details:
+
+![Lambda SQS Trigger Added](/assets/aws-certified-developer-associate/lambda_sqs_trigger_added.png "Lambda SQS Trigger Added")
+
+To **test the integration**, you can send a message to the `lambda-sqs` queue. For example, you can send:
+
+![Lambda SQS Send Message](/assets/aws-certified-developer-associate/lambda_sqs_send_message.png "Lambda SQS Send Message")
+
+Since the function is long polling the `lambda-sqs` queue, it will process the message at a certain point. To check it, go into the function's log stream in CloudWatch Logs and see the message being processed. Notice the properties:
+- `body: 'Hello world!'`: it contains the content of the message.
+- `messageAttributes`: it contains the `foo` attribute sent in the message.
+- `eventSource: 'aws:sqs'`: it indicates that the event source is SQS.
+
+![Lambda SQS Log Stream](/assets/aws-certified-developer-associate/lambda_sqs_log_stream.png "Lambda SQS Log Stream")
+
+After the message is processed, it is deleted from the queue, so you will see that the number of messages available is 0 (supposing you only sent one message).
+
+To **disable the trigger**, go into the function's *Configuration* tab and click on the *SQS* trigger. Then, click on *Disable*:
+
+![Lambda SQS Trigger Disable](/assets/aws-certified-developer-associate/lambda_sqs_trigger_disable.png "Lambda SQS Trigger Disable")
+
+Disabling it can be useful to avoid costs due to the function continuosly polling the queue.
