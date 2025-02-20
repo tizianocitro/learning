@@ -457,3 +457,50 @@ All the invocations can be see in the function's log stream in CloudWatch Logs. 
 ![Lambda EventBridge Log Stream](/assets/aws-certified-developer-associate/lambda_eventbridge_log_stream.png "Lambda EventBridge Log Stream")
 
 You can also see that the `lambda-demo-eventbridge` **function has a resource-based policy that allows EventBridge to invoke it** (`lambda:invokeFunction` permission).
+
+## 18.9 Lambda Integration with S3 Event Notifications
+
+**When an object is created, modified, or deleted in an S3 bucket, an event notification can be sent to a Lambda function.**
+- A few examples of S3 events are S3:ObjectCreated, S3:ObjectRemoved, S3:ObjectRestore, and S3:Replication.
+- It is possible to filter the events based on the object name (e.g., only trigger the function when the object name contains `.jpg`).
+
+![Lambda S3 Event Notifications](/assets/aws-certified-developer-associate/lambda_s3_event_notifications.png "Lambda S3 Event Notifications")
+
+Notes:
+- S3 event notifications **typically deliver events in seconds but can sometimes take a minute or longer**.
+- If **two writes are made to a single non-versioned object at the same time**, it is **possible that only one event notification will be sent**.
+- **Enable versioning on the bucket to ensure that an event notification is sent for every write**.
+
+**Use case**: generate thumbnails of images uploaded to an S3 bucket.
+
+### 18.9.1 Metadata Sync by Integrating Lambda with S3
+
+When an object is uploaded to an S3 bucket, you can use a Lambda function to process the object, read its metadata, and sync them with a database. For example, you can sync the metadata of an image with a DynamoDB table or RDS table.
+
+![Lambda S3 Metadata Sync](/assets/aws-certified-developer-associate/lambda_s3_metadata_sync.png "Lambda S3 Metadata Sync")
+
+## 18.10 Creating a Lambda Function Integrating with S3 Event Notifications
+
+Create a new function called `lambda-s3`. 
+
+Create an S3 bucket called `demo-s3-event`. Then, go to the bucket's *Properties* tab and **configure an event notification to trigger the function when an object is created**. To do so, find the *Event Notifications* section and click on *Create Event Notification*. Give it a name of `invokeLambda`:
+
+![Lambda S3 Event Notification](/assets/aws-certified-developer-associate/lambda_s3_event_notification.png "Lambda S3 Event Notification")
+
+Then, for the **event types**, select the *All object create events* option:
+
+![Lambda S3 Event Notification Event Types](/assets/aws-certified-developer-associate/lambda_s3_event_notification_event_types.png "Lambda S3 Event Notification Event Types")
+
+Next is to configure the `lambda-s3` function as the **destination**:
+
+![Lambda S3 Event Notification Destination](/assets/aws-certified-developer-associate/lambda_s3_event_notification_destination.png "Lambda S3 Event Notification Destination")
+
+Save the event notification see it appear as a trigger in the function's details:
+
+![Lambda S3 Event Notification Trigger](/assets/aws-certified-developer-associate/lambda_s3_event_notification_trigger.png "Lambda S3 Event Notification Trigger")
+
+To **test that it is working**, upload an object to the bucket and see the function being triggered. Like for EventBridge, you can see the invocations in the function's log stream in CloudWatch Logs. In the function's code, you can **log the input event to see what is being sent to the function**. For example, you can see the bucket name, object key, and event name (e.g., `ObjectCreated:Put`).
+
+![Lambda S3 Event Notification Log Stream](/assets/aws-certified-developer-associate/lambda_s3_event_notification_log_stream.png "Lambda S3 Event Notification Log Stream")
+
+Also in this case, the `lambda-s3` **function has a resource-based policy that allows S3 to invoke it** (`lambda:invokeFunction` permission).
