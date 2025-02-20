@@ -639,3 +639,22 @@ To **disable the trigger**, go into the function's *Configuration* tab and click
 ![Lambda SQS Trigger Disable](/assets/aws-certified-developer-associate/lambda_sqs_trigger_disable.png "Lambda SQS Trigger Disable")
 
 Disabling it can be useful to avoid costs due to the function continuosly polling the queue.
+
+## 18.15 Using Event Source Mapping for Lambda and Kinesis Integration
+
+If you want to integrate a Lambda function with a Kinesis Data Stream, you can do it by creating an event source mapping. This is the same process as with SQS, but you need to **select Kinesis as the trigger configuration**.
+
+![Lambda Kinesis Trigger Configuration](/assets/aws-certified-developer-associate/lambda_kinesis_trigger_configuration.png "Lambda Kinesis Trigger Configuration")
+
+You need to specify the:
+- **Kinesis stream**: the stream that the function will poll.
+- **Consumer**: if you have an enhanced fan-out consumer.
+- **Batch size**: how many records to get in a batch (read at once).
+- **Starting position**: you have three options to start reading records from the stream:
+    - `TRIM_HORIZON`: oldest records.
+    - `LATEST`: newest records.
+    - `AT_TIMESTAMP`: records from a specific timestamp.
+
+**Enable the trigger** and, optionally, configure some **additional settings**, among which you have the ones in the image below and the **concurrent batches per shard (how many batches to process in parallel)**:
+
+![Lambda Kinesis Trigger Additional Settings](/assets/aws-certified-developer-associate/lambda_kinesis_trigger_additional_settings.png "Lambda Kinesis Trigger Additional Settings")
