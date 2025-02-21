@@ -658,3 +658,47 @@ You need to specify the:
 **Enable the trigger** and, optionally, configure some **additional settings**, among which you have the ones in the image below and the **concurrent batches per shard (how many batches to process in parallel)**:
 
 ![Lambda Kinesis Trigger Additional Settings](/assets/aws-certified-developer-associate/lambda_kinesis_trigger_additional_settings.png "Lambda Kinesis Trigger Additional Settings")
+
+## 18.16 Event and Context Object in Lambda
+
+When a Lambda function is invoked, it receives two arguments:
+- **Event**: the data that is passed to the function when it is invoked.
+- **Context**: information about the invocation, function, and execution environment.
+
+The image below shows an example of both objects:
+
+![Lambda Event and Context](/assets/aws-certified-developer-associate/lambda_event_context.png "Lambda Event and Context")
+
+### 18.16.1 Event Object
+
+It is a JSON-formatted document that **contains data for the function to process**.
+- It contains information from the invoking service (e.g., EventBridge).
+- For example, it contains input arguments, invoking service arguments, etc.
+
+The Lambda runtime converts the event to an object (e.g., a `dict` type in Python).
+
+### 18.16.2 Context Object
+
+It **provides methods and properties that provide information about the invocation, function, and runtime environment**.
+- For example, you can get `aws_request_id`, `function_name`, `memory_limit_in_mb`, etc.
+
+It is passed to functions by Lambda at runtime.
+
+### 18.16.3 Accessing the Event and Context Objects
+
+To access the event and context objects in a Lambda function, you can use the following code in Python:
+
+```python
+def lambda_handler(event, context):
+    # Access the event object
+    print("Event source: ", event.source)
+    print("Event region: ", event.region)
+
+    # Access the context object
+    print("Request ID: ", context.aws_request_id)
+    print("Function name: ", context.function_name)
+    print("Function ARN: ", context.invoked_function_arn)
+    print("Function memory limit (MB): ", context.memory_limit_in_mb)
+    print("CloudWatch log group name: ", context.log_group_name)
+    print("CloudWatch log stream name: ", context.log_stream_name)
+```
