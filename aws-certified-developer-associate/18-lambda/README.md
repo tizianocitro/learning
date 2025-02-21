@@ -702,3 +702,74 @@ def lambda_handler(event, context):
     print("CloudWatch log group name: ", context.log_group_name)
     print("CloudWatch log stream name: ", context.log_stream_name)
 ```
+
+## 18.17 Lambda Destinations
+
+**Destinations are for sending the result or failures of an asynchronous invocation or event source mapping somewhere**.
+- They are an alternative to DLQs.
+- Since their introduction, AWS recommends using destinations instead of DLQs because they allow you to send the results to multiple destinations instead of just SQS or SNS (as with DLQs).
+- You can use both destinations and DLQs at the same time.
+
+### 18.17.1 Destinations for Asynchronous Invocations
+
+For **asynchronous invocations**, you can **define destinations for both successful and failed events**. Destinations can be:
+- SQS.
+- SNS.
+- Lambda.
+- EventBridge.
+
+![Lambda Destinations for Asynchronous Invocations](/assets/aws-certified-developer-associate/lambda_destinations_async.png "Lambda Destinations for Asynchronous Invocations")
+
+### 18.17.2 Creating a Destination for a Lambda Function
+
+For **event source mapping**, you can **define destinations for discarded event batches**. Destinations can be:
+- SQS.
+- SNS.
+
+![Lambda Destinations for Event Source Mapping](/assets/aws-certified-developer-associate/lambda_destinations_mapping.png "Lambda Destinations for Event Source Mapping")
+
+## 18.18 Creating Destinations for a Lambda Function Asynchronous Invocation
+
+To add a destination to a function, go to the function's details console and click on *Add Destination*. In this case, we will **create a destination for successful invocations and one for failed invocations** for a function integrating with S3 called `lambda-s3`:
+
+![Lambda Add Destination](/assets/aws-certified-developer-associate/lambda_add_destination.png "Lambda Add Destination")
+
+Next step is to create two queues: a success queue called `s3-success` and a failure queue called `s3-failure`.
+
+### 18.18.1 Creating the Failure Destination
+
+For the failure destination, set the **condition** to `On failure` and the **destination type** to `SQS`. Then, select the `s3-failure` queue:
+
+![Lambda Failure Destination](/assets/aws-certified-developer-associate/lambda_failure_destination.png "Lambda Failure Destination")
+
+If your function's execution role does not have the necessary permissions to send failures to the destination, **saving the destination will attempt to add the necessary permissions to the role** for you.
+
+### 18.18.2 Creating the Success Destination
+
+To create the success destination, set the **condition** to `On success` and the **destination type** to `SQS`. Then, select the `s3-success` queue:
+
+![Lambda Success Destination](/assets/aws-certified-developer-associate/lambda_success_destination.png "Lambda Success Destination")
+
+Once saved, **destinations appear in the function's details**. In this case you will see 2 SQS destinations: one for success and one for failure.
+
+![Lambda Destinations Created](/assets/aws-certified-developer-associate/lambda_destinations_created.png "Lambda Destinations Created")
+
+But you can also see them in the *Configuration* tab:
+
+![Lambda Destinations Configuration](/assets/aws-certified-developer-associate/lambda_destinations_configuration.png "Lambda Destinations Configuration")
+
+### 18.18.3 Testing the Destinations
+
+To **test the success destination**, you can upload a file to S3 and see that in case of success, the message is sent to the `s3-success` queue (1 message available):
+
+![Lambda Destinations Success Message](/assets/aws-certified-developer-associate/lambda_destinations_success_message.png "Lambda Destinations Success Message")
+
+So, you can poll messages from the `s3-success` queue and see the message that was sent by the function and also that the event source is S3.
+- The **message contains the response body of the function**.
+
+![Lambda Destinations Success Message Received](/assets/aws-certified-developer-associate/lambda_destinations_success_message_received.png "Lambda Destinations Success Message Received")
+
+To **test the failure destination**, you can modify the function to raise an exception and see that in case of failure, the message is sent to the `s3-failure` queue (1 message available).
+- Keep in mind that **the function has to fail all the retry attempts before the message is sent to the failure destination**.
+- The message is similar to the one sent to the success destination, but it contains also a property called `approximateInvokeCount` that indicates the number of times the message was retried.
+- The response body contains all the error information you return in the function.
