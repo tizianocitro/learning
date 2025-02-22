@@ -773,3 +773,44 @@ To **test the failure destination**, you can modify the function to raise an exc
 - Keep in mind that **the function has to fail all the retry attempts before the message is sent to the failure destination**.
 - The message is similar to the one sent to the success destination, but it contains also a property called `approximateInvokeCount` that indicates the number of times the message was retried.
 - The response body contains all the error information you return in the function.
+
+## 18.19 Lambda Execution Role for Lambda to Access Other Services
+
+The execution role is the IAM role that the Lambda service assumes when it executes the function. It is the **role that grants the Lambda function permissions to access AWS services/resources**.
+- The **best practice is to create one execution role per function**.
+
+**Lambda uses the execution role to get the permissions to read from the stream/queue when you use an event source mapping** to invoke your function.
+- This is because the function polls the stream/queue via the event source mappings, it is not the service that invokes the function.
+- This is why when you create an event source mapping, you need to specify the execution role but do not need a resource-based policy.
+
+There are sample managed policies for Lambda:
+- `AWSLambdaBasicExecutionRole`: upload logs to CloudWatch, this is why it is called *basic*.
+- `AWSLambdaKinesisExecutionRole`: read from Kinesis.
+- `AWSLambdaDynamoDBExecutionRole`: read from DynamoDB Streams.
+- `AWSLambdaSQSQueueExecutionRole`: read from SQS.
+- `AWSLambdaVPCAccessExecutionRole`: deploy Lambda function in VPC.
+- `AWSXRayDaemonWriteAccess`: upload trace data to X-Ray.
+
+You can see a function's execution role in the *Permissions* section of the function's *Configuration* tab:
+
+![Lambda Execution Role](/assets/aws-certified-developer-associate/lambda_execution_role.png "Lambda Execution Role")
+
+## 18.20 Lambda Resource-based Policies for Other Services to Invoke Lambda
+
+When you use other services to invoke a Lambda function, you need to **use a resource-based policy to grant permissions to the services to invoke the function**.
+- It is similar to an S3 bucket policy for S3 buckets.
+- When an AWS service like S3 calls your Lambda function, the resource-based policy needs to give it permission to invoke the function.
+
+An **IAM principal can access you Lambda function if one of these two conditions is met**:
+- The IAM policy attached to the principal authorizes it to access the function (e.g. user access).
+- The resource-based policy authorizes access to the function (e.g. service access).
+
+You can see a function's resource-based policy in the *Permissions* section of the function's *Configuration* tab:
+
+![Lambda Resource-based Policy](/assets/aws-certified-developer-associate/lambda_resource_based_policy.png "Lambda Resource-based Policy")
+
+And you can see it in details by clicking on the *View Policy*:
+
+![Lambda Resource-based Policy Details](/assets/aws-certified-developer-associate/lambda_resource_based_policy_details.png "Lambda Resource-based Policy Details")
+
+The policy above allows the `s3.amazonaws.com` service to invoke the function `lambda-s3` using the `lambda:InvokeFunction` permission.
