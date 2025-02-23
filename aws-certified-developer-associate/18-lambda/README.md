@@ -814,3 +814,39 @@ And you can see it in details by clicking on the *View Policy*:
 ![Lambda Resource-based Policy Details](/assets/aws-certified-developer-associate/lambda_resource_based_policy_details.png "Lambda Resource-based Policy Details")
 
 The policy above allows the `s3.amazonaws.com` service to invoke the function `lambda-s3` using the `lambda:InvokeFunction` permission.
+
+## 18.21 Lambda Environment Variables
+
+Environment variable are key/value pairs in string form that allow you to adjust the function behavior without updating code.
+- The environment variables are available to your code.
+- The Lambda service adds its own system environment variables as well.
+
+You can use environment variables to store secrets encrypted by KMS either via the Lambda service key or your own customer-managed key.
+
+### 18.21.1 Using Environment Variables in Lambda
+
+Function can a environment variables like show below but be aware that it is language-dependent:
+
+```python
+import os
+
+def lambda_handler(event, context):
+    environment_name = os.environ['ENVIRONMENT_NAME']
+    print(environment_name)
+```
+
+For the code above to actually use the environment variable `ENVIRONMENT_NAME`, we need to add it to the Lambda function. To do so, go to the function's *Configuration* tab and scroll down to the *Environment Variables* section. Then, click on *Edit* to add variables:
+
+![Lambda Environment Variables](/assets/aws-certified-developer-associate/lambda_environment_variables.png "Lambda Environment Variables")
+
+Then, clik on *Add Environment Variable* and **add the `ENVIRONMENT_NAME` variable** with a value of `dev`:
+
+![Lambda Environment Variables Add](/assets/aws-certified-developer-associate/lambda_environment_variables_add.png "Lambda Environment Variables Add")
+
+There is also **encrypted configuration** for environment variables (in transit and at rest):
+
+![Lambda Environment Variables Encrypted](/assets/aws-certified-developer-associate/lambda_environment_variables_encrypted.png "Lambda Environment Variables Encrypted")
+
+Save and **see the variables in the function's details**:
+
+![Lambda Environment Variables List](/assets/aws-certified-developer-associate/lambda_environment_variables_list.png "Lambda Environment Variables List")
