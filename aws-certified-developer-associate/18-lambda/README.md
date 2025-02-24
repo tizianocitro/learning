@@ -850,3 +850,63 @@ There is also **encrypted configuration** for environment variables (in transit 
 Save and **see the variables in the function's details**:
 
 ![Lambda Environment Variables List](/assets/aws-certified-developer-associate/lambda_environment_variables_list.png "Lambda Environment Variables List")
+
+## 18.22 Logging and Monitoring for Lambda
+
+Lambda **functions can log to CloudWatch Logs**:
+- Lambda execution logs are stored in CloudWatch Logs.
+- Make sure your Lambda function has an execution role with an IAM policy that authorizes writes to CloudWatch Logs.
+- CloudWatch Logs is the default logging service for Lambda.
+
+**Monitoring with CloudWatch Metrics** because Lambda metrics are displayed in CloudWatch Metrics. You have metrics like:
+- Invocations.
+- Durations.
+- Concurrent executions: level of concurrency of the function.
+- Error count.
+- Success rates.
+- Throttles: when the function is throttled because it reached the concurrency limit.
+- Async delivery failures: when the function fails to deliver an event to the destination oe dead-letter queue.
+- Iterator age: for Kinesis/DynamoDB Streams.
+
+**Tracing with X-Ray**:
+- Enable tracing in Lambda configuration: use the *Active Tracing* option to make Lambda run the X-Ray daemon for you.
+- Use X-Ray SDK in the function's code.
+- Ensure the function has a correct execution role to write into X-Ray, and, for this, there is a managed policy called `AWSXRayDaemonWriteAccess`.
+- Set the environment variables to communicate with X-Ray:
+    - `_X_AMZN_TRACE_ID`: contains the tracing header.
+    - `AWS_XRAY_CONTEXT_MISSING`: by default, it is `LOG_ERROR`.
+    - `AWS_XRAY_DAEMON_ADDRESS`: this is the most important as it indicates the X-Ray daemon address in the form of `IP_ADDRESS:PORT`.
+
+### 18.22.1 Monitoring Lambda Metrics
+
+Go to the function's *Monitoring* tab to **see the function metrics** under the *Metrics* section:
+
+![Lambda Monitoring Metrics](/assets/aws-certified-developer-associate/lambda_monitoring_metrics.png "Lambda Monitoring Metrics")
+
+### 18.22.2 Logging Lambda Execution
+
+To **see the logs of the function**, go to the function's *Monitoring* tab and click on *View Logs in CloudWatch* or access the *Logs* section and click on one of the log streams to see it in CloudWatch Logs:
+
+![Lambda View Logs in CloudWatch](/assets/aws-certified-developer-associate/lambda_monitoring_details.png "Lambda View Logs in CloudWatch")
+
+Then, you can **inspect logs**:
+
+![Lambda Inspect Logs in CloudWatch](/assets/aws-certified-developer-associate/lambda_alb_monitoring.png "Lambda Inspect Logs in CloudWatch")
+
+### 18.22.3 Tracing Lambda with X-Ray
+
+To enable X-Ray tracing, go to the function's *Configuration* tab and scroll down to the *Monitoring and Operations Tools* section. Then, click on *Edit* to enable tracing:
+
+![Lambda Monitoring and Operations Tools](/assets/aws-certified-developer-associate/lambda_monitoring_operations_tools.png "Lambda Monitoring and Operations Tools")
+
+Then, **enable active tracing** by toggling the option:
+
+![Lambda Enable Active Tracing](/assets/aws-certified-developer-associate/lambda_enable_active_tracing.png "Lambda Enable Active Tracing")
+
+If the function does not have the necessary permissions to write to X-Ray, the console will try to add the necessary permissions for you:
+
+![Lambda X-Ray Permissions](/assets/aws-certified-developer-associate/lambda_xray_permissions.png "Lambda X-Ray Permissions")
+
+After saving, it will appear as enabled in the function's *Monitoring and Operations Tools* section. This is how the service map could then appear in X-Ray (the one below is the old X-Ray console):
+
+![Lambda X-Ray Service Map](/assets/aws-certified-developer-associate/lambda_xray_service_map.png "Lambda X-Ray Service Map")
