@@ -910,3 +910,83 @@ If the function does not have the necessary permissions to write to X-Ray, the c
 After saving, it will appear as enabled in the function's *Monitoring and Operations Tools* section. This is how the service map could then appear in X-Ray (the one below is the old X-Ray console):
 
 ![Lambda X-Ray Service Map](/assets/aws-certified-developer-associate/lambda_xray_service_map.png "Lambda X-Ray Service Map")
+
+## 18.23 Lambda@Edge and CloudFront Functions
+
+Many modern applications execute some logic at the edge. To do so, you can use edge functions.
+
+**Edge functions consist of code that you write and attach to CloudFront distributions to run close to your users to minimize latency**.
+
+CloudFront provides **two types of edge functions**:
+- CloudFront Functions.
+- Lambda@Edge.
+
+Use cases:
+- Customize the CDN content.
+- Website security and privacy.
+- Dynamic web application at the edge.
+- Search engine optimization (SEO).
+- Intelligently route across origins and data centers.
+- Bot mitigation at the edge.
+- Real-time image transformation.
+- A/B testing.
+- User authentication and authorization.
+- User prioritization.
+- User tracking and analytics.
+
+### 18.23.1 Lambda@Edge
+
+Lambda **functions written in Node.js or Python**.
+- Scale to thousands of requests/second.
+- Author your functions in one region (us-east-1, the same where you manage your CloudFront distributions), then CloudFront replicates them to its locations.
+
+They are used to **change CloudFront requests and responses**:
+- Viewer request: after CloudFront receives a request from a viewer.
+- Origin request: before CloudFront forwards the request to the origin.
+- Origin response: after CloudFront receives the response from the origin.
+- Viewer response: before CloudFront forwards the response to the viewer.
+
+![Lambda@Edge](/assets/aws-certified-developer-associate/lambda_edge.png "Lambda@Edge")
+
+Lambda@Edge can be **used when** you need/have:
+- Longer execution time (several milliseconds).
+- Adjustable CPU or memory.
+- Your code depends on third-party libraries (e.g., AWS SDK to access other AWS services).
+- Network access to use external services for processing.
+- File system access or access to the body of HTTP requests.
+
+### 18.23.2 CloudFront Functions
+
+**Lightweight functions written in JavaScript that modify viewer requests and viewer responses** at the edge.
+- Useful for high-scale, latency-sensitive CDN customizations.
+- Provide sub-milliseconds startup times and serve millions of requests/second.
+- They are a native feature of CloudFront, so the code is managed entirely within CloudFront.
+
+They are used to **change viewer requests and responses only**:
+- Viewer request: after CloudFront receives a request from a viewer.
+- Viewer response: before CloudFront forwards the response to the viewer.
+
+![CloudFront Functions](/assets/aws-certified-developer-associate/cloudfront_functions.png "CloudFront Functions")
+
+**Used for things that can be done in less than 1 millisecond**:
+- Cache key normalization: transform request attributes (headers, cookies, query strings, URL) to create an optimal cache key.
+- Header manipulation: insert/modify/delete HTTP headers in the request or response.
+- URL rewrites or redirects.
+- Request authentication and authorization.
+- Create and validate user-generated tokens (e.g., JWT) to allow/deny requests.
+
+### 18.23.3 Lambda@Edge vs CloudFront Functions
+
+Some of the **differences in terms of features** are summarized in the table below:
+
+| | Lambda@Edge | CloudFront Functions |
+| --- | --- | --- |
+| Runtime support | Node.js and Python | JavaScript |
+| Number of requests | Thousands of requests/second | Millions of requests/second |
+| CloudFront triggers | Viewer request, origin request, origin response, viewer response | Viewer request, viewer response |
+| Max execution time | Up to 5/10 seconds | < 1 millisecond |
+| Max memory | 128 MB, up to 10 GB | 2 MB |
+| Total package size | Up to 1/50 MB | 10 KB |
+| Network access, file system access | Yes | No |
+| Access to the request body  | Yes | No |
+| Pricing | No free tier, charged per request and duration | Free tier available, 1/6th the price of @Edge |
