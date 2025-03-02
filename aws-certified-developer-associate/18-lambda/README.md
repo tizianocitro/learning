@@ -990,3 +990,68 @@ Some of the **differences in terms of features** are summarized in the table bel
 | Network access, file system access | Yes | No |
 | Access to the request body  | Yes | No |
 | Pricing | No free tier, charged per request and duration | Free tier available, 1/6th the price of @Edge |
+
+## 18.24 Lambda Networking and VPC
+
+### 18.24.1 Default Lambda Deployment
+
+By default, Lambda **functions are launched outside your VPC**, they are **launched in an AWS-owned VPC**. Therefore, **they cannot access resources in your VPC** (e.g., RDS, ElastiCache, etc.)
+
+In a Lambda default deployment, your functions can access the internet, but they cannot access resources in your VPC and private subnets:
+
+![Lambda Default Deployment](/assets/aws-certified-developer-associate/lambda_default_deployment.png "Lambda Default Deployment")
+
+### 18.24.2 Deploy Lambda in VPC
+
+To **access resources in your VPC**, you need to **deploy your Lambda function inside your VPC**. This is done by configuring the function with desired VPC ID, subnets, and security groups.
+
+**Lambda will create an Elastic Network Interface (ENI) in your VPC/subnets** using the above configuration.
+- The function needs the `AWSLambdaVPCAccessExecutionRole` role to create ENIs.
+- The **function will access the private resources in your VPC via the ENI**.
+- Resources in the VPC needs to allow inbound/outbound traffic from the security group attached to the ENI.
+
+![Lambda VPC Deployment](/assets/aws-certified-developer-associate/lambda_vpc_deployment.png "Lambda VPC Deployment")
+
+### 18.24.3 Access the Public Internet from Lambda in VPC
+
+Lambda **functions inside your VPC do not have internet access**.
+
+Even deploying it in a public subnet, it will not have internet access. **Deploying a function in a public subnet does not give it internet access or a public IP** (the exam tests you on this).
+
+**Deploying a function in a private subnet gives it internet access if you have a NAT Gateway/Instance**.
+- The private subnet must have a route to the NAT Gateway.
+- The NAT Gateway must be in a public subnet with a route to the Internet Gateway.
+
+You can use the NAT Gateway to access other AWS services via the internet. However, **use VPC Endpoints to privately access AWS services without a NAT** to avoid going over the internet.
+
+![Lambda VPC Internet Access](/assets/aws-certified-developer-associate/lambda_vpc_internet_access.png "Lambda VPC Internet Access")
+
+Lambda integration with CloudWatch Logs works even without endpoints or NAT Gateway.
+
+## 18.25 Deploying Lambda Functions in VPC
+
+Create a function `lambda-vpc` and a security group called `lambda-sg` inside the VPC you want to deploy the function. No need for inbound/outbound rules, as in this example, you only need a security group to attach to the function:
+
+![Lambda VPC Security Group](/assets/aws-certified-developer-associate/lambda_vpc_security_group.png "Lambda VPC Security Group")
+
+Now, go to the *Configuration* tab of the function and scroll down to the *VPC* section where you can configure the VPC configuration:
+
+![Lambda VPC Configuration](/assets/aws-certified-developer-associate/lambda_vpc_configuration.png "Lambda VPC Configuration")
+
+Then, click on *Edit* to **add the VPC, subnets, and security group** to the function's *configuration*:
+
+![Lambda VPC Edit](/assets/aws-certified-developer-associate/lambda_vpc_edit.png "Lambda VPC Edit")
+
+You can see a **warning** that explains how to configure the function to access the internet if needed.
+
+For the **security group**, you will also see the eventual inbound/outbound rules:
+
+![Lambda VPC Security Group Rules](/assets/aws-certified-developer-associate/lambda_vpc_security_group_rules.png "Lambda VPC Security Group Rules")
+
+For this to work, the function needs the `CreateNetworkInterface` permission, which can be granted by attaching the `AWSLambdaVPCAccessExecutionRole` managed policy to the function's execution role.
+
+![Lambda VPC Error on Permissions](/assets/aws-certified-developer-associate/lambda_vpc_error_permissions.png "Lambda VPC Error on Permissions")
+
+After saving, the function will be deployed in the VPC and you can check in the *Network Interfaces* section of the EC2 console that new ENIs have been created. You will have **one ENI per subnet**, so three ENIs because we have added three subnets in the function's security group:
+
+![Lambda VPC ENIs](/assets/aws-certified-developer-associate/lambda_vpc_enis.png "Lambda VPC ENIs")
