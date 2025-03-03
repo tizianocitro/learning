@@ -1055,3 +1055,18 @@ For this to work, the function needs the `CreateNetworkInterface` permission, wh
 After saving, the function will be deployed in the VPC and you can check in the *Network Interfaces* section of the EC2 console that new ENIs have been created. You will have **one ENI per subnet**, so three ENIs because we have added three subnets in the function's security group:
 
 ![Lambda VPC ENIs](/assets/aws-certified-developer-associate/lambda_vpc_enis.png "Lambda VPC ENIs")
+
+## 18.26 Lambda Function Configuration
+
+**RAM**:
+- Scale from 128MB to 10GB in 1MB increments.
+- **Increase the memory (MB) to increase the vCPUs**.
+- The more RAM you add, the more vCPU credits you get, so you cannot increase the number of vCPUs directly. You need to increase the RAM to get more vCPUs.
+- The more RAM you add, the more expensive the function is.
+- At 1,792 MB, a function has the equivalent of one full vCPU.
+- After 1,792 MB, you get more than one vCPU and need to use multi-threading in your code to benefit from it (up to 6 vCPU).
+- **If your application is CPU-bound (computation heavy), increase RAM** (common exam question).
+
+**Timeout**: by default, it is 3 seconds, maximum timeout is 900 seconds (15 minutes).
+- Anything above 15 minutes is a good candidate for Fargate/ECS/EC2 but not for Lambda.
+
