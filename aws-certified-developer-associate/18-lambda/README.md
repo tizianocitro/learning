@@ -1070,3 +1070,50 @@ After saving, the function will be deployed in the VPC and you can check in the 
 **Timeout**: by default, it is 3 seconds, maximum timeout is 900 seconds (15 minutes).
 - Anything above 15 minutes is a good candidate for Fargate/ECS/EC2 but not for Lambda.
 
+## 18.27 Lambda Execution Context
+
+The **execution context is a temporary runtime environment that initializes any external dependencies of your lambda code**.
+- It is great for database connections, HTTP clients, SDK clients, etc.
+
+The **execution context is maintained for some time in anticipation of another Lambda function invocation**. The next function invocation can re-use the context and save time in initializing connections objects.
+- The execution context includes the `/tmp` directory: a space to write temporary files that will be available across executions.
+
+### 18.27.1 Take Advantage of Execution Context
+
+This is **important at the exam**: best practice is that everything that takes a long time to initialize should be done outside the handler function to take advantage of the execution context and be re-used across invocations.
+
+The following is **bad code because it initializes the database connection every time the function is invoked**:
+
+```python
+import os
+
+def get_user_handler(event, context):
+    # Initialize the connection every time the function is invoked
+    DB_URL = os.getenv['DB_URL']
+    db_client = db.connect(DB_URL)
+    user = db_client.get_user(event['user_id'])
+    return user
+```
+
+Instead, the following is **good code because it initializes the database connection once and re-uses it across invocations**:
+
+```python
+import os
+
+# The connection will be reused across invocations
+DB_URL = os.getenv['DB_URL']
+db_client = db.connect(DB_URL)
+
+def get_user_handler(event, context):
+    user = db_client.get_user(event['user_id'])
+    return user
+```
+
+### 18.27.2 Transient Caching Using the `/tmp` Directory
+
+You can use the `/tmp` directory if your function needs to download a big file to work or needs disk space to perform operations, etc.
+- Max size is 10GB.
+
+The `/tmp` **directory content remains when the execution context is frozen**, providing **transient cache that can be used for multiple invocations** (e.g.,  helpful to checkpoint your work).
+- Use S3 for permanent persistence of objects (non temporary).
+- There is no Lambda feature to directly encrypt content on `/tmp`, you must use KMS to generate data keys and encrypt/decrypt the data using these keys.
