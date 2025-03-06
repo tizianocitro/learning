@@ -911,6 +911,15 @@ After saving, it will appear as enabled in the function's *Monitoring and Operat
 
 ![Lambda X-Ray Service Map](/assets/aws-certified-developer-associate/lambda_xray_service_map.png "Lambda X-Ray Service Map")
 
+X-Ray can be enabled when creating a Lambda function with CloudFront using the property:
+
+```yaml
+TracingConfig:
+  Mode: Active
+```
+
+Remember to assign the proper permissions to the Lambda function to write to X-Ray.
+
 ## 18.23 Lambda@Edge and CloudFront Functions
 
 Many modern applications execute some logic at the edge. To do so, you can use edge functions.
@@ -1117,3 +1126,23 @@ You can use the `/tmp` directory if your function needs to download a big file t
 The `/tmp` **directory content remains when the execution context is frozen**, providing **transient cache that can be used for multiple invocations** (e.g.,  helpful to checkpoint your work).
 - Use S3 for permanent persistence of objects (non temporary).
 - There is no Lambda feature to directly encrypt content on `/tmp`, you must use KMS to generate data keys and encrypt/decrypt the data using these keys.
+
+## 18.28 Changing Lambda Function Configuration
+
+You can change the function configuration at any time by going into the function's *Configuration* tab.
+
+In the *General Configuration* section, you can change the function **description**, **memory**, **timeout**, and **execution role**:
+
+![Lambda Function Configuration General](/assets/aws-certified-developer-associate/lambda_function_configuration_general.png "Lambda Function Configuration General")
+
+If you click on *Edit*, you will see:
+
+![Lambda Function Configuration General Edit](/assets/aws-certified-developer-associate/lambda_function_configuration_general_edit.png "Lambda Function Configuration General Edit")
+
+If the **timeout is triggered**, the function execution will be terminated and the logs will show the error message. For example, with a timeout of 3 seconds:
+
+![Lambda Function Timeout Error](/assets/aws-certified-developer-associate/lambda_function_timeout_error.png "Lambda Function Timeout Error")
+
+You can see **how long it took for the function to execute** in the `Duration` field in the logs, while the timeout is in the `errorMessage` field of the response body. Meanwhile, the time it took for the function to initialize is in the `Init Duration` field (it is the **time to initialize the execution context**, e.g., to execute functions outside the handler function):
+
+![Lambda Function Init Duration](/assets/aws-certified-developer-associate/lambda_function_init_duration.png "Lambda Function Init Duration")
