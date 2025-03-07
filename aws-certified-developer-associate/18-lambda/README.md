@@ -1254,3 +1254,15 @@ As you can see, what you reserve is deducted from the account's total unreserved
 From the *Provisioned Concurrency Configurations* section, you can also configure **provisioned concurrency** to set a pool of warm instances to reduce cold starts. Either click on *Add* or *Add Configuration*:
 
 ![Lambda Provisioned Concurrency Add](/assets/aws-certified-developer-associate/lambda_provisioned_concurrency_add.png "Lambda Provisioned Concurrency Add")
+
+## 18.33 Lambda Cold Starts and Provisioned Concurrency
+
+**Cold start**:
+- When a new instance starts, code is loaded and code outside the handler run (init).
+- If the init takes long (e.g., for code, dependencies, SDK, etc.), this process can take some time.
+- First request served by new instances has higher latency than the rest of the requests.
+
+To address cold starts, you can **use provisioned concurrency to allocate concurrency in advance** before the function is invoked, **so the cold start never happens** and all invocations have low latency.
+- **Application Auto Scaling can manage concurrency based on a schedule or target utilization**.
+- Provisioned concurrency is billed per hour, even if the function is not invoked.
+- Cold starts in VPC have been dramatically reduced.
