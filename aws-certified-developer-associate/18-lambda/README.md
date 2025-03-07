@@ -1197,3 +1197,15 @@ In this case, choose among AWS-provided layers and select the `AWSSDKPandas-Pyth
 ![Lambda Layers Add Pandas](/assets/aws-certified-developer-associate/lambda_layers_add_pandas.png "Lambda Layers Add Pandas")
 
 After adding the layer, you can see it in the function's details as the number of layers will increase. Then, you can run the function again and see that it works because the `pandas` library is now available.
+
+## 18.30 File System Mounting with EFS
+
+Lambda **functions can access EFS file systems if they are running in a VPC**. To do so configure Lambda to **mount EFS file systems to local directory during initialization**.
+- This works only using EFS Access Points.
+- **Check for the EFS connection limits because for each function instance, you will get a new connection**, so you can incur in connection burst limits.
+
+![Lambda EFS](/assets/aws-certified-developer-associate/lambda_efs.png "Lambda EFS")
+
+## 18.31 Storage Options for Lambda
+
+![Lambda Storage Options](/assets/aws-certified-developer-associate/lambda_storage_options.png "Lambda Storage Options")
