@@ -1209,3 +1209,48 @@ Lambda **functions can access EFS file systems if they are running in a VPC**. T
 ## 18.31 Storage Options for Lambda
 
 ![Lambda Storage Options](/assets/aws-certified-developer-associate/lambda_storage_options.png "Lambda Storage Options")
+
+## 18.32 Lambda Concurrency
+
+The more we trigger a Lambda function, the more it will scale out. **Concurrency is the number of invocations your function is processing at any given time**.
+- Default limit is 1000 concurrent executions.
+- If you need a higher limit, open a support ticket to request it.
+
+You can **set a reserved concurrency at the function level**, which imposes a **limit to the number of concurrent executions** of the function. **Each invocation over the concurrency limit will trigger a throttle** and the throttle behavior depends on the invocation type:
+- Synchronous invocation: the client receives a `ThrottleError - 429` error.
+- Asynchronous invocation: the event is retried automatically and then sent to the DLQ or the destination.
+
+The **concurrency you reserve is deducted from the account's total unreserved concurrency** (which is available for all functions in the account).
+
+### 18.32.1 Concurrency Issue
+
+If you do not reserve (so limit) concurrency, a **single application can trigger a lot of invocations and exhaust the concurrency limit**. This can **lead to throttling in all other applications in the same account**:
+
+![Lambda Concurrency Issue](/assets/aws-certified-developer-associate/lambda_concurrency_issue.png "Lambda Concurrency Issue")
+
+### 18.32.2 Concurrency with Asynchronous Invocations
+
+Consider a function that is triggered every time we insert an object into an S3 bucket. 
+
+If the function does not have enough concurrency available to process all events, additional requests are throttled.
+
+For throttling errors (`429`) and system errors (`500`-series), Lambda returns the event to the queue and attempts to run the function again for up to 6 hours.
+
+The retry interval increases exponentially from 1 second after the first attempt to a maximum of 5 minutes.
+
+### 18.32.3 Configuring Concurrency Settings in Lambda Functions
+
+Go into a function's *Configuration* tab and scroll down to the *Concurrency* section to configure the concurrency settings:
+
+![Lambda Concurrency Configuration](/assets/aws-certified-developer-associate/lambda_concurrency_configuration.png "Lambda Concurrency Configuration")
+
+Click on *Edit* to configure whether you want to use **unreserved accoount concurrency** or **reserve concurrency**:
+
+![Lambda Concurrency Edit](/assets/aws-certified-developer-associate/lambda_concurrency_edit.png "Lambda Concurrency Edit")
+
+As you can see, what you reserve is deducted from the account's total unreserved concurrency (which is available for all functions in the account).
+- You can set the reserved concurrency to 0 to test the throttle behavior.
+
+From the *Provisioned Concurrency Configurations* section, you can also configure **provisioned concurrency** to set a pool of warm instances to reduce cold starts. Either click on *Add* or *Add Configuration*:
+
+![Lambda Provisioned Concurrency Add](/assets/aws-certified-developer-associate/lambda_provisioned_concurrency_add.png "Lambda Provisioned Concurrency Add")
