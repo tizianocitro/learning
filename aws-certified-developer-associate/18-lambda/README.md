@@ -1146,3 +1146,54 @@ If the **timeout is triggered**, the function execution will be terminated and t
 You can see **how long it took for the function to execute** in the `Duration` field in the logs, while the timeout is in the `errorMessage` field of the response body. Meanwhile, the time it took for the function to initialize is in the `Init Duration` field (it is the **time to initialize the execution context**, e.g., to execute functions outside the handler function):
 
 ![Lambda Function Init Duration](/assets/aws-certified-developer-associate/lambda_function_init_duration.png "Lambda Function Init Duration")
+
+## 18.29 Lambda Layers
+
+This feature allows you to do two things:
+1. **Create custom runtimes** for languages that are not natively supported by Lambda. For example, the one for the Rust language at [https://github.com/awslabs/aws-lambda-rust-runtime](https://github.com/awslabs/aws-lambda-rust-runtime).
+2. **Externalize dependencies to re-use them** across functions and avoid to repackaging them every time.
+![Lambda Layers](/assets/aws-certified-developer-associate/lambda_layers.png "Lambda Layers")
+
+You can get up to 5 layers per function and the total unzipped size of the function and all layers cannot exceed 250MB.
+
+### 18.29.1 Using Lambda Layers
+
+Create a `lambda-layer-demo` function and use a library in its code like `pandas`. For example:
+
+```python
+import pandas as pd
+
+def lambda_handler(event, context):
+    # Some sample data
+    data = {
+        'Name': ['Tom', 'Nick', 'John', 'Alice'],
+        'Age': [20, 21, 19, 18]
+    }
+
+    # Create dataframe
+    df = pd.DataFrame(data)
+
+    # Convert to JSON
+    result = df.to_dict(orient='records')
+
+    return result
+```
+
+If you try to run the function, you will get an error because the `pandas` library is not available in the Lambda runtime. To **add a layer** with the `pandas` library and solve this issue, go to the function's details page and click on *Layers* (the UI is a bit different in this example):
+
+![Lambda Layers Add](/assets/aws-certified-developer-associate/lambda_layers_add.png "Lambda Layers Add")
+
+This will bring you to a UI where you can click on *Add a Layer* to add a new layer:
+
+![Lambda Layers Add Layer](/assets/aws-certified-developer-associate/lambda_layers_add_layer.png "Lambda Layers Add Layer")
+
+From this new page, you can choose **different ways of adding a layer**:
+- **Custom layers**: choose a layer from the ones creted by your account.
+- **AWS layers**: choose among the AWS-provided layers.
+- **Specify an ARN**: use a layer by providing its ARN.
+
+In this case, choose among AWS-provided layers and select the `AWSSDKPandas-Python<XXX>` layer:
+
+![Lambda Layers Add Pandas](/assets/aws-certified-developer-associate/lambda_layers_add_pandas.png "Lambda Layers Add Pandas")
+
+After adding the layer, you can see it in the function's details as the number of layers will increase. Then, you can run the function again and see that it works because the `pandas` library is now available.
