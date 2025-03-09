@@ -1266,3 +1266,77 @@ To address cold starts, you can **use provisioned concurrency to allocate concur
 - **Application Auto Scaling can manage concurrency based on a schedule or target utilization**.
 - Provisioned concurrency is billed per hour, even if the function is not invoked.
 - Cold starts in VPC have been dramatically reduced.
+
+## 18.34 Dependency Management in Lambda Functions
+
+If your Lambda function depends on external libraries like X-Ray SDK, database clients, etc. You need to **install the packages (the dependencies) alongside your code and zip it together**. For example:
+- Node.js: use npm and the `node_modules` directory, so not just he `package.json` file.
+- Python: use pip with the `--target` options.
+- Java: include the relevant `.jar` files.
+
+Upload the zip straight to Lambda if it is less than 50MB, otherwise upload it to S3 first and then reference it in Lambda.
+
+Native libraries work but they need to be compiled on Amazon Linux, while AWS SDK is pre-installed in every Lambda function.
+
+### 18.34.1 Managing Dependencies
+
+Consider the following function's code:
+
+```javascript
+// Require the X-Ray SDK (need to install it first)
+const AWSXRay = require('aws-xray-sdk-core');
+
+// Require the AWS SDK (comes with every Lambda function)
+const AWS = AWSXRay.captureAWS(require('aws-sdk'));
+
+// We will use the S3 service, so we need a proper IAM role
+const s3 = new AWS.S3();
+
+exports.handler = async function(event) {
+  return s3.listBuckets().promise();
+}
+```
+
+Create a `index.js` file in your directory and copy the code above in it. As you can see, the code uses the X-Ray SDK, so we need to **install the dependency**. Do so via the command:
+
+```bash
+# Use npm because it is a Node.js function
+npm install aws-xray-sdk
+```
+
+Set the proper permissions for these files and zip them together:
+
+```bash
+chmod a+r *
+
+# You need `zip` installed
+zip -r function.zip *
+```
+
+Then, create the Lambda function bu uploading the **zip project files** using the CLI:
+
+```bash
+aws lambda create-function \
+    --zip-file fileb://function.zip \
+    --function-name lambda-xray-with-dependencies \
+    --runtime nodejs14.x \
+    --handler index.handler \
+    --role arn:aws:iam::001736599714:role/DemoLambdaWithDependencies
+```
+
+Since we need to access S3, we add a role to the function that has the necessary permissions to access it. The function also uses X-Ray, so we need to enable active tracing in the function's configuration.
+
+If you want to **load the ZIP file from the console**, you can do it in the *Code* section of the function's *Configuration* tab, where you can also see the option to load the ZIP file from S3:
+
+![Lambda Load ZIP File](/assets/aws-certified-developer-associate/lambda_load_zip_file.png "Lambda Load ZIP File")
+
+If you want to **load the ZIP file from S3 location** (in this case, without versioning) using the CLI:
+
+```bash
+aws lambda create-function \
+    --function-name lambda-xray-with-dependencies \
+    --runtime nodejs14.x \
+    --role arn:aws:iam::001736599714:role/DemoLambdaWithDependencies \
+    --handler index.handler \
+    --code S3Bucket=my-bucket,S3Key=function.zip
+```
