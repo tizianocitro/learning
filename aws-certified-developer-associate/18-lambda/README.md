@@ -1340,3 +1340,90 @@ aws lambda create-function \
     --handler index.handler \
     --code S3Bucket=my-bucket,S3Key=function.zip
 ```
+
+## 18.35 Lambda and CloudFormation
+
+Two ways to upload Lambda functions via CloudFormation:
+1. **Inline**: code is written directly in the CloudFormation template.
+2. **S3**: code is uploaded to S3 and referenced in the CloudFormation template.
+
+When you create an application through CloudFormation, the console will show you a message that the function belongs to an application because the Lambda service knows that the function was created through CloudFormation:
+
+![Lambda Belongs to Application](/assets/aws-certified-developer-associate/lambda_belongs_application.png "Lambda Belongs to Application")
+
+### 18.35.1 Inline (No Dependencies)
+
+Inline functions are very simple. You can **use the `Code.ZipFile` property to specify the code inline** but you **cannot include function dependencies with inline functions**. For example:
+
+```yaml
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Lambda function inline
+Resources:
+  Function:
+    Type: AWS::Lambda::Function
+    Properties:
+      Runtime: python3.x
+      Role: arn:aws:iam::123456789012:role/lambda-role
+      Handler: index.handler
+      Code:
+        ZipFile: |
+          import os
+          import db
+
+          DB_URL = os.getenv("DB_URL")
+          db_client = db.connect(DB_URL)
+
+          def handler(event, context):
+              user = db_client.get(user_id=event["user_id"])
+              return user
+```
+
+### 18.35.2 Through S3 (With Dependencies)
+
+You must store the Lambda zip in S3 and reference it in the CloudFormation template using the properties:
+- `S3Bucket`: the bucket containing the zip.
+- `S3Key`: the full path to the zip.
+- `S3ObjectVersion`: if you version bucket.
+
+**Versioning is recommended** because if you update the code in S3, but do not update `S3Bucket`, `S3Key` or `S3ObjectVersion`, CloudFormation won't update your function.
+
+For example:
+
+```yaml
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Lambda function from S3
+Resources:
+  Function:
+    Type: AWS::Lambda::Function
+    Properties:
+      Runtime: python3.x
+      Role: arn:aws:iam::123456789012:role/lambda-role
+      Handler: index.handler
+      Code:
+        S3Bucket: my-bucket
+        S3Key: function.zip
+        S3ObjectVersion: v1
+```
+
+A useful tip to configure the `S3Bucket`, `S3Key`, and `S3ObjectVersion` properties is to use **parameters** and then reference them in the function properties.
+
+```yaml
+Parameters:
+  S3Bucket:
+    Type: String
+    Description: S3 bucket name
+  S3Key:
+    Type: String
+    Description: S3 key
+  S3ObjectVersion:
+    Type: String
+    Description: S3 object version
+```
+
+### 18.35.3 Through S3 in Multiple Accounts
+
+Create an S3 bucket holding the Lambda code, then you reference this bucket in all the CloudFormation templates in all the accounts. However, **if the account is different than the bucket owner, you need to grant the account access to the bucket**. You can achieve so in **two ways**:
+- Assigning a bucket policy to the bucket that allows CloudFormation to access it.
+- Assigning an execution role to each CloudFormation stack that allows it to access the bucket.
+
+![Lambda CloudFormation S3](/assets/aws-certified-developer-associate/lambda_cloudformation_s3.png "Lambda CloudFormation S3")
