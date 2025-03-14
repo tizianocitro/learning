@@ -1427,3 +1427,41 @@ Create an S3 bucket holding the Lambda code, then you reference this bucket in a
 - Assigning an execution role to each CloudFormation stack that allows it to access the bucket.
 
 ![Lambda CloudFormation S3](/assets/aws-certified-developer-associate/lambda_cloudformation_s3.png "Lambda CloudFormation S3")
+
+## 18.36 Lambda Container Images
+
+This feature allows you to **package and deploy Lambda functions as container images of up to 10GB in size**. This is useful to pack complex dependencies, large dependencies in a container.
+- Base images are available for Python, Node.js, Java, .NET, Go, Ruby.
+- **Test the containers locally using the Lambda Runtime Interface Emulator**.
+- You get a unified workflow to build applications using the same Docker CLI commands.
+
+You can **create your own images as long as they implement the Lambda Runtime API**, which allows the Lambda service to communicate with the function and run it.
+
+![Lambda Container Images](/assets/aws-certified-developer-associate/lambda_container_images.png "Lambda Container Images")
+
+The following is an example of a Lambda container image (Dockerfile) built from the Node.js base image provided by AWS:
+
+```Dockerfile
+# Use an image that implements the Lambda Runtime API
+FROM amazon/aws-lambda-nodejs:12
+
+# Copy your application code and files
+COPY app.js package*.json ./
+
+# Install the dependencies in the container
+RUN npm install
+
+# Function to run when the Lambda function is invoked
+# In this case, lambdaHandler function in the app.js file
+CMD [ "app.lambdaHandler" ]
+```
+
+### 18.36.1 Best Pratices for Lambda Container Images
+
+To **optimize container images**, use:
+- **AWS-provided base images**: they are stable, built on Amazon Linux 2, and cached by the Lambda service, so they start faster.
+- **Multi-stage builds**: build the code in larger preliminary images, copy only the artifacts you need in your final container image, and discard the preliminary steps.
+- **Images built in layers from stable to frequently changing**: make your most frequently occurring changes as late in your Dockerfile as possible, in this way you can reuse the layers that change less frequently thanks to caching.
+- **A single repository for functions with large layers**: ECR compares each layer of a container image when it is pushed to avoid uploading and storing duplicates, so you can save space and time.
+
+Use Lambda container images to upload large Lambda functions up to 10 GB.
