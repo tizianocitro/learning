@@ -1465,3 +1465,77 @@ To **optimize container images**, use:
 - **A single repository for functions with large layers**: ECR compares each layer of a container image when it is pushed to avoid uploading and storing duplicates, so you can save space and time.
 
 Use Lambda container images to upload large Lambda functions up to 10 GB.
+
+## 18.37 Lambda Versions and Aliases
+
+### 18.37.1 Lambda Versions
+
+You can **publish a version of your Lambda function to create a snapshot of the function code and configuration at a specific point in time**.
+
+**Versions comprise code and configuration** and:
+- Are immutable.
+- Have increasing version numbers.
+- Get their their own ARN, so they are independent from one another.
+
+![Lambda Versions](/assets/aws-certified-developer-associate/lambda_versions.png "Lambda Versions")
+
+When you work on a Lambda function, you are working on the `$LATEST` version, which is mutable.
+- Each version of a lambda function can be accessed, just like the `$LATEST` version.
+
+However, versions do not provide a stable URL to invoke the function. To do so, you can use **aliases**.
+
+### 18.37.2 Lambda Aliases
+
+Aliases are **pointers to Lambda function versions**.
+- You can define a *dev*, *test*, and *prod* aliases and have them point at different versions of your function.
+- Aliases are mutable.
+- Aliases have their own ARN.
+- Aliases **cannot reference other aliases** (the exam may trick you with this).
+
+Aliases **enable Canary deployment by assigning weights to different versions of the function**. For example, the *prod* alias can point 95% of traffic to v1 and 10% to v2:
+
+![Lambda Aliases](/assets/aws-certified-developer-associate/lambda_aliases.png "Lambda Aliases")
+
+Aliases also enable stable configuration of event triggers/destination.
+
+## 18.38 Using Lambda Versions and Aliases
+
+### 18.38.1 Creating Lambda Versions
+
+Create a `lambda-version-demo` function. Then, use the *Actions* dropdown to **publish a new version** by clicking on *Publish new Version*:
+
+![Lambda Publish New Version](/assets/aws-certified-developer-associate/lambda_publish_new_version.png "Lambda Publish New Version")
+
+This will automatically publish v1 of the function. You can optionally add a **description** to it:
+
+![Lambda Publish New Version Description](/assets/aws-certified-developer-associate/lambda_publish_new_version_description.png "Lambda Publish New Version Description")
+
+You can publish as many versions as you want, and they will be **listed** in the *Versions* tab from which you can **access them by clicking on the version number**:
+
+![Lambda Versions List](/assets/aws-certified-developer-associate/lambda_versions_list.png "Lambda Versions List")
+
+When you **access the version**, you can see its details:
+
+![Lambda Details Shows Version](/assets/aws-certified-developer-associate/lambda_details_shows_version.png "Lambda Details Shows Version")
+
+By going into the *Code* tab, you see that the **code cannot be changed**:
+
+![Lambda Code Cannot Be Changed](/assets/aws-certified-developer-associate/lambda_code_cannot_be_changed.png "Lambda Code Cannot Be Changed")
+
+### 18.38.2 Creating Lambda Aliases
+
+To create an alias, go to the *Aliases* tab and click on *Create alias*:
+
+![Lambda Create Alias](/assets/aws-certified-developer-associate/lambda_create_alias.png "Lambda Create Alias")
+
+Then, you can configure the alias by providing a **name**, **description**, and **version to which the alias should point**. In this case, the creation of a `dev` alias that points at version `$LATEST`:
+
+![Lambda Configure Alias](/assets/aws-certified-developer-associate/lambda_configure_alias.png "Lambda Configure Alias")
+
+After creating the alias, you can see it in the *Aliases* tab:
+
+![Lambda Aliases List](/assets/aws-certified-developer-associate/lambda_aliases_list.png "Lambda Aliases List")
+
+And **access the alias by clicking on the alias name** (from here you can also see the ARN and the version it ponts at):
+
+![Lambda Alias Details](/assets/aws-certified-developer-associate/lambda_alias_details.png "Lambda Alias Details")
