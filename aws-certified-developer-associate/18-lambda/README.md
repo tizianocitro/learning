@@ -1591,3 +1591,109 @@ Resources:
         CurrentVersion: 1
         TargetVersion: 2
 ```
+
+## 18.40 Lambda Function URL
+
+**Dedicated unique HTTP(S) endpoints for your Lambda functions generated for you**. They can be **applied to any function alias or to the `$LATEST` version but cannot be applied to other function versions**.
+
+- For example, `https://<url-id>.lambda-url.<region>.on.aws`.
+- They never change.
+- For when you do not want to use API Gateway, CloudFront, etc.
+- Support resource-based policies & CORS configurations.
+- Create and configure them using AWS console or API.
+- Function URLs **can be accessed only through the public internet**.
+
+### 18.40.1 Function URL Security
+
+Security is achieved through:
+- Resource-based policy: authorize other accounts/specific CIDR/IAM principal.
+- CORS: if you call your function URL from a different domain, you need to allow it.
+
+### 18.40.2 Allow Public and Unauthenticated Access
+
+You can **allow public and unauthenticated access** by setting `AuthType: NONE` in the function URL configuration. However, the resource-based policy is always in effect, so it must grant public access for this to work.
+
+For example, the following resource-based policy allows public access to the function URL:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": "lambda:InvokeFunctionUrl",
+      "Resource":
+        "arn:aws:lambda:<region>:<account-id>:function:<function-name>",
+        "Condition": {
+            "StringEquals": {
+                "lambda:FunctionUrlAuthType": "NONE"
+            }
+        }
+    }
+}
+```
+
+### 18.40.3 Allow Function URL Access Through IAM
+
+Set `AuthType: AWS_IA` to **authenticate and authorize requests using IAM**.
+-**Both principal’s identity-based policy and resource-based policy are evaluated**, so you need to make sure that they give the `lambda:InvokeFunctionUrl` permission to the principal.
+- **Same account**: you need the identity-based policy or resource-based policy to allow the call.
+- **Cross account**: you need the identity-based policy and resource-based policy to allow the call.
+
+The resource-based policy for IAM authentication is similar to the one for public access but with `AuthType: AWS_IAM`:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": "lambda:InvokeFunctionUrl",
+      "Resource":
+        "arn:aws:lambda:<region>:<account-id>:function:<function-name>",
+        "Condition": {
+            "StringEquals": {
+                "lambda:FunctionUrlAuthType": "AWS_IAM"
+            }
+        }
+    }
+}
+```
+
+Meanwhile, the identity-based policy looks like this:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "lambda:InvokeFunctionUrl",
+      "Resource":
+        "arn:aws:lambda:<region>:<account-id>:function:<function-name>"
+    }
+  ]
+}
+```
+
+### 18.40.4 Creating a Function URL For a Lambda Function
+
+Create a function, then a version and an alias for that version. Then, go to the *Configuration* tab of the alias and scroll down to the *Function URL* section to create a new URL:
+
+![Lambda Function URL](/assets/aws-certified-developer-associate/lambda_function_url.png "Lambda Function URL")
+
+Configure the URL by setting the **`AuthType`** (select `NONE` in this case):
+
+![Lambda Function URL AuthType](/assets/aws-certified-developer-associate/lambda_function_url_authtype.png "Lambda Function URL AuthType")
+
+Eventually, you can configure **CORS** (origin, headers, max age, methods, etc.):
+
+![Lambda Function URL CORS](/assets/aws-certified-developer-associate/lambda_function_url_cors.png "Lambda Function URL CORS")
+
+Once you create the URL, you can see it in the *Function URL* section and in the function alias' details:
+
+![Lambda Function URL Created](/assets/aws-certified-developer-associate/lambda_function_url_created.png "Lambda Function URL Created")
+
+You can just copy and use it to invoke the function. If it allows GET requests, you can just paste it in the browser to see the function response.
