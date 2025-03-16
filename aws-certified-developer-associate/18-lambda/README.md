@@ -1553,3 +1553,41 @@ You can check the weights associated with aliases also on the *Aliases* tab:
 ![Lambda Aliases Check Weights](/assets/aws-certified-developer-associate/lambda_aliases_check_weights.png "Lambda Aliases Check Weights")
 
 You can then edit the alias again to remove the weights and point it to the new version only.
+
+## 18.39 Lambda Integration with CodeDeploy
+
+CodeDeploy can help you automate traffic shift for Lambda aliases.
+- The feature is integrated within SAM (Serverless Application Model).
+
+**CodeDeploy will change the weight of the alias to shift traffic from one version to another until all traffic is shifted to the new version**:
+
+![Lambda CodeDeploy](/assets/aws-certified-developer-associate/lambda_codedeploy.png "Lambda CodeDeploy")
+
+**Traffic shifting strategies**:
+- **Linear**: grow traffic every N minutes until 100%. For example, the `Linear10PercentEvery3Minutes` and `Linear10PercentEvery10Minutes` linear strategies.
+- **Canary**: try X% for N minutes then shift 100%. For example, the `Canary10Percent5Minutes` and `Canary10Percent30Minutes` canary strategies.
+- **All at once**: shift 100% of traffic immediately.
+
+You can **create pre/post traffic hooks to check the health of Lambda functions**. These hooks allow you to communicate to CodeDeploy if the deployment was successful or not and in case of failure, CodeDeploy will rollback the deployment.
+
+### 18.39.1 CodeDeploy with AppSpec.yml File
+
+If you are using CodeDeploy with Lambda, you need to provide an `appspec.yml` file in the root of your deployment package. This file must contain the following information:
+- `Name`: the name of the Lambda function to deploy.
+- `Alias`: the name of the alias to the Lambda function.
+- `CurrentVersion`: the version of the Lambda function traffic currently points to.
+- `TargetVersion`: the version of the Lambda function traffic is shifted to.
+
+For example (more on this in the SAM section):
+
+```yaml
+version: 0.0
+Resources:
+  - MyLambdaFunction:
+      Type: AWS::Lambda::Function
+      Properties:
+        Name: myFunction
+        Alias: prod
+        CurrentVersion: 1
+        TargetVersion: 2
+```
