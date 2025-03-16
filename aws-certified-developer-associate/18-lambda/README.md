@@ -1697,3 +1697,14 @@ Once you create the URL, you can see it in the *Function URL* section and in the
 ![Lambda Function URL Created](/assets/aws-certified-developer-associate/lambda_function_url_created.png "Lambda Function URL Created")
 
 You can just copy and use it to invoke the function. If it allows GET requests, you can just paste it in the browser to see the function response.
+
+## 18.41 Lambda Integration with CodeGuru Profiler
+
+**Gain insights into runtime performance of your functions** using CodeGuru Profiler. CodeGuru creates a profiler group for your Lambda function.
+- Supported for java and python runtimes.
+- Activated in Lambda console.
+
+When activated, Lambda adds:
+- CodeGuru Profiler layer to your function.
+- Environment variables to your function.
+- `AmazonCodeGuruProfilerAgentAccess` policy to your function.
