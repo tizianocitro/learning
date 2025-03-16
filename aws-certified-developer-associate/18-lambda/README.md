@@ -1539,3 +1539,17 @@ After creating the alias, you can see it in the *Aliases* tab:
 And **access the alias by clicking on the alias name** (from here you can also see the ARN and the version it ponts at):
 
 ![Lambda Alias Details](/assets/aws-certified-developer-associate/lambda_alias_details.png "Lambda Alias Details")
+
+### 18.38.3 Using Weighted Lambda Aliases
+
+Suppose you have a *prod* alias and you want to test a new v2 version of a function by sending 90% of the traffic to the old stable v1 and 10% to the new v2.
+
+To do so, edit the *prod* alias and **configure the weighted routing**:
+
+![Lambda Weighted Aliases](/assets/aws-certified-developer-associate/lambda_weighted_aliases.png "Lambda Weighted Aliases")
+
+You can check the weights associated with aliases also on the *Aliases* tab:
+
+![Lambda Aliases Check Weights](/assets/aws-certified-developer-associate/lambda_aliases_check_weights.png "Lambda Aliases Check Weights")
+
+You can then edit the alias again to remove the weights and point it to the new version only.
