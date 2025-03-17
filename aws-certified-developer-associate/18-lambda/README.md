@@ -1708,3 +1708,19 @@ When activated, Lambda adds:
 - CodeGuru Profiler layer to your function.
 - Environment variables to your function.
 - `AmazonCodeGuruProfilerAgentAccess` policy to your function.
+
+## 18.42 Per-Region Limits of Lambda
+
+**Execution** limits:
+- Memory allocation: from 128 MB to 10GB in 1 MB increments. More RAM = more CPUs.
+- Maximum execution time: 900 seconds (15 minutes), anything above is not suitable for Lambda.
+- Environment variables: up to 4 KB.
+- Disk capacity in the function container in `/tmp` directory: from 512 MB to 10GB (10240MB).
+- Concurrency executions: 1000 concurrent executions by default, can be increased by AWS support.
+
+**Deployment** limits:
+- Function deployment size compressed in `.zip` file: up to 50 MB.
+- Size of uncompressed deployment: code + dependencies is up to 250 MB but you can use the `/tmp` directory to load other files at startup for up to 10GB (10240MB).
+- Size of environment variables: up to 4 KB.
+
+The **exam tests you on these limits**. For example, it might ask you about a function that requires more than 32GB of RAM or a size of 500MB. In such cases, you know that the function is not suitable for Lambda.
