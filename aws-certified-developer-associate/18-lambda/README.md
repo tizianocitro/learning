@@ -1724,3 +1724,22 @@ When activated, Lambda adds:
 - Size of environment variables: up to 4 KB.
 
 The **exam tests you on these limits**. For example, it might ask you about a function that requires more than 32GB of RAM or a size of 500MB. In such cases, you know that the function is not suitable for Lambda.
+
+## 18.43 Lambda Best Practices
+
+- **Perform heavy-duty work outside of your function handler**.
+    - Connect to databases outside of your function handler.
+    - Initialize the AWS SDK outside of your function handler.
+    - Pull in dependencies or datasets outside of your function handler.
+
+- **Use environment variables for anything that might change over time**.
+    - For example, database connection strings, S3 bucket names, API endpoints, etc.
+    - Do not put these values in your code.
+    - Passwords and any sensitive value can be encrypted using KMS.
+
+- **Minimize your deployment package size to its runtime necessities**.
+    - Break down the function if it is too big.
+    - Use Layers where necessary if you need to reuse dependencies across functions.
+    - Keep in mind the Lambda limits.
+
+- **Avoid using recursive code**: you should never have a Lambda function that call itself.
