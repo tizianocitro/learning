@@ -57,3 +57,47 @@ For instance, suppose that we are building a movie database with the following a
 What could be the best partition key to maximize data distribution?
 - `movie_id` has the highest cardinality so it is a good candidate.
 - `movie_language` does not take many values and may be skewed towards English, so it is not a great choice for the partition key.
+
+## 19.3 Creating Tables and Items in DynamoDB
+
+### 19.3.1 Creating Tables in DynamoDB
+
+Go to the DynamoDB console and click on *Create Table* to **create a table**:
+
+![DynamoDB Create Table](/assets/aws-certified-developer-associate/dynamodb_create_table.png "DynamoDB Create Table")
+
+Give it a **name**:
+
+![DynamoDB Table Name](/assets/aws-certified-developer-associate/dynamodb_table_name.png "DynamoDB Table Name")
+
+Then, define the **primary key** and optionally the **sort key**:
+
+![DynamoDB Primary Key](/assets/aws-certified-developer-associate/dynamodb_primary_key.png "DynamoDB Primary Key")
+
+You can choose between using some default **settings** or customizing them yourself, we will customize them in this example:
+
+![DynamoDB Settings](/assets/aws-certified-developer-associate/dynamodb_settings.png "DynamoDB Settings")
+
+First thing is the **table class** (standard or standard & infraquent access):
+
+![DynamoDB Table Class](/assets/aws-certified-developer-associate/dynamodb_table_class.png "DynamoDB Table Class")
+
+Then, we need to define the **read/write capacity settings** by chosing between **provisioned** and **on-demand** modes:
+
+![DynamoDB Read/Write Capacity](/assets/aws-certified-developer-associate/dynamodb_read_write_capacity.png "DynamoDB Read/Write Capacity")
+
+And, if you select provisioned, you can set the **auto-scaling settings for read/write capacity** (more later on this):
+
+![DynamoDB Auto-Scaling](/assets/aws-certified-developer-associate/dynamodb_auto_scaling.png "DynamoDB Auto-Scaling")
+
+You get a **cost estimation** based on the settings you chose so far:
+
+![DynamoDB Cost Estimation](/assets/aws-certified-developer-associate/dynamodb_cost_estimation.png "DynamoDB Cost Estimation")
+
+Next are the settings for **encryption at rest**:
+
+![DynamoDB Encryption at Rest](/assets/aws-certified-developer-associate/dynamodb_encryption_at_rest.png "DynamoDB Encryption at Rest")
+
+Finally, you can optionally add **tags** and create the table. The table will appear in the **list of tables**:
+
+![DynamoDB Table List](/assets/aws-certified-developer-associate/dynamodb_table_list.png "DynamoDB Table List")
