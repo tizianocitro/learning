@@ -101,3 +101,33 @@ Next are the settings for **encryption at rest**:
 Finally, you can optionally add **tags** and create the table. The table will appear in the **list of tables**:
 
 ![DynamoDB Table List](/assets/aws-certified-developer-associate/dynamodb_table_list.png "DynamoDB Table List")
+
+### 19.3.2 Creating Items in DynamoDB
+
+You can access the table by clicking on it in the table list, and you will see the **overview** of the table:
+
+![DynamoDB Table Overview](/assets/aws-certified-developer-associate/dynamodb_table_overview.png "DynamoDB Table Overview")
+
+You can also view and count the **items** in the table:
+
+![DynamoDB Table Items](/assets/aws-certified-developer-associate/dynamodb_table_items.png "DynamoDB Table Items")
+
+If you click on *View Items*, you can see the **items** in the table, **run queries**, **create items**, etc.:
+
+![DynamoDB Table Items View](/assets/aws-certified-developer-associate/dynamodb_table_items_view.png "DynamoDB Table Items View")
+
+Click on *Create Item* to **create an item** with as many attributes (and their values) as you want though the a UI form or JSON:
+
+![DynamoDB Table Create Item](/assets/aws-certified-developer-associate/dynamodb_table_create_item.png "DynamoDB Table Create Item")
+
+Create the item and it will appear in the **list of items**:
+
+![DynamoDB Table Item Created](/assets/aws-certified-developer-associate/dynamodb_table_item_created.png "DynamoDB Table Item Created")
+
+If add an item with a **duplicate primary key**, you will get an error:
+
+![DynamoDB Table Item Error](/assets/aws-certified-developer-associate/dynamodb_table_item_error.png "DynamoDB Table Item Error")
+
+Note how the attributes in this second item are not the same as the first one. Once you save it, the **missing attributes** will be added as `null` with no error:
+
+![DynamoDB Table Item Null Attributes](/assets/aws-certified-developer-associate/dynamodb_table_item_null_attributes.png "DynamoDB Table Item Null Attributes")
