@@ -131,3 +131,21 @@ If add an item with a **duplicate primary key**, you will get an error:
 Note how the attributes in this second item are not the same as the first one. Once you save it, the **missing attributes** will be added as `null` with no error:
 
 ![DynamoDB Table Item Null Attributes](/assets/aws-certified-developer-associate/dynamodb_table_item_null_attributes.png "DynamoDB Table Item Null Attributes")
+
+### 19.3.3 Creating Tables and Items in DynamoDB with Sort Key
+
+Create a new table `UserPosts` with partition key `user_id` and **sort key** `post_ts` (post timestamp) to store users' posts:
+
+![DynamoDB Table UserPosts](/assets/aws-certified-developer-associate/dynamodb_table_userposts.png "DynamoDB Table UserPosts")
+
+The sort key appears in the table's overview:
+
+![DynamoDB Table UserPosts Overview](/assets/aws-certified-developer-associate/dynamodb_table_userposts_overview.png "DynamoDB Table UserPosts Overview")
+
+Then, create new items and see that you will need to **enter both the partition key and the sort key**:
+
+![DynamoDB Table UserPosts Create Item](/assets/aws-certified-developer-associate/dynamodb_table_userposts_create_item.png "DynamoDB Table UserPosts Create Item")
+
+Keep creating items with the same partition key and different sort keys to see how they are **grouped by partition key and sorted by sort key**:
+
+![DynamoDB Table UserPosts Items](/assets/aws-certified-developer-associate/dynamodb_table_userposts_items.png "DynamoDB Table UserPosts Items")
