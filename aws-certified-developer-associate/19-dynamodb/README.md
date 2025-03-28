@@ -149,3 +149,60 @@ Then, create new items and see that you will need to **enter both the partition 
 Keep creating items with the same partition key and different sort keys to see how they are **grouped by partition key and sorted by sort key**:
 
 ![DynamoDB Table UserPosts Items](/assets/aws-certified-developer-associate/dynamodb_table_userposts_items.png "DynamoDB Table UserPosts Items")
+
+## 19.4 Read and Write Capacity Modes
+
+They are the settings that **control how you manage your tables' capacity in terms of read/write throughput**.
+
+There are two capacity modes and you can switch between them once every 24 hours.
+
+**Provisioned mode (default)**: you specify the number of reads/writes per second.
+- You need to **plan capacity beforehand** because you pay for the provisioned capacity even if you are not using it.
+- Pay for provisioned read/write capacity units.
+
+**On-demand mode**: read/writes automatically scale up/down based on your workloads.
+- **No capacity planning** needed because DynamoDB accommodates your workloads.
+- Pay for what you use but it is more expensive.
+
+## 19.5 Provisioned Capacity Mode
+
+Tables must have provisioned read and write capacity units:
+- **Read capacity unit (RCU)**: throughput for reads.
+- **Write capacity unit (WCU)**: throughput for writes.
+
+You have the **option to setup auto-scaling of throughput to meet demand** and can also use **burst capacity to exceed the provisioned capacity temporarily**.
+-  If burst capacity has been consumed, you will get the `ProvisionedThroughputExceededException` exception.
+- In case you get this exception, you can retry the request with exponential backoff.
+
+### 19.5.1 Write Capacity Units (WCU)
+
+**One WCU represents one write per second for an item up to 1 KB in size**. If the **items are larger than 1 KB, more WCUs are consumed**.
+
+A few examples:
+- We write 10 items per second, with item size 2 KB => we need 20 WCUs because `10 * (2 KB / 1 KB) = 20`.
+- We write 6 items per second, with item size 4.5 KB => we need 30 WCUs because `6 * (5 KB / 1 KB) = 30`, 4.5 gets rounded to the upper KB, so 5 KB.
+- We write 120 items per minute, with item size 2 KB => we need 4 WCUs because `(120 / 60) * (2 KB / 1 KB) = 4`.
+
+### 19.5.2 Strongly Consistent Reads vs Eventually Consistent Reads
+
+With DynamoDB, you have an offering that behind the scenes is a distributed system:
+
+![DynamoDB Behind the Scenes](/assets/aws-certified-developer-associate/dynamodb_behind_the_scenes.png "DynamoDB Behind the Scenes")
+
+In such a system, you have to make a choice between:
+- **Eventually consistent read (default)**: if we read just after a write, it is possible that we will get stale data because of replication.
+- **Strongly consistent read**: if we read just after a write, we will get the correct data for sure.
+    - For strongly consistent reads, you need to specify `ConsistentRead: true` in the API calls (e.g., `GetItem`, `BatchGetItem`, `Query`, `Scan`).
+    - Strongly consistent reads **consume twice read capacity units**.
+    - Strongly consistent reads **may have higher latency**.
+
+The **choice between the two impacts DynamoDB read capacity units**.
+
+### 19.5.3 Read Capacity Units (RCU)
+
+**One RCU represents one strongly consistent read per second or two eventually consistent reads per second for an item up to 4KB in size**. If the **items are larger than 4 KB, more RCUs are consumed**, and the number of RCUs is rounded up to the nearest 4 KB.
+
+A few examples:
+- We do 10 strongly consistent reads per second, with item size 4 KB => we need `10 * (4 KB / 4 KB) = 10 RCUs`.
+- We do 16 eventually consistent reads per second, with item size 12 KB => we need `(16 / 2) * (12 KB / 4 KB) = 24 RCUs`.
+- We do 10 strongly consistent reads per second, with item size 6 KB => we need `10 * (8 KB / 4 KB) = 20 RCUs`, 6 KB gets rounded to the upper 4 KB, so 8 KB.
