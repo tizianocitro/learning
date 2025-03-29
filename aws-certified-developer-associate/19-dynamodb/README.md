@@ -206,3 +206,32 @@ A few examples:
 - We do 10 strongly consistent reads per second, with item size 4 KB => we need `10 * (4 KB / 4 KB) = 10 RCUs`.
 - We do 16 eventually consistent reads per second, with item size 12 KB => we need `(16 / 2) * (12 KB / 4 KB) = 24 RCUs`.
 - We do 10 strongly consistent reads per second, with item size 6 KB => we need `10 * (8 KB / 4 KB) = 20 RCUs`, 6 KB gets rounded to the upper 4 KB, so 8 KB.
+
+### 19.5.4 DynamoDB Partitions Internals
+
+DynamoDB is made of tables, **each table has partitions, and partitions are copies of your data that live on different servers.**
+- Data is distributed across partitions based on the partition key.
+- Partition keys go through a hashing algorithm to know to which partition the data should go.
+
+![DynamoDB Partitions](/assets/aws-certified-developer-associate/dynamodb_partitions.png "DynamoDB Partitions")
+
+To compute the number of partitions you need to know a formula (which is not needed for the exam, as opposed to the RSU/WSU formulas that are needed for the exame):
+- Number of partitions by capacity: `(RCUs / 3000) + (WCUs / 1000)`.
+- Number of partitions by size: `(total data size / 10 GB)`.
+- Number of partitions: `ceil(max(number of partitions by capacity + number of partitions by size))`.
+
+**WCUs and RCUs are spread evenly across partitions**.
+
+### 19.5.5 DynamoDB Throttling
+
+If you exceed provisioned RCUs or WCUs at partition level, you get `ProvisionedThroughputExceededException`.
+
+There are different possible **reasons for throttling**:
+- **Hot keys**: one partition key is being read too many times (e.g., popular item).
+- **Hot partitions**: one partition is being read too many times (e.g., popular partition).
+- **Very large items**: RCU and WCU depends on size of items, so very large items can cause consumption of too many RCUs/WCUs.
+
+Possible **solutions to avoid throttling**:
+- Exponential backoff when exception is encountered (already done in SDK).
+- Distribute partition keys as much as possible by choosing a good partition key.
+- If RCU issue (e.g., hot partition), you can use *DynamoDB Accelerator* (DAX) to cache reads.
