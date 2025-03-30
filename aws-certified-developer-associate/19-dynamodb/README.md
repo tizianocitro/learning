@@ -235,3 +235,16 @@ Possible **solutions to avoid throttling**:
 - Exponential backoff when exception is encountered (already done in SDK).
 - Distribute partition keys as much as possible by choosing a good partition key.
 - If RCU issue (e.g., hot partition), you can use *DynamoDB Accelerator* (DAX) to cache reads.
+
+## 19.6 On-Demand Capacity Mode
+
+Read/writes automatically scale up/down with your workloads, so no capacity planning is needed (no WCUs/RCUs). You get **unlimited WCUs/RCUs, no throttle, but it is more expensive**, around 2.5x more expensive than provisioned capacity.
+
+You are charged for reads/writes that you use in terms of:
+- **Read request units (RRUs)**: throughput for reads (same as RCU).
+- **Write request units (WRUs)**: throughput for writes (same as WCU).
+
+Use cases:
+- Unknown workloads.
+- Unpredictable application traffic.
+- ...
