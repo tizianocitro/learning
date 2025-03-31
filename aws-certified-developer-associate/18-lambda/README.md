@@ -1727,17 +1727,17 @@ The **exam tests you on these limits**. For example, it might ask you about a fu
 
 ## 18.43 Lambda Best Practices
 
-- **Perform heavy-duty work outside of your function handler**.
+- **Perform heavy-duty work outside of your function handler**:
     - Connect to databases outside of your function handler.
     - Initialize the AWS SDK outside of your function handler.
     - Pull in dependencies or datasets outside of your function handler.
 
-- **Use environment variables for anything that might change over time**.
+- **Use environment variables for anything that might change over time**:
     - For example, database connection strings, S3 bucket names, API endpoints, etc.
     - Do not put these values in your code.
     - Passwords and any sensitive value can be encrypted using KMS.
 
-- **Minimize your deployment package size to its runtime necessities**.
+- **Minimize your deployment package size to its runtime necessities**:
     - Break down the function if it is too big.
     - Use Layers where necessary if you need to reuse dependencies across functions.
     - Keep in mind the Lambda limits.
