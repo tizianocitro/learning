@@ -248,3 +248,35 @@ Use cases:
 - Unknown workloads.
 - Unpredictable application traffic.
 - ...
+
+## 19.7 Configuring RCUs and WCUs
+
+To configure RCUs and WCUs, you can go to the table's details and search for the *Additional Settings* tab:
+
+![DynamoDB Table Additional Settings](/assets/aws-certified-developer-associate/dynamodb_table_additional_settings.png "DynamoDB Table Additional Settings")
+
+If you click on *Edit*, you can change the capacity settings (in this case, we are using on-demand mode):
+
+![DynamoDB Table Edit Capacity](/assets/aws-certified-developer-associate/dynamodb_table_edit_capacity.png "DynamoDB Table Edit Capacity")
+
+But we can **switch to provisioned mode**:
+
+![DynamoDB Table Edit Capacity Provisioned](/assets/aws-certified-developer-associate/dynamodb_table_edit_capacity_provisioned.png "DynamoDB Table Edit Capacity Provisioned")
+
+Set the **capacity settings** via the capacity calculator that also shows the **cost estimation**. In this settings, you also indicate the **read/write consistency**:
+
+![DynamoDB Table Set Capacity](/assets/aws-certified-developer-associate/dynamodb_table_set_capacity.png "DynamoDB Table Set Capacity")
+
+Next is to set **table capacity**, in this case **without auto-scaling**, so you need to **set the provisioned capacity units**:
+
+![DynamoDB Table Set Table Capacity No Auto-Scaling](/assets/aws-certified-developer-associate/dynamodb_table_set_table_capacity_no_auto_scaling.png "DynamoDB Table Set Table Capacity No Auto-Scaling")
+
+Or with **auto-scaling**, where you need to set the **minimum and maximum capacity units**, and the **target utilization**, which indicates that DynamoDB will scale to max capacity if the utilization is on average this value. However, if you are on low utilization, it will scale down up to but never lower than the minimum capacity.
+
+![DynamoDB Table Set Table Capacity Auto-Scaling](/assets/aws-certified-developer-associate/dynamodb_table_set_table_capacity_auto_scaling.png "DynamoDB Table Set Table Capacity Auto-Scaling")
+
+Finally, you can see the cost estimation for the settings you chose and update the table.
+
+In the same tab, you can see **auto-scaling activities**:
+
+![DynamoDB Table Auto-Scaling Activities](/assets/aws-certified-developer-associate/dynamodb_table_auto_scaling_activities.png "DynamoDB Table Auto-Scaling Activities")
