@@ -280,3 +280,77 @@ Finally, you can see the cost estimation for the settings you chose and update t
 In the same tab, you can see **auto-scaling activities**:
 
 ![DynamoDB Table Auto-Scaling Activities](/assets/aws-certified-developer-associate/dynamodb_table_auto_scaling_activities.png "DynamoDB Table Auto-Scaling Activities")
+
+## 19.8 DynamoDB Basic Operations APIs
+
+### 19.8.1 Write APIs
+
+The following APIs are important to know for the exam:
+
+| API | Description |
+| --- | ----------- |
+| `PutItem` | **Creates a new item or replaces an old item** with a new item (same primary key). |
+| `UpdateItem` | **Modifies an existing item's attributes or adds a new item if it does not exist**. It can be used to implement *atomic counters*: numeric attributes that are unconditionally incremented. |
+| `ConditionalWrite` | **Writes/updates/deletes an item if a condition is met**, otherwise returns an error. It helps with concurrent access to items and has no performance impact. |
+
+### 19.8.2 Read APIs
+
+The following APIs are important to know for the exam:
+- `GetItem`: retrieves a **single item by primary key** (primary key can be HASH or HASH + RANGE).
+    - It performs eventually consistent reads by default.
+    - It provides the option to use strongly consistent reads but will consume more RCUs and might take longer.
+    - A `ProjectionExpression` can be specified to retrieve only certain attributes.
+
+---
+
+- `Query`: returns **items based on a key condition expression** (partition key and sort key) **and filter expression**.
+    - `KeyConditionExpression`:
+        - Partition key value is required and must be `=` operator.
+        - Sort key value is optional (`=`,`<`, `<=`, `>`, `>=,` `Between`, `Begins with`, `Equals to`).
+    - `FilterExpression`:
+        - Additional filtering after the query operation (client-side), before data is returned.
+        - Usable only with non-key attributes (does not allow HASH or RANGE attributes).
+    - It returns the number of items specified in `Limit` or up to 1 MB of data, so either you reach the limit or the 1 MB.
+    - It provides pagination on the results.
+    - It can query a table, a local secondary index, or a global secondary index (more later).
+    - In the console, you can use the query wizard to help you build the query:
+    ![DynamoDB Query Wizard](/assets/aws-certified-developer-associate/dynamodb_query_wizard.png "DynamoDB Query Wizard")
+---
+
+- `Scan`: **reads the entire table** and then filter out data clinet-sider, so inefficient.
+    - Scans return up to 1 MB of data and can be paginated, so use pagination to keep on reading.
+    - It consumes a lot or RCU because it reads the entire table.
+    - Limit the impact on other operations by using `Limit` or reduce the size of the result and pause.
+    - For faster performance, use `Parallel Scan`, which uses **multiple workers to scan multiple data segments at the same time**.
+        - It increases the throughput but also the consumed RCU.
+        - Limit the impact of parallel scans just like you would for scans with `Limit`.
+    - It can use `ProjectionExpression` and `FilterExpression` with no impact on RCU.
+    - You can easily do a scan from the console:
+    ![DynamoDB Scan Wizard](/assets/aws-certified-developer-associate/dynamodb_scan_wizard.png "DynamoDB Scan Wizard")
+
+### 19.8.3 Delete APIs
+
+The following APIs are important to know for the exam.
+
+| API | Description |
+| --- | ----------- |
+| `DeleteItem` | **Deletes a single item by primary key** with the option to perform a conditional delete. |
+| `DeleteTable` | **Deletes a table** and all its items. It provides a much quicker deletion than calling `DeleteItem` on all items. This is **important for the exam in case you are asked to delete all items**. |
+
+### 19.8.4 Batch APIs
+
+Batch operations allow you to save in latency by reducing the number of API calls.
+- Batches are processed in parallel for better efficiency.
+- Part of a batch can fail and, in that case, you need to try again for the failed items.
+
+The following APIs are important to know for the exam:
+
+- `BatchWriteItem`: **performs up to 25 `PutItem` and/or `DeleteItem` in one call**.
+    - Up to 16 MB of data written and up to 400 KB of data per item.
+    - It cannot update items (`UpdateItem`), only create or replace (`PutItem`) and delete (`DeleteItem`).
+    - `UnprocessedItems` is used to return failed items to retry them with exponential backoff or add WCU.
+
+- `BatchGetItem`: **retrieves multiple items from multiple tables** in a single API call.
+    - Up to 100 items and up to 16 MB of data.
+    - Items are retrieved in parallel to minimize latency.
+    - `UnprocessedKeys` for failed items operations to retry them with exponential backoff or add RCU.
