@@ -354,3 +354,36 @@ The following APIs are important to know for the exam:
     - Up to 100 items and up to 16 MB of data.
     - Items are retrieved in parallel to minimize latency.
     - `UnprocessedKeys` for failed items operations to retry them with exponential backoff or add RCU.
+
+## 19.9 DynamoDB PartiQL Query Language
+
+PartiQL is a **SQL-compatible query language for DynamoDB** that allows you to select, insert, update, and delete items using SQL-like syntax.
+- You can run queries across multiple tables.
+- It **does not support joins**.
+- It supports batch operations.
+
+You can run PartiQL queries from:
+- DynamoDB APIs.
+- NoSQL Workbench for DynamoDB.
+- CLI.
+- SDK.
+- Console.
+
+You can **use PartiQL to query both tables and indexes**:
+
+```sql
+-- Query a table
+SELECT 'user_id', 'game_ts'
+FROM 'users'
+WHERE 'user_id' = '123' AND
+      'game_ts' BETWEEN '2021-01-01' AND '2021-01-31'
+
+-- Query an index
+SELECT *
+FROM 'users'.'game_id-index'
+WHERE 'user_id' = '123' AND 'game_id' = '456'
+```
+
+In the console, you can use the **PartiQL editor to run queries**:
+
+![DynamoDB PartiQL Editor](/assets/aws-certified-developer-associate/dynamodb_partiql_editor.png "DynamoDB PartiQL Editor")
