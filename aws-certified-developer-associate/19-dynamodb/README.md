@@ -387,3 +387,63 @@ WHERE 'user_id' = '123' AND 'game_id' = '456'
 In the console, you can use the **PartiQL editor to run queries**:
 
 ![DynamoDB PartiQL Editor](/assets/aws-certified-developer-associate/dynamodb_partiql_editor.png "DynamoDB PartiQL Editor")
+
+## 19.10 Conditional Writes in DynamoDB
+
+They are a feature for `PutItem`, `UpdateItem`, `DeleteItem`, and `BatchWriteItem`. The idea is that you can **specify a condition expression to determine which items should be modified**. You can use the following conditions:
+- `attribute_exists`: checks if the attribute exists in the item.
+- `attribute_not_exists`: checks if the attribute does not exist in the item.
+- `attribute_type`: checks if the attribute exists and is of the specified type.
+- `contains` (for string): checks if the attribute contains a substring.
+- `begins_with` (for string): checks if the attribute begins with a substring.
+- `size` (for string): checks if the attribute is of a certain size.
+- `IN`: checks if the attribute is in the list of values, e.g., `ProductCategory IN ['Book', 'Movie']`.
+- `Between`: checks if the attribute is between two values, e.g., `Price BETWEEN 100 AND 200`.
+
+The difference between filter expressions and condition expressions is that **filter expressions are for read operations** (`Query`, `Scan`) and **condition expressions are for write operations** (`PutItem`, `UpdateItem`, `DeleteItem`, `BatchWriteItem`).
+
+### 19.10.1 Conditional Writes to Not Overwrite Items
+
+You can use `attribute_not_exists(partition_key)` to **prevent overwriting an item with the same partition key**. Using this condition, you can ensure that the item is created if the partition key does not exist, otherwise the operation will fail.
+
+The same can be done with the combination of partition key and sort key, using `attribute_not_exists(partition_key) AND attribute_not_exists(sort_key)`.
+
+### 19.10.2 Update Items with Conditional Writes
+
+To update an item with a condition expression, you can use the following command:
+
+```bash
+aws dynamodb update-item \
+    --table-name ProductCatalog \
+    --key '{"Id": {"N": "456"}}' \
+    --update-expression "SET Price = Price - :discount" \
+    --condition-expression "Price > :limit" \
+    --expression-attribute-values file://values.json
+```
+
+Where `values.json` contains:
+
+```json
+{
+    ":discount": {"N": "150"},
+    ":limit": {"N": "500"}
+}
+```
+
+So, if we have the following item:
+
+```json
+{
+    "Id": {"N": "456"},
+    "Price": {"N": "650"}
+}
+```
+
+the update will result in the following item:
+
+```json
+{
+    "Id": {"N": "456"},
+    "Price": {"N": "500"}
+}
+```
