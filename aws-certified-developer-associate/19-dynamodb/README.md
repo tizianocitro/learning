@@ -447,3 +447,59 @@ the update will result in the following item:
     "Price": {"N": "500"}
 }
 ```
+
+### 19.10.3 Delete Items with Conditional Writes
+
+First example uses the `attribute_not_exists` condition, which will delete the item only if the attribute does not exist (no value). For example, the following command will delete the item if the `Price` is not set:
+
+```bash
+aws dynamodb delete-item \
+    --table-name ProductCatalog \
+    --key '{"Id": {"N": "456"}}' \
+    --condition-expression "attribute_not_exists(Price)"
+```
+
+Second example uses the `attribute_exists` condition, which will delete the item only if the attribute exists (has a value). For example, the following command will delete the item if the it has at least a review with 1 star:
+
+```bash
+aws dynamodb delete-item \
+    --table-name ProductCatalog \
+    --key '{"Id": {"N": "456"}}' \
+    --condition-expression "attribute_exists(ProductReviews.OneStar)"
+```
+
+### 19.10.4 Complex Conditional Writes
+
+The following command deletes an item if the `Price` is between 100 and 200 and the `ProductCategory` is `Book` or `Movie`:
+
+```bash
+aws dynamodb delete-item \
+    --table-name ProductCatalog \
+    --key '{"Id": {"N": "456"}}' \
+    --condition-expression \
+    "Price BETWEEN :low AND :high AND ProductCategory IN (:cat1, :cat2)" \
+    --expression-attribute-values file://values.json
+```
+
+Where `values.json` contains:
+
+```json
+{
+    ":low": {"N": "500"},
+    ":high": {"N": "600"},
+    ":cat1": {"S": "Book"},
+    ":cat2": {"S": "Movie"}
+}
+```
+
+### 19.10.5 String Comparisons in Conditional Writes
+
+The following command deletes an item if the attribute `Src` begins with `http://`:
+
+```bash
+aws dynamodb delete-item \
+    --table-name ProductCatalog \
+    --key '{"Id": {"N": "456"}}' \
+    --condition-expression "begins_with(Src, :prefix)" \
+    --expression-attribute-values '{":prefix": {"S": "http://"}}'
+```
