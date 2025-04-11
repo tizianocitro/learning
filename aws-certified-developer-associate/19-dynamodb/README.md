@@ -25,7 +25,7 @@ It **scales to massive workloads and is fully distributed**, meaning it can hand
 
 ## 19.2 Basics
 
-DynamoDB is made of **tables**, each having a **primary key** (section [#19.2.1 Primary Keys](#1921-primary-keys)) that must be decided at creation time.
+DynamoDB is made of **tables**, each having a **primary key** (section [19.2.1 Primary Keys](#1921-primary-keys)) that must be decided at creation time.
 
 Each table can have an infinite number of **items** (also called rows), and each item has **attributes** that can be aded over time or be missing (null).
 - **Maximum size of an item is 400KB**.
