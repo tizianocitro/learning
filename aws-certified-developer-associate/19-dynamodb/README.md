@@ -28,7 +28,7 @@ It **scales to massive workloads and is fully distributed**, meaning it can hand
 DynamoDB is made of **tables**, each having a **primary key** (section [#19.2.1 Primary Keys](#1921-primary-keys)) that must be decided at creation time.
 
 Each table can have an infinite number of **items** (also called rows), and each item has **attributes** that can be aded over time or be missing (null).
-- Maximum size of an item is 400KB.
+- **Maximum size of an item is 400KB**.
 - Supported data types are:
     - Scalar types: `String`, `Number`, `Binary`, `Boolean`, `Null`.
     - Document types: `List`, `Map`.
@@ -503,3 +503,49 @@ aws dynamodb delete-item \
     --condition-expression "begins_with(Src, :prefix)" \
     --expression-attribute-values '{":prefix": {"S": "http://"}}'
 ```
+
+## 19.11 DynamoDB Indexes
+
+There are two types of indexes in DynamoDB: local secondary indexes and global secondary indexes.
+
+### 19.11.1 Local Secondary Indexes (LSI)
+
+An **LSI provides an alternative (additional) sort key for a table**.
+- The sort key consists of one scalar attribute (`String`, `Number`, or `Binary`).
+- Up to 5 LSIs per table.
+- They **must be defined at table creation time**.
+
+LSIs can contain some or all of the attributes that are projected into the index (KEYS_ONLY, INCLUDE, ALL), so the attributes that are not projected into the index are fetched from the base table.
+
+For instance, consider the following table:
+
+![DynamoDB Table LSI](/assets/aws-certified-developer-associate/dynamodb_table_lsi.png "DynamoDB Table LSI")
+
+We have a primary key `User_ID` and a sort key `Game_ID`, which we can use to query the table. However, we may want to query using the `Game_TS` and the  `User_ID` because we want to get all games played by a user in a certain time frame. We can create an LSI with the sort key `Game_TS` to achieve this, so that we do not need to scan the table and then filter it, which is inefficient.
+
+### 19.11.2 Global Secondary Indexes (GSI)
+
+A **GSI provides an alternative (additional) primary key (either HASH or HASH + RANGE)** for a table.
+- Used to speed up queries on non-key attributes.
+- The index key consists of scalar attributes (`String`, `Number`, or `Binary`)
+- You can think of it like a new table with the same data but with a different primary key, so you need to provision RCUs and WCUs for the index.
+- They **can be created/modified at table creation time or after**.
+
+GSIs can contain some or all of the attributes that are projected into the index (KEYS_ONLY, INCLUDE, ALL), so the attributes that are not projected into the index are fetched from the base table.
+
+For instance, consider the following table:
+
+![DynamoDB Table GSI](/assets/aws-certified-developer-associate/dynamodb_table_gsi.png "DynamoDB Table GSI")
+
+On this table, we can query only by `User_ID` and `Game_ID`. However, we may want to query by `Game_ID` and `Game_TS` to get all games played in a certain time frame. With the table above, we can only perform this query by scanning the table and then filtering, which is inefficient. To solve this, we can create a GSI with the primary key `Game_ID` and `Game_TS` which looks like a new table with the same data but with a different primary key:
+
+![DynamoDB Table GSI Created](/assets/aws-certified-developer-associate/dynamodb_table_gsi_created.png "DynamoDB Table GSI Created")
+
+### 19.11.3 Indexes and Throttling
+
+- Global secondary indexes:
+    - **If the writes are throttled on the GSI, then the main table will be throttled, even if the WCU on the main tables are fine**.
+    - Choose GSI partition key carefully.
+    - Assign WCU capacity carefully.
+    - This is a **caviet to be aware of because the exam may ask you about this**: GSIs use an independent amount of RCUs/WCUs and if they are throttled due to insufficient capacity, then the main table will also be throttled.
+- Local secondary indexes: they use the WCUs and RCUs of the main table, so there are no special throttling consideration.
