@@ -549,3 +549,15 @@ On this table, we can query only by `User_ID` and `Game_ID`. However, we may wan
     - Assign WCU capacity carefully.
     - This is a **caviet to be aware of because the exam may ask you about this**: GSIs use an independent amount of RCUs/WCUs and if they are throttled due to insufficient capacity, then the main table will also be throttled.
 - Local secondary indexes: they use the WCUs and RCUs of the main table, so there are no special throttling consideration.
+
+## 19.12 Creating Indexes in DynamoDB
+
+During table creation, scroll to **secondary indexes** where you can create both LSIs and GSIs:
+
+![DynamoDB Table Create Indexes](/assets/aws-certified-developer-associate/dynamodb_table_create_indexes.png "DynamoDB Table Create Indexes")
+
+You can see created indexes in the table's details at any time:
+
+![DynamoDB Table Indexes](/assets/aws-certified-developer-associate/dynamodb_table_indexes.png "DynamoDB Table Indexes")
+
+From the image above, you can confirm that LSIs cannot be modified after table creation, while GSIs can be modified/created.
