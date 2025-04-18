@@ -561,3 +561,15 @@ You can see created indexes in the table's details at any time:
 ![DynamoDB Table Indexes](/assets/aws-certified-developer-associate/dynamodb_table_indexes.png "DynamoDB Table Indexes")
 
 From the image above, you can confirm that LSIs cannot be modified after table creation, while GSIs can be modified/created.
+
+### 19.12.1 Creating a Local Secondary Index
+
+To **create a LSI**, you need to specify the **index name** and the **sort key**:
+
+![DynamoDB Table Create LSI](/assets/aws-certified-developer-associate/dynamodb_table_create_lsi.png "DynamoDB Table Create LSI")
+
+And it will appear in the table's secondary indexes:
+
+![DynamoDB Table LSI Created](/assets/aws-certified-developer-associate/dynamodb_table_lsi_created.png "DynamoDB Table LSI Created")
+
+LSIs can be created only at table creation time and cannot be modified after table creation.
