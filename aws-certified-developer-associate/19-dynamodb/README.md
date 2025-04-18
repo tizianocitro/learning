@@ -583,3 +583,13 @@ To **create a GSI**, you need to specify the **index name**, the **partition key
 For GSIs, you also need to specify the **index capacity** (which you can also copy from the main table):
 
 ![DynamoDB Table GSI Capacity](/assets/aws-certified-developer-associate/dynamodb_table_gsi_capacity.png "DynamoDB Table GSI Capacity")
+
+### 19.12.3 Querying Secondary Indexes
+
+If you into the table's details, you **can query the table or the indexes**:
+
+![DynamoDB Table Query Indexes](/assets/aws-certified-developer-associate/dynamodb_table_query_indexes.png "DynamoDB Table Query Indexes")
+
+In this case, the `game_id-index` is the LSI we created, and we can query it by the sort key `game_id` and the partition key `user_id`. Instead, if we query the table, we can only use the partition key `user_id` and the sort key `game_ts`.
+
+However, GSIs will appear in the dropwdown list of indexes to query, so you can query them as well. In that case, you can query by the partition key and the sort key of the GSI.
