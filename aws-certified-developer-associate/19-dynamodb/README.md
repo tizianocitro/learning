@@ -573,3 +573,13 @@ And it will appear in the table's secondary indexes:
 ![DynamoDB Table LSI Created](/assets/aws-certified-developer-associate/dynamodb_table_lsi_created.png "DynamoDB Table LSI Created")
 
 LSIs can be created only at table creation time and cannot be modified after table creation.
+
+### 19.12.2 Creating a Global Secondary Index
+
+To **create a GSI**, you need to specify the **index name**, the **partition key**, and the **sort key**:
+
+![DynamoDB Table Create GSI](/assets/aws-certified-developer-associate/dynamodb_table_create_gsi.png "DynamoDB Table Create GSI")
+
+For GSIs, you also need to specify the **index capacity** (which you can also copy from the main table):
+
+![DynamoDB Table GSI Capacity](/assets/aws-certified-developer-associate/dynamodb_table_gsi_capacity.png "DynamoDB Table GSI Capacity")
