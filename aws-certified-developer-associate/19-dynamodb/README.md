@@ -593,3 +593,11 @@ If you into the table's details, you **can query the table or the indexes**:
 In this case, the `game_id-index` is the LSI we created, and we can query it by the sort key `game_id` and the partition key `user_id`. Instead, if we query the table, we can only use the partition key `user_id` and the sort key `game_ts`.
 
 However, GSIs will appear in the dropwdown list of indexes to query, so you can query them as well. In that case, you can query by the partition key and the sort key of the GSI.
+
+## 19.13 DynamoDB Optimistic Locking
+
+DynamoDB has a feature called conditional writes, which provides a way to ensure an item has not changed before you update/delete it.
+
+This **strategy is called optimistic locking** and the idea behind it is that you read an item, then you update it, but before you update it, you check if the item has not changed since you read it. If it has changed, you do not update it because you do not have the latest version of the item anymore. So, you need to get the latest version of the item and try again.
+
+![DynamoDB Optimistic Locking](/assets/aws-certified-developer-associate/dynamodb_optimistic_locking.png "DynamoDB Optimistic Locking")
