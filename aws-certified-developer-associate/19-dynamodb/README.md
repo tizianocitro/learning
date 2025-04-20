@@ -601,3 +601,26 @@ DynamoDB has a feature called conditional writes, which provides a way to ensure
 This **strategy is called optimistic locking** and the idea behind it is that you read an item, then you update it, but before you update it, you check if the item has not changed since you read it. If it has changed, you do not update it because you do not have the latest version of the item anymore. So, you need to get the latest version of the item and try again.
 
 ![DynamoDB Optimistic Locking](/assets/aws-certified-developer-associate/dynamodb_optimistic_locking.png "DynamoDB Optimistic Locking")
+
+## 19.14 DynamoDB Accelerator (DAX)
+
+DAX is a **fully managed, highly available, in-memory cache for DynamoDB** that delivers up to 10x performance improvement by caching the most frequently used data, thus offloading the heavy reads on hot keys of your DynamoDB table and preventing the `ProvisionedThroughputExceededException` exception.
+
+DAX:
+- Provides microseconds latency for cached reads and queries because it **stores the most popular items in memory**.
+- **Solves the hot key problem** when you have too many reads on the same partition key.
+- Is fully secure with encryption at rest with KMS, VPC, IAM, CloudTrail, CloudWatch, etc.
+
+DAX **does not require application logic modification** because it is compatible with the DynamoDB API. You just need to point your application to the DAX cluster you provisioned.
+- 5 minutes TTL for cache by default.
+- Up to 10 nodes in the cluster with a recommended 3 nodes in 3 different AZs for production.
+
+![DynamoDB DAX](/assets/aws-certified-developer-associate/dynamodb_dax.png "DynamoDB DAX")
+
+DAX has no free tier, so you pay for the nodes you provision.
+
+### 19.14.1 DAX vs ElastiCache
+
+**DAX and ElastiCache can be used in conjunction**:
+- DAX is to cache individual items or for queries and scan.
+- Elisticache allows you to cache results of the results of whatever logic your application has, so not only for DynamoDB and its queries.
