@@ -624,3 +624,84 @@ DAX has no free tier, so you pay for the nodes you provision.
 **DAX and ElastiCache can be used in conjunction**:
 - DAX is to cache individual items or for queries and scan.
 - Elisticache allows you to cache results of the results of whatever logic your application has, so not only for DynamoDB and its queries.
+
+### 19.14.2 Creating a DAX Cluster
+
+Go to *Clusters* in the DAX console and click on *Create Cluster*:
+
+![DynamoDB DAX Create Cluster](/assets/aws-certified-developer-associate/dynamodb_dax_create_cluster.png "DynamoDB DAX Create Cluster")
+
+Give the cluster a **name** (e.g., `demodax`) and optionally a **description**:
+
+![DynamoDB DAX Cluster Name](/assets/aws-certified-developer-associate/dynamodb_dax_cluster_name.png "DynamoDB DAX Cluster Name")
+
+Next is to configure the **node families** by choosing betweenn 3 options:
+- `t-type`: for burstable workloads.
+- `r-type`: for memory-optimized workloads.
+- `All families`: for a mix of both.
+
+![DynamoDB DAX Node Family](/assets/aws-certified-developer-associate/dynamodb_dax_node_family.png "DynamoDB DAX Node Family")
+
+Then, select the **node type**:
+
+![DynamoDB DAX Node Type](/assets/aws-certified-developer-associate/dynamodb_dax_node_type.png "DynamoDB DAX Node Type")
+
+And the **number of nodes** (cluster size between 1 and 11):
+
+![DynamoDB DAX Number of Nodes](/assets/aws-certified-developer-associate/dynamodb_dax_number_of_nodes.png "DynamoDB DAX Number of Nodes")
+
+If you select less than 3 nodes, you will get a warning because it is not recommended for production due to reduced availability.
+
+Next configure the **subnets and VPC**:
+
+![DynamoDB DAX Subnets](/assets/aws-certified-developer-associate/dynamodb_dax_subnets.png "DynamoDB DAX Subnets")
+
+![DynamoDB DAX Subnets 2](/assets/aws-certified-developer-associate/dynamodb_dax_subnets_2.png "DynamoDB DAX Subnets 2")
+
+Configure **access control via security group**:
+
+![DynamoDB DAX Security Group](/assets/aws-certified-developer-associate/dynamodb_dax_security_group.png "DynamoDB DAX Security Group")
+
+And **AZ allocation**:
+
+![DynamoDB DAX AZ Allocation](/assets/aws-certified-developer-associate/dynamodb_dax_az_allocation.png "DynamoDB DAX AZ Allocation")
+
+Next thing is **security**. Start with IAM permissions, you need to create a new role or use an existing one to **allow DAX to access DynamoDB**:
+
+![DynamoDB DAX Security](/assets/aws-certified-developer-associate/dynamodb_dax_security.png "DynamoDB DAX Security")
+
+![DynamoDB DAX Security 2](/assets/aws-certified-developer-associate/dynamodb_dax_security_2.png "DynamoDB DAX Security 2")
+
+And finish with **encryption** configuration:
+
+![DynamoDB DAX Encryption](/assets/aws-certified-developer-associate/dynamodb_dax_encryption.png "DynamoDB DAX Encryption")
+
+You have also some **advanced settings** to configure. The first is the **parameter group which defines settings like TTL and for items and queries**. You can set the following parameters in a parameter group:
+
+![DynamoDB DAX Parameter Group](/assets/aws-certified-developer-associate/dynamodb_dax_parameter_group.png "DynamoDB DAX Parameter Group")
+
+And then set it in the cluster configuration:
+
+![DynamoDB DAX Parameter Group Set](/assets/aws-certified-developer-associate/dynamodb_dax_parameter_group_set.png "DynamoDB DAX Parameter Group Set")
+
+Finally, you can set **tags** and the **maintenance window** for software updates and patches:
+
+![DynamoDB DAX Maintenance Window](/assets/aws-certified-developer-associate/dynamodb_dax_maintenance_window.png "DynamoDB DAX Maintenance Window")
+
+After the cluster is created, you can see it in the **list of clusters**:
+
+![DynamoDB DAX Cluster List](/assets/aws-certified-developer-associate/dynamodb_dax_cluster_list.png "DynamoDB DAX Cluster List")
+
+And by clicking on it, you can see the **details of the cluster** where you have crucial information like the **cluster endpoint that you need to point your applications to**:
+
+![DynamoDB DAX Cluster Details](/assets/aws-certified-developer-associate/dynamodb_dax_cluster_details.png "DynamoDB DAX Cluster Details")
+
+Or the **nodes in the cluster**:
+
+![DynamoDB DAX Cluster Nodes](/assets/aws-certified-developer-associate/dynamodb_dax_cluster_nodes.png "DynamoDB DAX Cluster Nodes")
+
+Which you can also add:
+
+![DynamoDB DAX Cluster Add Nodes](/assets/aws-certified-developer-associate/dynamodb_dax_cluster_add_nodes.png "DynamoDB DAX Cluster Add Nodes")
+
+But you can also check the events of your database and monitor metrics.
