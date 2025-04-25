@@ -705,3 +705,36 @@ Which you can also add:
 ![DynamoDB DAX Cluster Add Nodes](/assets/aws-certified-developer-associate/dynamodb_dax_cluster_add_nodes.png "DynamoDB DAX Cluster Add Nodes")
 
 But you can also check the events of your database and monitor metrics.
+
+## 19.15 DynamoDB Streams
+
+They are **ordered stream of item-level modifications (create/update/delete) in a table**. Stream records can be:
+- Sent to Kinesis Data Streams.
+- Processes by Kinesis Client Library applications.
+- Processes by Lambda functions.
+
+**Data retention is of up to 24 hours**, so you need to process them in this time frame or use Lambda or Kinesis to store them for longer.
+
+Use cases:
+- React to changes in real-time (e.g., welcome email to users).
+- Analytics.
+- Insert into derivative tables.
+- Insert into OpenSearch.
+- Implement cross-region replication.
+
+The image below explain what you can do with DynamoDB Streams:
+
+![DynamoDB Streams](/assets/aws-certified-developer-associate/dynamodb_streams.png "DynamoDB Streams")
+
+### 19.15.1 Features of DynamoDB Streams
+
+You have the ability to **choose the information that will be written to the stream**:
+- `KEYS_ONLY`: only the key attributes of the modified item.
+- `NEW_IMAGE`: the entire item, as it appears after it was modified.
+- `OLD_IMAGE`: the entire item, as it appeared before it was modified.
+- `NEW_AND_OLD_IMAGES`: both the new and the old images of the item.
+
+**DynamoDB streams are made of shards**, just like Kinesis Data Streams.
+- You do not provision shards, this is automated by AWS.
+
+**Records are not retroactively populated in a stream after enabling it** but only after the stream is enabled. The **exam tries to trick you with this**.
