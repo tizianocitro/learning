@@ -738,3 +738,10 @@ You have the ability to **choose the information that will be written to the str
 - You do not provision shards, this is automated by AWS.
 
 **Records are not retroactively populated in a stream after enabling it** but only after the stream is enabled. The **exam tries to trick you with this**.
+
+### 19.15.2 DynamoDB Streams Integration with Lambda
+
+You need to **define an event source mapping to read from a stream** and **ensure that the Lambda function has the appropriate permissions to pull from the stream**.
+- The Lambda function is invoked synchronously.
+
+![DynamoDB Streams Lambda](/assets/aws-certified-developer-associate/dynamodb_streams_lambda.png "DynamoDB Streams Lambda")
