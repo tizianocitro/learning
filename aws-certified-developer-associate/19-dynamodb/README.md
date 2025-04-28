@@ -745,3 +745,47 @@ You need to **define an event source mapping to read from a stream** and **ensur
 - The Lambda function is invoked synchronously.
 
 ![DynamoDB Streams Lambda](/assets/aws-certified-developer-associate/dynamodb_streams_lambda.png "DynamoDB Streams Lambda")
+
+## 19.16 Using DynamoDB Streams
+
+Go to a table's details and find the *Exports and Streams* tab where you will find the following:
+
+![DynamoDB Table Streams](/assets/aws-certified-developer-associate/dynamodb_table_streams.png "DynamoDB Table Streams")
+
+In this case, we will **enable** the DynamoDB stream by cliking on *Enable* and selecting the `NEW_AND_OLD_IMAGES` option to see as much information as possible in stream records:
+
+![DynamoDB Table Streams Enable](/assets/aws-certified-developer-associate/dynamodb_table_streams_enable.png "DynamoDB Table Streams Enable")
+
+Enable the stream and this is what you will see:
+
+![DynamoDB Table Streams Enabled](/assets/aws-certified-developer-associate/dynamodb_table_streams_enabled.png "DynamoDB Table Streams Enabled")
+
+Now we need to **create a trigger for the stream (a Lambda function)**, so we click on *Create Trigger*:
+
+![DynamoDB Table Streams Create Trigger](/assets/aws-certified-developer-associate/dynamodb_table_streams_create_trigger.png "DynamoDB Table Streams Create Trigger")
+
+First, **create a Lambda function to use as trigger** using of the blueprints for DynamoDB (the chosen blueprint is `dynamodb-process-stream-python3` that just logs the stream records):
+
+![DynamoDB Table Streams Configure Trigger](/assets/aws-certified-developer-associate/dynamodb_table_streams_configure_trigger.png "DynamoDB Table Streams Configure Trigger")
+
+And **set the DynamoDB trigger in the function configuration** where you specify the DynamoDB table, the batch size, and the starting position:
+
+![DynamoDB Table Streams Lambda Trigger](/assets/aws-certified-developer-associate/dynamodb_table_streams_lambda_trigger.png "DynamoDB Table Streams Lambda Trigger")
+
+**Ensure the function has necessary permissions** to read from DynamoDB. Then, go back to the table's *Exports and Streams* tab and actually on *Create Trigger* to configure the trigger:
+
+![DynamoDB Table Streams Configure Trigger 2](/assets/aws-certified-developer-associate/dynamodb_table_streams_configure_trigger_2.png "DynamoDB Table Streams Configure Trigger 2")
+
+And it will appear in the list of triggers:
+
+![DynamoDB Table Streams Trigger Created](/assets/aws-certified-developer-associate/dynamodb_table_streams_trigger_created.png "DynamoDB Table Streams Trigger Created")
+
+And you can also see it as a trigger in the Lambda function:
+
+![DynamoDB Table Streams Lambda Trigger 2](/assets/aws-certified-developer-associate/dynamodb_table_streams_lambda_trigger_2.png "DynamoDB Table Streams Lambda Trigger 2")
+
+To **test this trigger**, just go to the DynamoDB table and create a new item. To see that the function is actually being triggered, go to the CloudWatch logs and see the logs of the Lambda function where you will see the stream records being logged. For example:
+
+![DynamoDB Table Streams Lambda Logs](/assets/aws-certified-developer-associate/dynamodb_table_streams_lambda_logs.png "DynamoDB Table Streams Lambda Logs")
+
+The trigger can be **disabled** at any time in the function configuration but also in the table's details.
