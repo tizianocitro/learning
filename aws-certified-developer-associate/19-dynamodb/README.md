@@ -809,3 +809,25 @@ A delete operation for each expired item is inserted into the DynamoDB stream (i
 A few use cases:
 - Reduce stored data by keeping only current data.
 - Adhere to data retention policies defined by regulations.
+
+### 19.17.1 Setting Up TTL on Tables
+
+Create a table called `DemoTTL` and insert a few items with an `Number` attribute called `expire_on` (can be named differently) that will be used as the TTL attribute. For instance:
+
+![DynamoDB Item with TTL Attribute](/assets/aws-certified-developer-associate/dynamodb_item_with_ttl_attribute.png "DynamoDB Item with TTL Attribute")
+
+Go to the tables's details where you can see the *Time to Live (TTL)* setting, which is currently disabled:
+
+![DynamoDB Table TTL](/assets/aws-certified-developer-associate/dynamodb_table_ttl.png "DynamoDB Table TTL")
+
+Then, go to the *Additional Settins* tab and scroll to the *Time to Live (TTL)* setting where you can enable it by clicking on *Enable*. This will prompt you to enter a **TTL attribute name** (in this case `expire_on`):
+
+![DynamoDB Table TTL Enable](/assets/aws-certified-developer-associate/dynamodb_table_ttl_enable.png "DynamoDB Table TTL Enable")
+
+After doing so, you can **run a preview** to see which items will be deleted after specifying a time period:
+
+![DynamoDB Table TTL Preview](/assets/aws-certified-developer-associate/dynamodb_table_ttl_preview.png "DynamoDB Table TTL Preview")
+
+Finally, click on *Enable TTL* to enable the TTL feature on the table. And the TTL will now be enabled:
+
+![DynamoDB Table TTL Enabled](/assets/aws-certified-developer-associate/dynamodb_table_ttl_enabled.png "DynamoDB Table TTL Enabled")
