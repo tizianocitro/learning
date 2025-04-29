@@ -789,3 +789,23 @@ To **test this trigger**, just go to the DynamoDB table and create a new item. T
 ![DynamoDB Table Streams Lambda Logs](/assets/aws-certified-developer-associate/dynamodb_table_streams_lambda_logs.png "DynamoDB Table Streams Lambda Logs")
 
 The trigger can be **disabled** at any time in the function configuration but also in the table's details.
+
+## 19.17 DynamoDB Time To Live (TTL)
+
+DynamoDB TTL is a feature that allows you to **define a time period after which the items in a table are deleted**.
+- A deletion due to TTL has no extra cost, so it does not consume WCUs.
+
+The **TTL attribute must be a `Number` data type with a Unix Epoch timestamp value**.
+
+There are **two processes: one that checks items to flag those that are expired and another that deletes the expired items**.
+- Expired items are deleted within 48 hours of expiration, so not immediately.
+- Expired items (that have not been deleted yet) appear in reads/queries/scans and if you want them to be excluded, you need to filter them out.
+- Expired items are deleted from both LSIs and GSIs.
+
+![DynamoDB TTL](/assets/aws-certified-developer-associate/dynamodb_ttl.png "DynamoDB TTL")
+
+A delete operation for each expired item is inserted into the DynamoDB stream (if enabled), so you can use it to recover the data if needed or any other use case.
+
+A few use cases:
+- Reduce stored data by keeping only current data.
+- Adhere to data retention policies defined by regulations.
