@@ -831,3 +831,56 @@ After doing so, you can **run a preview** to see which items will be deleted aft
 Finally, click on *Enable TTL* to enable the TTL feature on the table. And the TTL will now be enabled:
 
 ![DynamoDB Table TTL Enabled](/assets/aws-certified-developer-associate/dynamodb_table_ttl_enabled.png "DynamoDB Table TTL Enabled")
+
+## 19.18 Good to Know Concepts and Features
+
+A few **CLI options** that are may come up in the exam:
+- `--projection-expression`: specify one or more attributes to retrieve instead of all attributes.
+    ```bash
+    aws dynamodb scan \
+        --table-name UserPosts \
+        --projection-expression "user_id, content"
+    ```
+
+- `--filter-expression`: filter the results of a query or scan operation.
+    ```bash
+    aws dynamodb scan \
+        --table-name UserPosts \
+        --filter-expression "user_id = :u" \
+        --expression-attribute-values '{":u":{"S":"john123"}}'
+    ```
+
+General **CLI pagination options**:
+- `--page-size`: specify that CLI retrieves the full list of items but with a larger number of API calls instead of one API call (default is 1000 items) to avoid timeouts.
+    - If you have 1000 items and you set the page size to 100, the CLI will make 10 API calls to retrieve all items.
+    ```bash
+    # If you have 3 items, it will make 3 API calls
+    aws dynamodb scan \
+        --table-name UserPosts \
+        --page-size 1
+    ```
+
+- `--max-items`: maximum number of items to show in the CLI (returns `NextToken`).
+    ```bash
+    # If you have 3 items, it will make 1 API call
+    # and return only 1 item and the 'NextToken'
+    aws dynamodb scan \
+        --table-name UserPosts \
+        --max-items 1
+    ```
+
+- `--starting-token`: specify the last `NextToken` to retrieve the next set of items.
+    - It works in conjunction with `--max-items` to retrieve the next set of items.
+    - If you do not receive the `NextToken`, it means that you have retrieved all items.
+    ```bash
+    # If you have 3 items, it will make 1 API call
+    # and return only 1 item and the 'NextToken'
+    aws dynamodb scan \
+        --table-name UserPosts \
+        --max-items 1
+
+    # Then, use the 'NextToken' to retrieve the next set of items
+    aws dynamodb scan \
+        --table-name UserPosts \
+        --starting-token "NextToken"
+    ```
