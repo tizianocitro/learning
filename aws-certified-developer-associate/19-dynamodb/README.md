@@ -884,3 +884,31 @@ General **CLI pagination options**:
         --table-name UserPosts \
         --starting-token "NextToken"
     ```
+
+## 19.19 Transactions in DynamoDB
+
+Transactions are **coordinated, all-or-nothing operations (add/update/delete) to multiple items across one or more tables**.
+- Provide ACID (atomicity, consistency, isolation, and durability)
+
+![DynamoDB Transactions](/assets/aws-certified-developer-associate/dynamodb_transactions.png "DynamoDB Transactions")
+
+Transaction **can be applied to both read and write operations**.
+- Transactions consumes 2x WCUs and RCUs because DynamoDB performs 2 operations for every item (`prepare` and `commit`).
+
+You have **3 read modes**:
+- **Eventual consistency (default)**: returned data might be stale due to replication lag, but it is more scalable and offers better performance.
+- **Strong consistency**: ensures the latest committed write is always read but with slightly higher latency.
+- **Transactional**: ensures strongly consistent reads when reading from multiple tables in a transaction.
+
+You have **2 write modes**:
+- **Standard (default)**: writes data without transactional guarantees.
+- **Transactional**: ensures all writes succeed or all fail together and is used when multiple dependent updates need to be applied atomically.
+
+Two operations that are important to know:
+- `TransactGetItems`: performs one or more `GetItem` operations.
+- `TransactWriteItems`: performs one or more `PutItem`, `UpdateItem`, and `DeleteItem` operations.
+
+A few use cases:
+- Financial transactions.
+- Managing orders.
+- Multiplayer games.
