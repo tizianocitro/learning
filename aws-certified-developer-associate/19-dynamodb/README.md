@@ -912,3 +912,11 @@ A few use cases:
 - Financial transactions.
 - Managing orders.
 - Multiplayer games.
+
+### 19.19.1 Transactions Capacity Computations
+
+This is **very important for the exam**. Refer to the section [19.5 Provisioned Capacity Mode](#195-provisioned-capacity-mode) for more information about how to calculate the capacity.
+
+Examples (* 2 is because of the prepare and commit):
+- We perform 3 transactional writes per second with item size 5 KB => we need `[3 * (5 KB / 1 KB)] * 2 = 30 WCUs`.
+- We perform 5 transaction reads per second, with item size 5 KB => we need `[5 * (5 KB / 4 KB)] * 2 = 25 RCUs`.
