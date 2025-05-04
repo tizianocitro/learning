@@ -920,3 +920,18 @@ This is **very important for the exam**. Refer to the section [19.5 Provisioned 
 Examples (* 2 is because of the prepare and commit):
 - We perform 3 transactional writes per second with item size 5 KB => we need `[3 * (5 KB / 1 KB)] * 2 = 30 WCUs`.
 - We perform 5 transaction reads per second, with item size 5 KB => we need `[5 * (5 KB / 4 KB)] * 2 = 25 RCUs`.
+
+## 19.20 DynamoDB used as Session State Cache
+
+It is common to **use DynamoDB to store session states**. For example, to store user sessions in a web application after a user logs in.
+
+### 19.20.1 Comparison with Other Services
+
+- **vs ElastiCache**: ElastiCache is fully in-memory but DynamoDB is serverless, with both being key/value stores.
+    - If the exam asks for a session store that is an in-memory key/value store, you need ElastiCache.
+    - Instead, if it asks for an auto scaling key/value store, you need DynamoDB.
+- **vs EFS**: EFS must be attached to EC2 instances as a network drive, so if you need to share the session state across multiple instances, you need to use EFS.
+- **vs EBS and Instance Store**: EBS and Instance Store can only be used for local caching, not shared caching because they are attached to a single instance.
+- **vs S3**: S3 is higher latency and not meant for small objects, so it is not a good option for session state.
+
+The **best 3 for storing session state are DynamoDB, ElastiCache, and EFS**. DynamoDB is the best option for a serverless architecture, while ElastiCache is the best option for a fully in-memory solution.
