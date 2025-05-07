@@ -935,3 +935,15 @@ It is common to **use DynamoDB to store session states**. For example, to store 
 - **vs S3**: S3 is higher latency and not meant for small objects, so it is not a good option for session state.
 
 The **best 3 for storing session state are DynamoDB, ElastiCache, and EFS**. DynamoDB is the best option for a serverless architecture, while ElastiCache is the best option for a fully in-memory solution.
+
+## 19.21 DynamoDB Write Sharding
+
+Imagine we have a voting application with two candidates, candidate A and candidate B. If we use a `Candidate_ID` property as partition key, we will get only two partitions, which will generate issues like the hot partition problem.
+
+A **strategy** to address the above problem and **get a better distribution of items across partitions** consists of **adding a suffix to the partition key**. For example, we can use a `Candidate_ID` property with a random suffix (e.g., `Candidate_ID-1`, `Candidate_ID-2`, etc.).
+
+![Write Sharding](/assets/aws-certified-developer-associate/dynamodb_write_sharding.png "Write Sharding")
+
+Two **methods for choosing the suffix**:
+- Sharding using random suffix: for example, use a random number as a suffix.
+- Sharding using calculated suffix: for example, use the hash of a property as a suffix (e.g., `Candidate_ID-<hash of Candidate_ID>`).
