@@ -947,3 +947,15 @@ A **strategy** to address the above problem and **get a better distribution of i
 Two **methods for choosing the suffix**:
 - Sharding using random suffix: for example, use a random number as a suffix.
 - Sharding using calculated suffix: for example, use the hash of a property as a suffix (e.g., `Candidate_ID-<hash of Candidate_ID>`).
+
+## 19.22 DynamoDB Write Types
+
+There are different types of writes in DynamoDB. The one you need depends on the use case and the requirements of your application:
+- **Concurrent writes**: when multiple users are writing to the same item at the same time but a write may overwrite another write.
+    ![Concurrent Writes](/assets/aws-certified-developer-associate/dynamodb_concurrent_writes.png "Concurrent Writes")
+- **Conditional writes**: when you want to update an item only if a certain condition is met.
+    ![Conditional Writes](/assets/aws-certified-developer-associate/dynamodb_conditional_writes.png "Conditional Writes")
+- **Atomic writes**: when you want to update multiple items at the same time but you want to ensure that all updates are applied without one overwriting the other.
+    ![Atomic Writes](/assets/aws-certified-developer-associate/dynamodb_atomic_writes.png "Atomic Writes")
+- **Batch writes**: perform writes in batches.
+    ![Batch Writes](/assets/aws-certified-developer-associate/dynamodb_batch_writes.png "Batch Writes")
