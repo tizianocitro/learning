@@ -959,3 +959,19 @@ There are different types of writes in DynamoDB. The one you need depends on the
     ![Atomic Writes](/assets/aws-certified-developer-associate/dynamodb_atomic_writes.png "Atomic Writes")
 - **Batch writes**: perform writes in batches.
     ![Batch Writes](/assets/aws-certified-developer-associate/dynamodb_batch_writes.png "Batch Writes")
+
+## 19.23 DynamoDB Integration with S3
+
+### 19.23.1 Storing Large Objects
+
+To store large objects in DynamoDB, you can use S3 to store the object and then store the S3 object URL in DynamoDB. This way, you can store large objects in S3 and keep the metadata in DynamoDB.
+
+The following image provides an example of using DynamoDB to store products' images stored in S3:
+
+![Storing Large Objects in DynamoDB](/assets/aws-certified-developer-associate/dynamodb_storing_large_objects.png "Storing Large Objects in DynamoDB")
+
+### 19.23.2 Indexing S3 Objects Metadata
+
+You can use DynamoDB to index S3 objects metadata. For example, you can store the metadata of S3 objects in DynamoDB and then use DynamoDB to query the metadata.
+
+![DynamoDB Indexing S3 Objects Metadata](/assets/aws-certified-developer-associate/dynamodb_indexing_s3_objects_metadata.png "DynamoDB Indexing S3 Objects Metadata")
