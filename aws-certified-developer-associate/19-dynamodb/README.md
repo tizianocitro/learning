@@ -975,3 +975,15 @@ The following image provides an example of using DynamoDB to store products' ima
 You can use DynamoDB to index S3 objects metadata. For example, you can store the metadata of S3 objects in DynamoDB and then use DynamoDB to query the metadata.
 
 ![DynamoDB Indexing S3 Objects Metadata](/assets/aws-certified-developer-associate/dynamodb_indexing_s3_objects_metadata.png "DynamoDB Indexing S3 Objects Metadata")
+
+## 19.24 DynamoDB Table Operations
+
+**Table cleanup**:
+- **Scan + DeleteItem**: it is very slow, expensive, and consumes RCUs and WCUs.
+- **Drop Table + create table (best option)**: it is fast, efficient, and cheap.
+
+**Copy table**:
+- Use the **Data Pipeline** service:
+    ![Data Pipeline](/assets/aws-certified-developer-associate/dynamodb_data_pipeline.png "Data Pipeline")
+- **Backup and restore into a new table**: it takes some time but is more efficient and do not require the usage of other services.
+- **Scan + PutItem or BatchWriteItem**.
