@@ -987,3 +987,63 @@ You can use DynamoDB to index S3 objects metadata. For example, you can store th
     ![Data Pipeline](/assets/aws-certified-developer-associate/dynamodb_data_pipeline.png "Data Pipeline")
 - **Backup and restore into a new table**: it takes some time but is more efficient and do not require the usage of other services.
 - **Scan + PutItem or BatchWriteItem**.
+
+## 19.25 DynamoDB Security and Other Features
+
+**Security**:
+- VPC Endpoints can be used to access DynamoDB without using the internet.
+- Access is fully controlled by IAM.
+- Encryption at rest using KMS and in-transit using SSL/TLS.
+
+**Backup and restore** features are available in two options:
+- Point-in-time recovery (PITR): for example, via RDS, with no performance impact.
+- On-demand backup and restore: just a normal backup and restore.
+
+**Global tables**: they are multi-region, multi-active, fully replicated, high performance tables.
+- You need to enable DynamoDB Streams to use global tables.
+
+**DynamoDB Local**: develop and test applications locally without accessing the DynamoDB web service.
+- For example, via a Docker image.
+
+**Database Migration Service (DMS)**: it can be used to migrate to DynamoDB from MongoDB, Oracle, MySQL, S3, and more.
+
+### 19.25.1 Allowing Users to Interact with DynamoDB Directly
+
+Instead of creating a IAM user for each client, you can allow users to log in to your application using identity providers like Google, Facebook, or Amazon. This way, you can assign temporary AWS credentials to users to allow them to interact with DynamoDB directly.
+
+![DynamoDB Users](/assets/aws-certified-developer-associate/dynamodb_users_directly.png "DynamoDB Users")
+
+However, for this to be secure, you need **fine-grain access control to allow users to access only the resources they need**.
+
+Using *Web Identity Federation* or *Cognito Identity Pools*, each user gets AWS credentials and you can assign an IAM role to these users with a condition to limit their API access to DynamoDB.
+
+For example, the following IAM policy allows users to access only their own items in the `OpenTable` table:
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:PutItem",
+                "dynamodb:GetItem",
+                "dynamodb:Query",
+                "dynamodb:DeleteItem"
+            ],
+            "Resource":
+                "arn:aws:dynamodb:us-east-1:123456789012:table/OpenTable",
+            "Condition": {
+                "ForAllValues:StringEquals": {
+                    "dynamodb:LeadingKeys":
+                        "${cognito-identity.amazonaws.com:sub}"
+                }
+            }
+        }
+    ]
+}
+```
+
+The `LeadingKeys` limits row-level access for users. You can also specify conditions to limit access to certain attributes. For example, you can use the `dynamodb:Attributes` condition key to limit access to certain attributes in the item. In summary:
+- `dynamodb:LeadingKeys`: provides **row-level access control**.
+- `dynamodb:Attributes`: provides **column-level access control**.
