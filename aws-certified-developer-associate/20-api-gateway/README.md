@@ -29,3 +29,9 @@ Available **integrations** at high level:
     - Expose any AWS APIs through the API Gateway.
     - For example, start a Step Function workflow, post a message to SQS, and more.
     - The **reason why we add the gateway is to add authentication, deploy publicly, rate control, etc**.
+
+### 20.1.1 API Gateway to Expose Kinesis Data Streams
+
+An example of integration is to allow users to send HTTP requests to an API Gateway endpoint, which then sends them to Kinesis Data Streams. In this way, you do not need to provides Kinesis Data Streams endpoint to the users. Instead, you can provide a single API Gateway endpoint that is easier to manage and secure. The API Gateway can also handle authentication, authorization, and request validation for the Kinesis Data Streams integration.
+
+![API Gateway to Expose Kinesis Data Streams](/assets/aws-certified-developer-associate/ag_expose_kinesis.png "API Gateway to Expose Kinesis Data Streams")
