@@ -35,3 +35,16 @@ Available **integrations** at high level:
 An example of integration is to allow users to send HTTP requests to an API Gateway endpoint, which then sends them to Kinesis Data Streams. In this way, you do not need to provides Kinesis Data Streams endpoint to the users. Instead, you can provide a single API Gateway endpoint that is easier to manage and secure. The API Gateway can also handle authentication, authorization, and request validation for the Kinesis Data Streams integration.
 
 ![API Gateway to Expose Kinesis Data Streams](/assets/aws-certified-developer-associate/ag_expose_kinesis.png "API Gateway to Expose Kinesis Data Streams")
+
+## 20.2 Different Ways of Deploying API Gateway Endpoints
+
+- **Edge-Optimized (default)**:
+    - For global clients.
+    - Requests are routed through the CloudFront Edge locations to improve latency.
+    - The API Gateway is still deployed in only one region.
+- **Regional**:
+    - For clients within the same region.
+    - You can manually combine it with your own CloudFront distribution to get more control over the caching strategies and the distribution in general.
+- **Private**:
+    - Can only be accessed from your VPC using an interface VPC endpoint (ENI).
+    - Use a resource policy to define access.
