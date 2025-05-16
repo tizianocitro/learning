@@ -60,3 +60,27 @@ An example of integration is to allow users to send HTTP requests to an API Gate
 - If using a Edge-Optimized endpoint, the certificate must be in us-east-1.
 - If using a Regional endpoint, the certificate must be in the same region where the API Gateway is deployed.
 - You must setup CNAME or A-alias record in Route 53 to point to the API Gateway endpoint.
+
+## 20.4 Creating APIs
+
+Go to the API Gateway console:
+
+![API Gateway Console](/assets/aws-certified-developer-associate/ag_console.png "API Gateway Console")
+
+And choose an **API type**. The options are:
+- **HTTP API**: for REST APIs with low latency and cost. It supports only a subset of features compared to the REST API.
+- **REST API**: for public REST APIs with all features.
+- **REST API Private**: for REST APIs with all features, but only accessible from your VPC.
+- **WebSocket API**: for WebSocket APIs.
+
+![API Gateway Console Choose API Type](/assets/aws-certified-developer-associate/ag_console_choose_api.png "API Gateway Console Choose API Type")
+
+Choose REST API and then click *Build*. First thing is to choose between creating a new API, importing or cloning one, and using a sample API. Select *New API* and give it a **name** and optionally **description**:
+
+![API Gateway Create API](/assets/aws-certified-developer-associate/ag_create_api.png "API Gateway Create API")
+
+In the screen above, you have to choose the **Endpoint Type** by selecting one of the option presented in [20.2 Different Ways of Deploying API Gateway Endpoints](#202-different-ways-of-deploying-api-gateway-endpoints).
+
+Then, click on *Create API* to create the API. You will be redirected to the API Gateway console where you can see the API you just created:
+
+![API Gateway API Created](/assets/aws-certified-developer-associate/ag_api_created.png "API Gateway API Created")
