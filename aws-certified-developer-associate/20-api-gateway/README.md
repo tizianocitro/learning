@@ -48,3 +48,15 @@ An example of integration is to allow users to send HTTP requests to an API Gate
 - **Private**:
     - Can only be accessed from your VPC using an interface VPC endpoint (ENI).
     - Use a resource policy to define access.
+
+## 20.3 API Gateway Security
+
+**User authentication** through:
+- IAM roles: useful for internal applications.
+- Cognito: it provides identity for external users (e.g., mobile users).
+- Custom authorizer: your own logic provided by a Lambda function.
+
+**Custom Domain Name HTTPS security through integration with AWS Certificate Manager (ACM)**:
+- If using a Edge-Optimized endpoint, the certificate must be in us-east-1.
+- If using a Regional endpoint, the certificate must be in the same region where the API Gateway is deployed.
+- You must setup CNAME or A-alias record in Route 53 to point to the API Gateway endpoint.
