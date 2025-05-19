@@ -84,3 +84,28 @@ In the screen above, you have to choose the **Endpoint Type** by selecting one o
 Then, click on *Create API* to create the API. You will be redirected to the API Gateway console where you can see the API you just created:
 
 ![API Gateway API Created](/assets/aws-certified-developer-associate/ag_api_created.png "API Gateway API Created")
+
+### 20.4.1 Creating Methods
+
+To create a method, select the resource you want to add the method to. In this case, we will select the root resource `/`, which is the default resource created when you create a new API. Then, click on *Create Method* and select the **method type** (HTTP verbs, e.g., GET, POST, DELETE) and **integration type**:
+
+![API Gateway Create Method](/assets/aws-certified-developer-associate/ag_create_method.png "API Gateway Create Method")
+
+You **can integrate with any AWS service by selecting the AWS service integration type**, you just need to select the service you want to in the dropdown list:
+
+![API Gateway Create Method Integration Type](/assets/aws-certified-developer-associate/ag_create_method_integration_type.png "API Gateway Create Method Integration Type")
+
+In this case, we will **choose the Lambda Function integration type**, so we need to select the region where the Lambda function is deployed and then select the Lambda function we want to integrate with:
+
+![API Gateway Create Method Lambda Function](/assets/aws-certified-developer-associate/ag_create_method_lambda_function.png "API Gateway Create Method Lambda Function")
+
+You can **customize the timeout**, which is the time the API Gateway will wait for a response from the Lambda function before returning an error.
+- The default timeout is 29 seconds.
+
+Finally, click on *Create Method* to create the method.
+
+As a result, the gateway will appear in the function as a trigger.
+- The gateway also gains the permission to invoke the Lambda function.
+- You can see this in the Lambda function's *Configuration* tab, under *Permissions*.
+
+![API Gateway Lambda Function Trigger](/assets/aws-certified-developer-associate/ag_lambda_trigger.png "API Gateway Lambda Function Trigger")
