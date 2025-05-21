@@ -109,3 +109,21 @@ As a result, the gateway will appear in the function as a trigger.
 - You can see this in the Lambda function's *Configuration* tab, under *Permissions*.
 
 ![API Gateway Lambda Function Trigger](/assets/aws-certified-developer-associate/ag_lambda_trigger.png "API Gateway Lambda Function Trigger")
+
+### 20.4.2 Accessing and Testing Methods
+
+In the API Gateway console, you can **see the created method** by clicking on it under the resource you selected:
+
+![API Gateway Method Created](/assets/aws-certified-developer-associate/ag_method_created.png "API Gateway Method Created")
+
+And **test the method** by going to the *Test* tab:
+
+![API Gateway Test Method](/assets/aws-certified-developer-associate/ag_test_method.png "API Gateway Test Method")
+
+Which will show you the response:
+
+![API Gateway Test Method Response](/assets/aws-certified-developer-associate/ag_test_method_response.png "API Gateway Test Method Response")
+
+You can debug and see what the gateway is sending to the Lambda function by accessing the CloudWatch logs of the Lambda function:
+
+![API Gateway Function CloudWatch Logs](/assets/aws-certified-developer-associate/ag_function_cloudwatch_logs.png "API Gateway Function CloudWatch Logs")
