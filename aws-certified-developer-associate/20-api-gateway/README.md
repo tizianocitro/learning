@@ -127,3 +127,22 @@ Which will show you the response:
 You can debug and see what the gateway is sending to the Lambda function by accessing the CloudWatch logs of the Lambda function:
 
 ![API Gateway Function CloudWatch Logs](/assets/aws-certified-developer-associate/ag_function_cloudwatch_logs.png "API Gateway Function CloudWatch Logs")
+
+### 20.4.3 Creating Resources
+
+To create a resource, select the API you want to add the resource to and click on *Create Resource*:
+
+![API Gateway Console Create Resource](/assets/aws-certified-developer-associate/ag_api_created.png "API Gateway Console Create Resource")
+
+Configure the **resource path** and **resource name**.
+- You can also choose to enable CORS for the resource, which will enable access to the resource from different domains.
+
+![API Gateway Create Resource](/assets/aws-certified-developer-associate/ag_create_resource.png "API Gateway Create Resource")
+
+Click on *Create Resource* to create the resource. You will be redirected to the API Gateway console where you can **see the resource you just created**:
+
+![API Gateway Resource Created](/assets/aws-certified-developer-associate/ag_resource_created.png "API Gateway Resource Created")
+
+And you can create methods for this new resource by clicking on *Create Method*, just like in [20.4.1 Creating Methods](#2041-creating-methods). This is how it will appear in the console:
+
+![API Gateway Resource Created with Method](/assets/aws-certified-developer-associate/ag_resource_created_method.png "API Gateway Resource Created with Method")
