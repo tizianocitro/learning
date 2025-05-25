@@ -146,3 +146,29 @@ Click on *Create Resource* to create the resource. You will be redirected to the
 And you can create methods for this new resource by clicking on *Create Method*, just like in [20.4.1 Creating Methods](#2041-creating-methods). This is how it will appear in the console:
 
 ![API Gateway Resource Created with Method](/assets/aws-certified-developer-associate/ag_resource_created_method.png "API Gateway Resource Created with Method")
+
+### 20.4.4 Deploying APIs in Stages
+
+To deploy the API, click on the *Deploy API* button in the API console:
+
+![API Gateway Deploy API](/assets/aws-certified-developer-associate/ag_resource_created_method.png "API Gateway Deploy API")
+
+Then select the **stage** you want to deploy the API to. You can create a new stage or select an existing one. A stage is a logical reference to a lifecycle state of your API (e.g., dev, test, prod). Then, give the stage a **name** and optionally a **description**:
+
+![API Gateway Deploy API Stage](/assets/aws-certified-developer-associate/ag_deploy_api_stage.png "API Gateway Deploy API Stage")
+
+And click on *Deploy* to deploy the API. You will be redirected to the API Gateway console where you can **see the created stage**:
+
+![API Gateway Stage Created](/assets/aws-certified-developer-associate/ag_stage_created.png "API Gateway Stage Created")
+
+Use the **invoke URL** to access the API. The URL will be in the format:
+
+```bash
+https://{restapi_id}.execute-api.{region}.amazonaws.com/{stage}
+```
+
+If you created a resource called `houses` and deployed it to the `dev` stage, the URL will be:
+
+```bash
+https://{restapi_id}.execute-api.{region}.amazonaws.com/dev/houses
+```
