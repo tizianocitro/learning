@@ -172,3 +172,30 @@ If you created a resource called `houses` and deployed it to the `dev` stage, th
 ```bash
 https://{restapi_id}.execute-api.{region}.amazonaws.com/dev/houses
 ```
+
+## 20.5 Deployment Stages
+
+Making changes in the API Gateway does not mean they are effective. In fact, you need to do a deployment for them to be in effect.
+
+**Changes are deployed to stages**. Stages can be as many as you want, and with the naming you like (e.g., dev, test, prod).
+- Each stage has its own configuration parameters.
+- **Stages can be rolled back as a history of deployments is kept**.
+
+For instance, you can use stages to manage API versions. You can create a new stage for each version of the API you want to deploy. This way, you can have multiple versions of the API running at the same time and switch between them easily:
+
+![API Gateway Stages](/assets/aws-certified-developer-associate/ag_stages.png "API Gateway Stages")
+
+### 20.5.1 Stage Variables
+
+Stage variables **are like environment variables for stages**. They can be used in:
+- Lambda function ARN.
+- HTTP endpoint.
+- Parameter mapping templates.
+
+Use cases:
+- Configure HTTP endpoints your stages talk to.
+- Pass configuration parameters to Lambda through mapping templates.
+
+To **access stage variables within the API Gatewa**y, use the `${stageVariables.variableName}` syntax. For example, if you have a stage variable called `myVariable`, you can access it in the API Gateway using `${stageVariables.myVariable}`.
+
+Regarding Lambda integration, **stage variables are passed to the `context` object in Lambda**. For example, if you have a stage variable called `myVariable`, you can access it in the Lambda function using `event.requestContext.stageVariables.myVariable`.
