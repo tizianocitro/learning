@@ -199,3 +199,63 @@ Use cases:
 To **access stage variables within the API Gatewa**y, use the `${stageVariables.variableName}` syntax. For example, if you have a stage variable called `myVariable`, you can access it in the API Gateway using `${stageVariables.myVariable}`.
 
 Regarding Lambda integration, **stage variables are passed to the `context` object in Lambda**. For example, if you have a stage variable called `myVariable`, you can access it in the Lambda function using `event.requestContext.stageVariables.myVariable`.
+
+### 20.5.2 Stage Variables for Lambda Aliases
+
+This is a very common pattern to use the API Gateway. The idea is to use stage variables to point to the right Lambda alias. This way, you can have different versions of the Lambda function for different stages (e.g., dev, test, prod) and the API Gateway will automatically invoke the right version based on the stage variable.
+
+![API Gateway Stage Variables for Lambda Alias](/assets/aws-certified-developer-associate/ag_stage_variables_lambda_alias.png "API Gateway Stage Variables for Lambda Alias")
+
+To **replicate the pattern** in the image above, you need to:
+1. Create a Lambda function.
+2. Publish two versions of the function: `v1`a nd `v2`.
+3. Update the Lambda function to be the `LATEST` version.
+4. Create a `dev` alias that points to the `LATEST` version.
+5. Create a `test` alias that points to the `v2` version.
+6. Create a `prod` alias that points to the `v1` version.
+7. Create an API in the API Gateway.
+8. Create a `/stage-variables` resource in the API.
+
+After doing all the steps above, **create a `GET` method** for the `stage-variables` resource and **point the integration to the Lambda function using the function ARN with the stage variable** `${stageVariables.lambdaAlias}` included. For example, the ARN should look like this `arn:aws:lambda:us-east-1:123456789012:function:my-function:${stageVariables.lambdaAlias}`.
+
+![API Gateway ARN with Stage Variable](/assets/aws-certified-developer-associate/ag_arn_stage_variable.png "API Gateway ARN with Stage Variable")
+
+As you can see from the image above, you will get a warning to ensure that all functions that could be targeted by the ARN have the same permissions. This is because the API Gateway will use the ARN to invoke the Lambda function, and if the permissions are not set correctly, it will fail. The console will also provide you a command to set the permissions correctly:
+
+![API Gateway ARN Permissions Command](/assets/aws-certified-developer-associate/ag_arn_permissions_command.png "API Gateway ARN Permissions Command")
+
+Be aware that the command in the image above has a bug that causes the ARN to be repeated twice. The correct command should have it only once.
+
+Before executing the command, you need to replace the `${stageVariables.lambdaAlias}` with the actual stage variable name you used in the ARN.
+- If you are pointing the `dev` alias in `dev` stage, `arn:aws:lambda:us-east-1:123456789012:function:my-function:${stageVariables.lambdaAlias}` should become `arn:aws:lambda:us-east-1:123456789012:function:my-function:dev`.
+
+Doing that, will add a resource-based policy statement to the corresponding Lambda function, allowing the API Gateway to invoke it:
+
+![API Gateway Lambda Function Policy Statement](/assets/aws-certified-developer-associate/ag_lambda_policy_statement.png "API Gateway Lambda Function Policy Statement")
+
+After running the command for all the aliases, create the method.
+
+To **test** that everything is working, you can go to the API Gateway console and click on the `GET` method you created under the `/stage-variables` resource. Then, click on the *Test* tab and you should see that now there is an **input element for the stage variable** called `lambdaAlias` where you can enter the alias you want to point to:
+
+![API Gateway Test Method with Stage Variable](/assets/aws-certified-developer-associate/ag_test_method_stage_variable.png "API Gateway Test Method with Stage Variable")
+
+Because we are providing `prod` as alias, the Lambda function will be invoked with the `v1` version. If you provide `test`, the Lambda function will be invoked with the `v2` version. If you provide `dev`, the Lambda function will be invoked with the `LATEST` version.
+
+Now, you can **deploy the API**. Click on the *Deploy API* button in the API console and create three stages: `dev`, `test`, and `prod`.
+
+To **point each stage to the proper alias, create a stage variable called `lambdaAlias` and set it to the alias you want** to point to. Scroll the stage page and find the *Stage Variables* section:
+
+![API Gateway Stage Variables](/assets/aws-certified-developer-associate/ag_stage_variables.png "API Gateway Stage Variables")
+
+From this section, you can easily add the `lambdaAlias` stage variable and set it to the alias you want:
+
+![API Gateway Stage Variables Add](/assets/aws-certified-developer-associate/ag_stage_variables_add.png "API Gateway Stage Variables Add")
+
+Save the changes and you will see the stage variable in the list:
+
+![API Gateway Stage Variables List](/assets/aws-certified-developer-associate/ag_stage_variables_list.png "API Gateway Stage Variables List")
+
+In this way, the value of the `lambdaAlias` stage variable is fixed for the deployment stage. **When using the invoke URL of the stage, the API Gateway will always invoke the Lambda function with the alias you set in the stage variable**.
+- Using the invoke URL `https://{restapi_id}.execute-api.{region}.amazonaws.com/dev/stage-variables`, the API Gateway will invoke the Lambda function with the `dev` alias, which means the `LATEST` version.
+- Using the invoke URL `https://{restapi_id}.execute-api.{region}.amazonaws.com/test/stage-variables`, the API Gateway will invoke the Lambda function with the `test` alias, which means the `v2` version.
+- Using the invoke URL `https://{restapi_id}.execute-api.{region}.amazonaws.com/prod/stage-variables`, the API Gateway will invoke the Lambda function with the `prod` alias, which means the `v1` version.
