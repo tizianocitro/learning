@@ -259,3 +259,25 @@ In this way, the value of the `lambdaAlias` stage variable is fixed for the depl
 - Using the invoke URL `https://{restapi_id}.execute-api.{region}.amazonaws.com/dev/stage-variables`, the API Gateway will invoke the Lambda function with the `dev` alias, which means the `LATEST` version.
 - Using the invoke URL `https://{restapi_id}.execute-api.{region}.amazonaws.com/test/stage-variables`, the API Gateway will invoke the Lambda function with the `test` alias, which means the `v2` version.
 - Using the invoke URL `https://{restapi_id}.execute-api.{region}.amazonaws.com/prod/stage-variables`, the API Gateway will invoke the Lambda function with the `prod` alias, which means the `v1` version.
+
+### 20.5.3 Stage Configuration
+
+To edit the stage configuration, click on the stage you want to edit in the API Gateway console and click on *Edit*:
+
+![API Gateway Stage Configuration](/assets/aws-certified-developer-associate/ag_stage_configuration.png "API Gateway Stage Configuration")
+
+From the editing page, you can change the stage **name** and **description**:
+
+![API Gateway Stage Configuration Name and Description](/assets/aws-certified-developer-associate/ag_stage_configuration_name_desc.png "API Gateway Stage Configuration Name and Description")
+
+Or **additional settings** like caching, throttling, firewall, and certificate:
+
+![API Gateway Stage Configuration Additional Settings](/assets/aws-certified-developer-associate/ag_stage_configuration_additional_settings.png "API Gateway Stage Configuration Additional Settings")
+
+Back to the stage details page, you have the *Logging and Tracing* section where you can enable **logging** and **tracing** for the stage:
+
+![API Gateway Stage Configuration Logging and Tracing](/assets/aws-certified-developer-associate/ag_stage_configuration_logging_tracing.png "API Gateway Stage Configuration Logging and Tracing")
+
+You also have a *Deployment History* tab where you can **see the history of deployments** for the stage, but also other tabs for **documentation**, **stage variables**, **canary**, and **tags**:
+
+![API Gateway Stage Configuration Deployment History](/assets/aws-certified-developer-associate/ag_stage_configuration_deployment_history.png "API Gateway Stage Configuration Deployment History")
