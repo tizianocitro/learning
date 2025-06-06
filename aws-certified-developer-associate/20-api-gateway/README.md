@@ -281,3 +281,16 @@ Back to the stage details page, you have the *Logging and Tracing* section where
 You also have a *Deployment History* tab where you can **see the history of deployments** for the stage, but also other tabs for **documentation**, **stage variables**, **canary**, and **tags**:
 
 ![API Gateway Stage Configuration Deployment History](/assets/aws-certified-developer-associate/ag_stage_configuration_deployment_history.png "API Gateway Stage Configuration Deployment History")
+
+## 20.6 Canary
+
+API Gateway offers the possibility to enable canary deployments for any stage (usually prod) for when you want to test new features before rolling them out to all users.
+- You choose the percentage of traffic the canary channel receives.
+
+They way it works is that you **create a stage for the canary deployment** and then you can **configure canary on the stage**. Whenever you redeploy on the stage, a percentage of traffic will be sent to the updated API Gateway endpoint, while the rest will be sent to the previous version of the API Gateway endpoint.
+- You will be able to **choose when the canary is not needed anymore by promoting the canary**.
+- Metrics and logs are separate for better monitoring.
+- Possibility to override stage variables for the canary stage.
+- This is the equivalent of blue/green deployment with Lambda and API Gateway.
+
+![API Gateway Canary Deployment](/assets/aws-certified-developer-associate/ag_canary_deployment.png "API Gateway Canary Deployment")
