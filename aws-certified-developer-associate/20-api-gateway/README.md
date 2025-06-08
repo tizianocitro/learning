@@ -294,3 +294,42 @@ They way it works is that you **create a stage for the canary deployment** and t
 - This is the equivalent of blue/green deployment with Lambda and API Gateway.
 
 ![API Gateway Canary Deployment](/assets/aws-certified-developer-associate/ag_canary_deployment.png "API Gateway Canary Deployment")
+
+### 20.6.1 Using Canary
+
+To use canary stages, you need to:
+1. Create a Lambda function.
+2. Publish two versions of the function: `v1` and `v2`.
+3. Create a new API in the API Gateway.
+4. Create a `/canary-demo` resource in the API.
+
+Create a `GET` method for the `/canary-demo` resource and point the integration to the Lambda function using the function ARN with the version included.
+- For example, the ARN should look like this `arn:aws:lambda:us-east-1:123456789012:function:my-function:1` to point to the `v1` version of the function.
+
+![API Gateway Canary Stage Method](/assets/aws-certified-developer-associate/ag_canary_stage_method.png "API Gateway Canary Stage Method")
+
+Then, deploy the API to a new stage called `canary`:
+
+![API Gateway Deploy Stage Method](/assets/aws-certified-developer-associate/ag_deploy_stage_method.png "API Gateway Deploy Stage Method")
+
+And go to the *Canary* tab to **configure canary** on the stage by clicking on *Create Canary*:
+
+![API Gateway Enable Canary Deployment](/assets/aws-certified-developer-associate/ag_enable_canary_deployment.png "API Gateway Enable Canary Deployment")
+
+And configure the canary by defining the **request distribution (percentage of traffic)**:
+
+![API Gateway Canary Deployment Configuration](/assets/aws-certified-developer-associate/ag_canary_deployment_configuration.png "API Gateway Canary Deployment Configuration")
+
+Save the changes and you will see the canary settings in the stage details page:
+
+![API Gateway Canary Deployment Settings](/assets/aws-certified-developer-associate/ag_canary_deployment_settings.png "API Gateway Canary Deployment Settings")
+
+Now, whenever you deploy the API to the `canary` stage, a percentage of traffic will be sent to the updated API Gateway endpoint, while the rest will be sent to the previous version of the API Gateway endpoint.
+
+When you are confident that the new version is working correctly, you can **promote the canary** by clicking on *Promote Canary*:
+
+![API Gateway Promote Canary](/assets/aws-certified-developer-associate/ag_promote_canary.png "API Gateway Promote Canary")
+
+This will make 100% of the traffic go to the stage and not the canary anymore, as you can see in the two *Requests directed to X* values in the image below:
+
+![API Gateway Promote Canary Confirmation](/assets/aws-certified-developer-associate/ag_promote_canary_confirmation.png "API Gateway Promote Canary Confirmation")
