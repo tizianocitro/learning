@@ -333,3 +333,22 @@ When you are confident that the new version is working correctly, you can **prom
 This will make 100% of the traffic go to the stage and not the canary anymore, as you can see in the two *Requests directed to X* values in the image below:
 
 ![API Gateway Promote Canary Confirmation](/assets/aws-certified-developer-associate/ag_promote_canary_confirmation.png "API Gateway Promote Canary Confirmation")
+
+## 20.7 Different Ways to Integrate API Gateway with Backend
+
+There are different integration types you can use to integrate the API Gateway with the backend:
+- **MOCK**: used to test the API Gateway without any backend integration. It will return a static response without invoking any backend service.
+- **HTTP/AWS (e.g., Lambda and AWS services)**: used to integrate with any HTTP endpoint or AWS service. It will invoke the backend service and return the response to the client.
+    - You must configure both the integration request and integration response.
+    - You can setup **data mapping using mapping templates for the request and response**, so that you can change the data format before sending it to the backend and after receiving it from the backend.
+    ![API Gateway HTTP/AWS Integration](/assets/aws-certified-developer-associate/ag_http_aws_integration.png "API Gateway HTTP/AWS Integration")
+- **AWS_PROXY (Lambda Proxy)**: incoming request from the client is the input to the Lambda function because we cannot modify the request.
+    - The function is responsible for the logic of request/response only.
+    - It is **not possible to use mapping template because headers and query string parameters are passed as arguments**.
+    - The API Gateway only role is to works as a proxy.
+- **HTTP_PROXY**: same as AWS_PROXY, but for HTTP endpoints (e.g., ALB).
+    - The HTTP request is passed to the backend without any modification.
+    - The backend is responsible for the logic of request/response only.
+    - The HTTP response from the backend is forwarded by API Gateway
+    - It is **not possible to use mapping template**, but it is **possible to add HTTP headers that are not visible to the client** if needed (e.g., API key)
+    ![API Gateway HTTP_PROXY Integration](/assets/aws-certified-developer-associate/ag_http_proxy_integration.png "API Gateway HTTP_PROXY Integration")
