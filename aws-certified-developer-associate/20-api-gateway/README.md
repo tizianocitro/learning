@@ -352,3 +352,14 @@ There are different integration types you can use to integrate the API Gateway w
     - The HTTP response from the backend is forwarded by API Gateway
     - It is **not possible to use mapping template**, but it is **possible to add HTTP headers that are not visible to the client** if needed (e.g., API key)
     ![API Gateway HTTP_PROXY Integration](/assets/aws-certified-developer-associate/ag_http_proxy_integration.png "API Gateway HTTP_PROXY Integration")
+
+## 20.8 Mapping Templates
+
+Mapping templates can be **used to modify requests and responses**:
+- Rename/modify query string parameters.
+- Add/modify headers.
+- Modify the body content.
+- Filter output results: for example, to remove unnecessary data.
+- The `Content-Type` header can be set to `application/json` or `application/xml`.
+
+Mapping templates are based on the Velocity Template Language (VTL), which provides operations like for loop, if, etc.
