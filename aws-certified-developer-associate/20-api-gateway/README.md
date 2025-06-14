@@ -363,3 +363,15 @@ Mapping templates can be **used to modify requests and responses**:
 - The `Content-Type` header can be set to `application/json` or `application/xml`.
 
 Mapping templates are based on the Velocity Template Language (VTL), which provides operations like for loop, if, etc.
+
+### 20.8.1 Integrating a Rest Client with a SOAP Service
+
+SOAP APIs are XML based, whereas REST APIs are JSON based. So, you need a way to convert the JSON request to XML and the XML response to JSON. This is where API Gateway with mapping templates come in handy.
+
+![API Gateway SOAP Integration](/assets/aws-certified-developer-associate/ag_soap_integration.png "API Gateway SOAP Integration")
+
+The API Gateway should:
+- Extract data from the request: either path, payload or header.
+- Build a SOAP message based on request data using a mapping template.
+- Call the SOAP service and receive its XML response.
+- Transform the XML response to the desired format (in this case, JSON), and respond to the user with the transformed data.
