@@ -375,3 +375,12 @@ The API Gateway should:
 - Build a SOAP message based on request data using a mapping template.
 - Call the SOAP service and receive its XML response.
 - Transform the XML response to the desired format (in this case, JSON), and respond to the user with the transformed data.
+
+### 20.7.3 Mapping Query String Parameters
+
+You can map query string parameters to the backend using mapping templates.
+
+In the example below, we are mapping the `name` query string parameter to the `my_variable` body variable in the backend. The `other` query string parameter is mapped to the `other_variable` body variable in the backend.
+- You could also change their case or add a prefix to the variable name, and more.
+
+![API Gateway Mapping Query String Parameters](/assets/aws-certified-developer-associate/ag_mapping_query_string_parameters.png "API Gateway Mapping Query String Parameters")
