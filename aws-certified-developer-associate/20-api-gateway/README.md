@@ -384,3 +384,30 @@ In the example below, we are mapping the `name` query string parameter to the `m
 - You could also change their case or add a prefix to the variable name, and more.
 
 ![API Gateway Mapping Query String Parameters](/assets/aws-certified-developer-associate/ag_mapping_query_string_parameters.png "API Gateway Mapping Query String Parameters")
+
+## 20.9 Using Mapping Templates to Transform Integration Responses
+
+To use mapping templates, you need to:
+1. Create a Lambda function.
+2. Create an API.
+3. Create a resource (e.g., `/mapping`).
+4. Create a method (e.g., `GET`) for the resource and integrate it with the function without enabling the *Lambda Proxy Integration* option.
+
+In the method details page, go into the *Integration Response* tab and scroll to the *Mapping Templates* section:
+
+![API Gateway Mapping Integration Response](/assets/aws-certified-developer-associate/ag_mapping_integration_response.png "API Gateway Mapping Integration Response")
+
+Click on *Create Template* to **configure a new mapping template** for the integration response by entering the `Content-Type` header value and the **template body**.
+- The **template body is the VTL code that will be used to transform the response from the backend** to the desired format.
+- The template body can be a static response or a dynamic response based on the input from the backend.
+- The **input from the backend is available in the `$input` variable**, which is a VTL object that contains the request and response data.
+
+![API Gateway Mapping Integration Response Template](/assets/aws-certified-developer-associate/ag_mapping_integration_response_template.png "API Gateway Mapping Integration Response Template")
+
+Create the template and you will see it in the *Mapping Templates* section:
+
+![API Gateway Mapping Integration Response Template Created](/assets/aws-certified-developer-associate/ag_mapping_integration_response_template_created.png "API Gateway Mapping Integration Response Template Created")
+
+If you **test the API**, you will see that the response is transformed according to the mapping template you created:
+
+![API Gateway Mapping Integration Response Test](/assets/aws-certified-developer-associate/ag_mapping_integration_response_test.png "API Gateway Mapping Integration Response Test")
