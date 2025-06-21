@@ -376,7 +376,7 @@ The API Gateway should:
 - Call the SOAP service and receive its XML response.
 - Transform the XML response to the desired format (in this case, JSON), and respond to the user with the transformed data.
 
-### 20.7.3 Mapping Query String Parameters
+### 20.8.2 Mapping Query String Parameters
 
 You can map query string parameters to the backend using mapping templates.
 
