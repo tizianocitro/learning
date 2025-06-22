@@ -411,3 +411,18 @@ Create the template and you will see it in the *Mapping Templates* section:
 If you **test the API**, you will see that the response is transformed according to the mapping template you created:
 
 ![API Gateway Mapping Integration Response Test](/assets/aws-certified-developer-associate/ag_mapping_integration_response_test.png "API Gateway Mapping Integration Response Test")
+
+## 20.10 OpenAPI Specification in API Gateway
+
+The **OpenAPI Specification (OAS) is a standard for defining APIs in a machine-readable format**. It allows you to describe the API endpoints, request and response formats, authentication methods, and more.
+- OpenAPI specifications can be written in YAML or JSON.
+- Using OpenAPI, it is possible to generate SDKs for applications.
+
+You **can import existing OpenAPI 3.0 specifications** to API Gateway that define: 
+- Method.
+- Method request.
+- Integration request.
+- Method response.
+- AWS extensions for API Gateway and setup every single option.
+
+You **can export current APIs as OpenAPI specifications** as well. This is useful for documentation purposes or to share the API definition with other developers.
