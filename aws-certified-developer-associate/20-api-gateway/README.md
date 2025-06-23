@@ -426,3 +426,17 @@ You **can import existing OpenAPI 3.0 specifications** to API Gateway that defin
 - AWS extensions for API Gateway and setup every single option.
 
 You **can export current APIs as OpenAPI specifications** as well. This is useful for documentation purposes or to share the API definition with other developers.
+
+### 20.10.1 Importing OpenAPI Specifications
+
+Go into the API Gateway console and select the option to create a REST API. Then, you can:
+1. Select *Import API* and provide the OpenAPI specification file in the *API Definition* field.
+2. Select *Example API* to use a sample OpenAPI specification file provided by AWS.
+
+We will use the second option:
+
+![API Gateway Import OpenAPI Specification](/assets/aws-certified-developer-associate/ag_import_openapi_specification.png "API Gateway Import OpenAPI Specification")
+
+Create the API and you will be redirected to the API Gateway console where you can see the API you just created:
+
+![API Gateway OpenAPI Specification Created](/assets/aws-certified-developer-associate/ag_openapi_specification_created.png "API Gateway OpenAPI Specification Created")
