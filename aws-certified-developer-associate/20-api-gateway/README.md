@@ -440,3 +440,13 @@ We will use the second option:
 Create the API and you will be redirected to the API Gateway console where you can see the API you just created:
 
 ![API Gateway OpenAPI Specification Created](/assets/aws-certified-developer-associate/ag_openapi_specification_created.png "API Gateway OpenAPI Specification Created")
+
+### 20.10.2 Exporting OpenAPI Specifications
+
+To export the OpenAPI specification of an API, go to the API Gateway console and select the API you want to export. Then, go to a stage and click on *Export* under the *Stage Actions* dropdown menu:
+
+![API Gateway Export OpenAPI Specification](/assets/aws-certified-developer-associate/ag_export_openapi_specification.png "API Gateway Export OpenAPI Specification")
+
+And configure the export format:
+
+![API Gateway Export OpenAPI Specification Configuration](/assets/aws-certified-developer-associate/ag_export_openapi_specification_configuration.png "API Gateway Export OpenAPI Specification Configuration")
