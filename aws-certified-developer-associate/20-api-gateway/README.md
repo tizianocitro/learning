@@ -450,3 +450,13 @@ To export the OpenAPI specification of an API, go to the API Gateway console and
 And configure the export format:
 
 ![API Gateway Export OpenAPI Specification Configuration](/assets/aws-certified-developer-associate/ag_export_openapi_specification_configuration.png "API Gateway Export OpenAPI Specification Configuration")
+
+### 20.10.3 Generating SDKs
+
+Go to the API Gateway console and select the API you want to export. Then, go to a stage and click on *Generate SDK* under the *Stage Actions* dropdown menu:
+
+![API Gateway Generate SDK](/assets/aws-certified-developer-associate/ag_export_openapi_specification.png "API Gateway Generate SDK")
+
+And select the **destination platform**:
+
+![API Gateway Generate SDK Configuration](/assets/aws-certified-developer-associate/ag_generate_sdk_configuration.png "API Gateway Generate SDK Configuration")
