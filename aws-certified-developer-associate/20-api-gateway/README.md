@@ -460,3 +460,62 @@ Go to the API Gateway console and select the API you want to export. Then, go to
 And select the **destination platform**:
 
 ![API Gateway Generate SDK Configuration](/assets/aws-certified-developer-associate/ag_generate_sdk_configuration.png "API Gateway Generate SDK Configuration")
+
+## 20.11 API Gateway Request Validation
+
+You can configure API Gateway **to perform basic validation of an API request** before proceeding with the integration request. **When the validation fails, API Gateway immediately fails the request and returns a `400`-error response** to the caller, reducing the load on the backend service.
+
+You can check:
+- The inclusion of required request parameters in the URI, query string, and headers of an
+incoming request.
+- The request payload adheres to the configured JSON schema request model of the method.
+
+### 20.11.1 Request Validation using OpenAPI
+
+You can setup request validation by importing OpenAPI definitions file.
+
+You can **define request validators in the OpenAPI file** and then import it to API Gateway. The request validators will be created automatically in API Gateway and you can use them in your API methods.
+
+The following is an example of an OpenAPI file with request validators definition:
+
+```json
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Request Validation Sample",
+    "version": "1.0.0"
+  },
+  "servers" [/*...*/],
+  /*...*/
+  "x-amazon-apigateway-request-validators": {
+    "all": {
+      "validateRequestBody": true,
+      "validateRequestParameters": true
+    },
+    "params-only": {
+      "validateRequestBody": false,
+      "validateRequestParameters": true
+    }
+  }
+}
+```
+
+To **use the request validators in your API methods**, you need to specify the `x-amazon-apigateway-request-validator` property in the method definition:
+
+```json
+{
+  /*...*/
+  "paths": {
+    "/validation": {
+      "get": {
+        "x-amazon-apigateway-request-validator": "params-only",
+        "responses": {/*...*/}
+      },
+        "post": {
+            "x-amazon-apigateway-request-validator": "all",
+            "responses": {/*...*/}
+        }
+    }
+  }
+}
+```
