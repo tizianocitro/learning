@@ -519,3 +519,17 @@ To **use the request validators in your API methods**, you need to specify the `
   }
 }
 ```
+
+## 20.12 API Gateway Caching Capabilities
+
+Caching reduces the number of calls made to the backend. The API Gateway **caches the responses from the backend and returns them to the client when the same request is made again**.
+
+![API Gateway Caching](/assets/aws-certified-developer-associate/ag_caching.png "API Gateway Caching")
+
+**Caches are defined at stage level**, so you defined the cache size and TTL for each stage.
+- But it is **possible to override cache settings per method**.
+- Default **TTL** is 300 (5 minutes) seconds with a minimum of 0s and a maximum 3600s (1 hour).
+- Cache content can be encrypted.
+- Cache capacity is between 0.5 GB to 237 GB.
+
+Cache is expensive, it makes sense in production but may not make sense in dev/test environments.
