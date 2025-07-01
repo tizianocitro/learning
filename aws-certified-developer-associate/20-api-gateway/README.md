@@ -533,3 +533,29 @@ Caching reduces the number of calls made to the backend. The API Gateway **cache
 - Cache capacity is between 0.5 GB to 237 GB.
 
 Cache is expensive, it makes sense in production but may not make sense in dev/test environments.
+
+### 20.12.1 Cache Invalidation
+
+You can flush the entire cache (invalidate it) immediately from the UI.
+
+Clients can invalidate the cache with the header `Cache-Control: max-age=0` but they need proper IAM authorization. For example, the policy below allows the `InvalidateCache` action on all API resources:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "execute-api:InvalidateCache"
+      ],
+      "Resource": [
+        "*"
+      ]
+    }
+  ]
+}
+```
+
+If you do not impose an `InvalidateCache` policy (or choose the *Require* authorization check box in the console), any client can invalidate the API cache.
+- This can be a serious security issue.
