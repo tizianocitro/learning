@@ -559,3 +559,19 @@ Clients can invalidate the cache with the header `Cache-Control: max-age=0` but 
 
 If you do not impose an `InvalidateCache` policy (or choose the *Require* authorization check box in the console), any client can invalidate the API cache.
 - This can be a serious security issue.
+
+### 20.12.2 Configuring Caching on Stages
+
+Go into a stage and click *Edit*. Scroll until you find the *Additional Settings* section to configure caching:
+
+![API Gateway Caching Configuration](/assets/aws-certified-developer-associate/ag_caching_configuration.png "API Gateway Caching Configuration")
+
+From the image above, you can:
+- **Enable API caching**: enable or disable caching for the stage.
+- **Cache capacity**: set the cache size for the stage.
+- **Enable cache encryption**: enable or disable cache encryption for the stage.
+- **Cache TTL**: enable or disable cache TTL for the stage.
+
+Another important configuration is the **per-key cache invalidation**. This option allows you to **require authorization for cache invalidation**. This is useful to prevent unauthorized users from invalidating the cache and react accordingly (e.g., ignore the cache invalidation request):
+
+![API Gateway Per-Key Cache Invalidation](/assets/aws-certified-developer-associate/ag_per_key_cache_invalidation.png "API Gateway Per-Key Cache Invalidation")
