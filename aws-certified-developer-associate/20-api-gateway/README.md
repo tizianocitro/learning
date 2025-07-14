@@ -575,3 +575,13 @@ From the image above, you can:
 Another important configuration is the **per-key cache invalidation**. This option allows you to **require authorization for cache invalidation**. This is useful to prevent unauthorized users from invalidating the cache and react accordingly (e.g., ignore the cache invalidation request):
 
 ![API Gateway Per-Key Cache Invalidation](/assets/aws-certified-developer-associate/ag_per_key_cache_invalidation.png "API Gateway Per-Key Cache Invalidation")
+
+### 20.12.3 Configuring Caching on Methods
+
+To do that, click on the method you want to configure caching for and click *Edit*. Then, scroll until you find the *Enable Method Cache* option:
+
+![API Gateway Enable Method Cache](/assets/aws-certified-developer-associate/ag_enable_method_cache.png "API Gateway Enable Method Cache")
+
+**Enable method caching to override the stage cache settings** and configure the method cache settings:
+
+![API Gateway Method Caching Configuration](/assets/aws-certified-developer-associate/ag_method_caching_configuration.png "API Gateway Method Caching Configuration")
