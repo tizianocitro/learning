@@ -585,3 +585,29 @@ To do that, click on the method you want to configure caching for and click *Edi
 **Enable method caching to override the stage cache settings** and configure the method cache settings:
 
 ![API Gateway Method Caching Configuration](/assets/aws-certified-developer-associate/ag_method_caching_configuration.png "API Gateway Method Caching Configuration")
+
+## 20.13 Usage Plans and API Keys
+
+If you want to **make an API available as an offering (under paid plans) to your customer**s, you can use usage plans and API keys.
+
+**Usage plans**:
+- Define who can access one or more deployed API stages and methods.
+- Define how much and how fast they can access them.
+- Use API keys to identify API clients and meter access.
+- Configure throttling limits and quota limits that are enforced on individual client.
+
+**API keys**:
+- Alphanumeric string values to distribute to your customers: for example, `WBjHxNtoAb4WPKBC7cGm64CBibIb24b4jt8jJHo9`.
+- Can be used with usage plans to control access.
+- Throttling limits are applied to the API keys.
+- Quota limits indicate the overall number of maximum requests.
+
+### 20.13.1 Correct Order for API keys
+
+It is **important to remember the steps to configure a usage plan**:
+1. Create one or more APIs, configure the methods to require an API key, and deploy the APIs to stages.
+2. Generate or import API keys to distribute to application developers (your customers) who will be using your API.
+3. Create the usage plan with the desired throttle and quota limits.
+4. Associate API stages and API keys with the usage plan.
+
+**Callers of the API must supply an assigned API key in the `x-api-key` header in requests** to the API.
