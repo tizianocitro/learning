@@ -611,3 +611,28 @@ It is **important to remember the steps to configure a usage plan**:
 4. Associate API stages and API keys with the usage plan.
 
 **Callers of the API must supply an assigned API key in the `x-api-key` header in requests** to the API.
+
+## 20.14 Logging, Tracing, and Monitoring
+
+**CloudWatch Logs integration**:
+- Logs contain information about request/response body.
+- CloudWatch logging is **enabled at the stage level** with log levels: `ERROR`, `DEBUG`, and `INFO`.
+- You can override settings on a per API basis.
+
+![API Gateway CloudWatch Logs Integration](/assets/aws-certified-developer-associate/ag_cloudwatch_logs_integration.png "API Gateway CloudWatch Logs Integration")
+
+**X-Ray integration**:
+- Enable tracing to get extra information about requests in API Gateway.
+- Enabling you X-Ray for both API Gateway and Lambda, you get the full picture for your APIs.
+
+**CloudWatch Metrics integration**:
+- **Metrics are by stage** with the possibility to enable detailed metrics.
+- Important metrics:
+  - `CacheHitCount` and `CacheMissCount`: efficiency of the cache.
+  - `4XXError` and `5XXError`: errors returned client-side and server-side, respectively.
+  - `Count`: the total number API requests in a given period.
+  - `IntegrationLatency`: the time between when API Gateway relays a request to the backend and when it receives a response from the backend.
+    - This does not include the API Gateway overhead.
+  - `Latency`: The time between when API Gateway receives a request from a client and when it returns a response to the client.
+    - The latency includes the integration latency and other API Gateway overhead (e.g., mapping templates and request validation).
+    - If the latency is higher than 29 seconds, the API Gateway will return an error to the client.
