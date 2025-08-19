@@ -636,3 +636,27 @@ It is **important to remember the steps to configure a usage plan**:
   - `Latency`: The time between when API Gateway receives a request from a client and when it returns a response to the client.
     - The latency includes the integration latency and other API Gateway overhead (e.g., mapping templates and request validation).
     - If the latency is higher than 29 seconds, the API Gateway will return an error to the client.
+
+### 20.14.1 Errors
+
+4xx means client errors:
+- `400: Bad Request`.
+- `403: Access Denied`: WAF filtered.
+- `429: Quota exceeded`: throttle, this is the error you get when too many requests are made to the API.
+
+5xx means server errors:
+- `502: Bad Gateway Exception`: usually for an incompatible output returned from a Lambda proxy integration backend and occasionally for out-of-order invocations due to heavy loads.
+- `503: Service Unavailable Exception`: the backend is not available.
+- `504: Integration Failure`: for example, API Gateway requests time out after the maximum of 29 seconds.
+
+### 20.14.2 Throttling
+
+You can define **account limits** to control throttling.
+- You can also set **stage limits** and **method limits** to improve performance.
+- Or you can **define usage plans to throttle per customer**.
+
+API Gateway throttles requests at 10000 requests per second across all APIs.
+- It is a soft limit that can be increased upon request.
+- In case of throttling, you get `429 Too Many Requests`: it is retriable error but you should use exponential backoff.
+
+Just like Lambda concurrency, **one API that is overloaded, if not limited, can cause the other APIs to be throttled**.
