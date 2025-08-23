@@ -660,3 +660,17 @@ API Gateway throttles requests at 10000 requests per second across all APIs.
 - In case of throttling, you get `429 Too Many Requests`: it is retriable error but you should use exponential backoff.
 
 Just like Lambda concurrency, **one API that is overloaded, if not limited, can cause the other APIs to be throttled**.
+
+## 20.15 CORS
+
+API Gatway supports CORS to allow cross-origin requests from web browsers. This must be enabled when you want to make your API available to web applications hosted on different domains.
+- CORS can be enabled through the console.
+
+The `OPTIONS` pre-flight request must contain the following headers:
+- `Access-Control-Allow-Methods`.
+- `Access-Control-Allow-Headers`.
+- `Access-Control-Allow-Origin`.
+
+It works in the following way:
+
+![API Gateway CORS](/assets/aws-certified-developer-associate/ag_cors.png "API Gateway CORS")
