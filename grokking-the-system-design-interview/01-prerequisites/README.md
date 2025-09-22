@@ -29,3 +29,19 @@ When you are in a system design interview, you can handle these requirements by 
 5. **Balance**: Ensure you are not focusing too much on one type of requirement over the other. A well-rounded approach is often necessary. You should demonstrate that you can design a system that not only meets its functional goals but also performs effectively, securely, and reliably.
 
 In system design interviews, interviewers are often interested in seeing how you think and approach problems, not just the final solution. Demonstrating a clear understanding of both functional and non-functional requirements is key to showing your comprehensive knowledge in system design.
+
+## 1.4 Back-of-the-Envelope Estimations
+
+Back-of-the-envelope estimations are like quick, rough calculations you might do on a napkin during lunch. They are not detailed or exact but give you a starting figure. These rough calculations help you quickly assess the feasibility of a proposed solution, estimate its performance, and identify potential bottlenecks.
+
+**Back-of-the-envelope estimation is a technique used to quickly approximate values and make rough calculations using simple arithmetic and basic assumptions**. This method is particularly useful in system design interviews because interviewers expect candidates to make informed decisions and trade-offs based on rough estimates.
+
+### 1.4.1 Why is Estimation Important in System Design Interviews?
+
+The ability to make quick estimations is essential for several reasons:
+- Indicate system scalability: highlights your understanding of how the system can grow or adapt.
+- Validate proposed solutions: estimation helps you ensure that your proposed architecture meets the requirements and can handle the expected load.
+- Identify bottlenecks: quick calculations help you identify potential performance bottlenecks and make necessary adjustments to your design.
+- Demonstrate your thought process: estimation showcases your ability to make informed decisions and trade-offs based on a set of assumptions and constraints.
+- Communicate effectively: providing estimates helps you effectively communicate your design choices and their implications to the interviewer.
+- Quick decision making: reflects your ability to make swift estimations to guide your design decisions.
