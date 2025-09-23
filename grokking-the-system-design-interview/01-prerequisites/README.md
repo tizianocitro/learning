@@ -45,3 +45,17 @@ The ability to make quick estimations is essential for several reasons:
 - Demonstrate your thought process: estimation showcases your ability to make informed decisions and trade-offs based on a set of assumptions and constraints.
 - Communicate effectively: providing estimates helps you effectively communicate your design choices and their implications to the interviewer.
 - Quick decision making: reflects your ability to make swift estimations to guide your design decisions.
+
+## 1.5 Estimation Techniques
+
+### 1.5.1 Rule of Thumb
+
+Rules of thumb are general guidelines or principles that can be applied to make quick and reasonably accurate estimations. They are **based on experience and observation, and while not always precise, they can provide valuable insights in the absence of detailed information**.
+
+For instance, estimating that a user will generate 1 MB of data per day on a social media platform can serve as a starting point for capacity planning.
+
+### 1.5.2 Approximation
+
+**Approximation involves simplifying complex calculations by rounding numbers or using easier-to-compute values**. This technique can help derive rough estimates quickly and with minimal effort.
+
+For example, assuming 1000 users instead of 1024 when estimating storage requirements can simplify calculations and still provide a reasonable approximation.
