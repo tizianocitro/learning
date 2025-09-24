@@ -59,3 +59,15 @@ For instance, estimating that a user will generate 1 MB of data per day on a soc
 **Approximation involves simplifying complex calculations by rounding numbers or using easier-to-compute values**. This technique can help derive rough estimates quickly and with minimal effort.
 
 For example, assuming 1000 users instead of 1024 when estimating storage requirements can simplify calculations and still provide a reasonable approximation.
+
+### 1.5.3 Breakdown and Aggregation
+
+**Breaking down a problem into smaller components and estimating each separately can make it easier to derive an overall estimate**. This technique involves identifying the key components of a system, estimating their individual requirements, and then aggregating these estimates to determine the total system requirements.
+
+For instance, estimating the storage needs for user data, multimedia content, and metadata separately can help in identifying the overall storage requirements of a social media platform.
+
+### 1.5.4 Sanity Check
+
+**A sanity check is a quick evaluation of an estimate to ensure its plausibility and reasonableness**. This step helps finding potential errors or oversights in the estimation process and can lead to more accurate and reliable results.
+
+For example, comparing the estimated storage requirements for a messaging service with the actual storage used by a similar existing service can help validate the estimate.
