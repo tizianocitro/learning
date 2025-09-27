@@ -87,3 +87,27 @@ There are several types of estimations you may need to make:
 2. **Use simple math**: use basic arithmetic to estimate the scale of data and resources.
 3. **Round numbers for simplicity**: use round numbers to make calculations easier and faster.
 4. **Be logical and reasonable**: ensure your estimations make sense given the context of the problem.
+
+## 1.7 Practical Examples for Types of Estimations
+
+### 1.7.1 Load Estimation
+
+Suppose you are asked to design a social media platform with 100 million daily active users (DAU) and an average of 10 posts per user per day. To estimate the load, you need to calculate the total number of posts generated daily:
+
+```text
+100 million DAU * 10 posts per user = 1 billion posts per day
+```
+
+Then, you can estimate the request rate per second:
+
+```text
+1 billion posts per day / 86400 seconds per day ≈ 11574 requests per second
+```
+
+### 1.7.2 Storage Estimation
+
+Consider a photo-sharing application with 500 million users and an average of 2 photos uploaded per user per day. Each photo has an average size of 2 MB. To estimate the storage required for one day worth of photos, you calculate:
+
+```text
+500 million users * 2 photos per user * 2 MB per photo = 2 billion MB = 2 PB
+```
