@@ -111,3 +111,41 @@ Consider a photo-sharing application with 500 million users and an average of 2 
 ```text
 500 million users * 2 photos per user * 2 MB per photo = 2 billion MB = 2 PB
 ```
+
+### 1.7.3 Bandwidth Estimation
+
+For a video streaming service with 10 million users streaming 1080p videos at 4 Mbps, you can estimate the required bandwidth:
+
+```text
+10 million users * 4 Mbps = 40 million Mbps
+```
+
+So, the 1080p is not really relevant in this case.
+
+### 1.7.4 Latency Estimation
+
+Suppose you are designing an API that fetches data from multiple sources, and you know that the average latency for each source is 50 ms, 100 ms, and 200 ms, respectively. If the data fetching process is sequential, you can estimate the total latency as follows:
+
+```text
+50 ms + 100 ms + 200 ms = 350 ms
+```
+
+If the data fetching process is parallel, the total latency would be the maximum latency among the sources:
+
+```text
+max(50 ms, 100 ms, 200 ms) = 200 ms
+```
+
+### 1.7.5 Resource Estimation
+
+Imagine you are designing a web application that receives 10000 requests per second, with each request requiring 10 ms of CPU time. To estimate the number of CPU cores needed, you can calculate the total CPU time per second:
+
+```text
+10,000 requests per second * 10 ms per request = 100000 ms per second
+```
+
+Assuming each CPU core can handle 1000 ms of processing per second, the number of cores required would be:
+
+```text
+100000 ms per second / 1000 ms per core = 100 cores
+```
