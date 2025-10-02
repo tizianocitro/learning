@@ -149,3 +149,14 @@ Assuming each CPU core can handle 1000 ms of processing per second, the number o
 ```text
 100000 ms per second / 1000 ms per core = 100 cores
 ```
+
+## 1.8 System Design Examples
+
+### 1.8.1 Designing a Messaging Service
+
+Imagine you are tasked with designing a messaging service similar to WhatsApp. To estimate the system's requirements, you can start by considering the following aspects:
+- **Number of users**: estimate the total number of users for the platform. This can be based on market research, competitor analysis, or historical data.
+- **Messages per user per day**: estimate the average number of messages sent by each user per day. This can be based on user behavior patterns or industry benchmarks.
+- **Message size**: estimate the average size of a message, considering text, images, videos, and other media content.
+- **Storage requirements**: calculate the total storage needed to store messages for a specified retention period, taking into account the number of users, messages per user, message size, and data redundancy.
+- **Bandwidth requirements**: estimate the bandwidth needed to handle the message traffic between users, considering the number of users, messages per user, and message size.
