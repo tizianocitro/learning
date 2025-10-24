@@ -160,3 +160,12 @@ Imagine you are tasked with designing a messaging service similar to WhatsApp. T
 - **Message size**: estimate the average size of a message, considering text, images, videos, and other media content.
 - **Storage requirements**: calculate the total storage needed to store messages for a specified retention period, taking into account the number of users, messages per user, message size, and data redundancy.
 - **Bandwidth requirements**: estimate the bandwidth needed to handle the message traffic between users, considering the number of users, messages per user, and message size.
+
+### 1.8.2 Designing a Video Streaming Platform
+
+Suppose you are designing a video streaming platform similar to Netflix. To estimate the system's requirements, consider the following aspects:
+- **Number of users**: estimate the total number of users for the platform based on market research, competitor analysis, or historical data.
+- **Concurrent users**: Estimate the number of users who will be streaming videos simultaneously during peak hours.
+- **Video size and bitrate**: Estimate the average size and bitrate of videos on the platform, considering various resolutions and encoding formats.
+- **Storage requirements**: Calculate the total storage needed to store the video content, taking into account the number of videos, their sizes, and data redundancy.
+- **Bandwidth requirements**: Estimate the bandwidth needed to handle the video streaming traffic, considering the number of concurrent users, video bitrates, and user locations.
