@@ -169,3 +169,35 @@ Suppose you are designing a video streaming platform similar to Netflix. To esti
 - **Video size and bitrate**: Estimate the average size and bitrate of videos on the platform, considering various resolutions and encoding formats.
 - **Storage requirements**: Calculate the total storage needed to store the video content, taking into account the number of videos, their sizes, and data redundancy.
 - **Bandwidth requirements**: Estimate the bandwidth needed to handle the video streaming traffic, considering the number of concurrent users, video bitrates, and user locations.
+
+## 1.9 Tips for Successful Estimation in Interviews
+
+### 1.9.1 Break Down the Problem
+
+When faced with a complex system design problem, break it down into smaller, more manageable components. This will make it easier to estimate each component's requirements and help you understand how they interact with each other.
+
+By identifying the key components and estimating their requirements separately, you can then aggregate your estimates to get a comprehensive view of the system's requirements.
+
+### 1.9.2 Use Reasonable Assumptions
+
+During an interview, you may not have all the necessary information to make precise estimations. In such cases, make reasonable assumptions based on your knowledge of similar systems, industry standards, or user behavior patterns. 
+
+Clearly state your assumptions to the interviewer, as this demonstrates your thought process and enables them to provide feedback or correct your assumptions if necessary.
+
+### 1.9.3 Leverage your Experience
+
+Drawing from your past experiences can be beneficial when estimating system requirements. If you have worked on similar systems or have experience with certain technologies, use that knowledge to inform your estimations. This will not only help you make more accurate estimations but also showcase your expertise to the interviewer.
+
+### 1.9.4 Be Prepared to Adjust Estimations
+
+As you progress through the interview, the interviewer may provide additional information or challenge your assumptions, requiring you to adjust your estimations. Be prepared to adapt and revise your estimations accordingly.
+
+This demonstrates your ability to think critically and shows that you can handle changing requirements in a real-world scenario.
+
+### 1.9.5 Do Not Forget to Ask Clarifying Questions
+
+Do not hesitate to ask the interviewer clarifying questions if you are unsure about a requirement or assumption. This will help you avoid making incorrect estimations.
+
+### 1.9.6 Communicate your Thought Process
+
+Throughout the estimation process, communicate your thought process clearly to the interviewer. Explain how you arrived at your estimations and the assumptions you made along the way. This allows the interviewer to understand your reasoning, provide feedback, and assess your problem-solving skills.
