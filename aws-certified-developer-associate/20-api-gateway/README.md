@@ -674,3 +674,96 @@ The `OPTIONS` pre-flight request must contain the following headers:
 It works in the following way:
 
 ![API Gateway CORS](/assets/aws-certified-developer-associate/ag_cors.png "API Gateway CORS")
+
+## 20.16 Authentication and Authorization
+
+### 20.16.1 IAM Permissions
+
+Create an IAM policy authorization and attach it to a user/role.
+- **Authentication** is handle with IAM credentials.
+- **Authorization** is handled with IAM policy.
+- Leverages *Sig v4* capability where IAM credential are signed and sent as headers.
+
+This is the best way to protect your API Gateway when you need to provide access within AWS (e.g., EC2, Lambda, IAM users, etc.)
+
+How it works:
+
+![API Gateway IAM Authentication](/assets/aws-certified-developer-associate/ag_iam_authentication.png "API Gateway IAM Authentication")
+
+### 20.16.2 Resource Policies
+
+Resource policies allow you to **control access to your API Gateway resources by attaching a JSON policy** to the API Gateway resource. The policy defines who can access the resource and what actions they can perform on it.
+
+They allow for:
+- Cross account access when combined with IAM security.
+- Specific source IP addresses.
+- VPC endpoints.
+
+The following is an example of a resource policy that allows cross-account access to the API Gateway resource:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": [
+          "arn:aws:iam::123456789012:user/Alice",
+          "arn:aws:iam::123456789012:user/Bob"
+        ]
+      },
+      "Action": "execute-api:Invoke",
+      "Resource": [
+        "arn:aws:execute-api:us-east-1:123456789012:api-id/*"
+      ]
+    }
+  ]
+}
+```
+
+### 20.16.3 Cognito User Pools
+
+Cognito fully manages user lifecycle with access tokens that expire automatically.
+- **Authentication** is handle with Cognito User Pools.
+- **Authorization** is set at the API Gateway method level.
+
+The API **gateway verifies identity from Cognito automatically**, so no custom implementation is required.
+
+How it works:
+
+![API Gateway Cognito Authentication](/assets/aws-certified-developer-associate/ag_cognito_authentication.png "API Gateway Cognito Authentication")
+
+### 20.16.4 Lambda Authorizer (formerly Custom Authorizer)
+
+This is the most flexible way to authenticate and authorize users but requires custom implementation.
+- **Authentication** is handle externally: it is up to you to implement the authentication logic.
+- **Authorization** is handled with a Lambda function that returns an IAM policy to the API Gateway.
+
+Lambda Authorizer is a token-based authorizer (bearer token, e.g., JWT or Oauth).
+
+**How it works**: the client authenticates with a third-party service (e.g., Google, Facebook, etc.) and receives a token. The client sends the token to the API Gateway in the `Authorization` header. The API Gateway invokes the Lambda authorizer (a Lambda function) to validate the token using the third-party service. If the token is valid, the authorizer function returns an IAM policy that allows or denies access to the API Gateway resource.
+- The Lambda function must return an IAM policy for the user.
+- The result policy is cached.
+
+![API Gateway Lambda Authorizer Authentication](/assets/aws-certified-developer-associate/ag_lambda_authorizer_authentication.png "API Gateway Lambda Authorizer Authentication")
+
+### 20.16.5 IAM vs Cognito vs Lambda Authorizer
+
+**IAM**:
+- Great for users/roles already within your AWS account.
+- Cross account access is possible with resource policies.
+- Handles authentication and authorization.
+- Leverages *Sig v4*.
+
+**Cognito User Pools**:
+- You manage your own user pool: it can be backed by Facebook, Google, etc.
+- No need to write custom code.
+- Must implement authorization in the backend.
+
+**Lambda Authorizer**:
+- Great for tird party tokens.
+- Very flexible in terms of what IAM policy is returned.
+- Handles authentication verification.
+- Authorization is handled in the custom Lambda function.
+- Pay per Lambda invocation, though results are cached.
