@@ -767,3 +767,37 @@ Lambda Authorizer is a token-based authorizer (bearer token, e.g., JWT or Oauth)
 - Handles authentication verification.
 - Authorization is handled in the custom Lambda function.
 - Pay per Lambda invocation, though results are cached.
+
+## 20.17 Configuring Authentication and Authorization on API Gateway Methods
+
+### 20.17.1 Usings IAM
+
+To configure authentication and authorization on API Gateway methods, go to the method you want to configure and click on *Method Request*, then edit the *Method Request Settings* by clicking on *Edit*:
+
+![API Gateway Method Request Settings](/assets/aws-certified-developer-associate/ag_method_request_settings.png "API Gateway Method Request Settings")
+
+In the **authorization** field, you can select if you want to use IAM:
+
+![API Gateway Method Request Settings IAM](/assets/aws-certified-developer-associate/ag_method_request_settings_iam.png "API Gateway Method Request Settings IAM")
+
+### 20.17.2 Using Resource Policies
+
+Go to the API Gateway console and select the API you want to configure. Then, go to the *Resource Policy* section and create a policy:
+
+![API Gateway Resource Policy](/assets/aws-certified-developer-associate/ag_resource_policy.png "API Gateway Resource Policy")
+
+You also have a set of **predefined policies** you can use to quickly configure the resource policy:
+
+![API Gateway Predefined Resource Policies](/assets/aws-certified-developer-associate/ag_predefined_resource_policies.png "API Gateway Predefined Resource Policies")
+
+### 20.17.3 Using Lambda Authorizer and Cognito User Pools
+
+Go to the API Gateway console and select the API you want to configure. Then, go to the *Authorizers* section and create a new authorizer.
+
+The first type of authorizer is the **Lambda** authorizer, which allows you to use a Lambda function to authorize requests to your API Gateway methods, and is the one we described above.
+
+![API Gateway Authorizer](/assets/aws-certified-developer-associate/ag_authorizer.png "API Gateway Authorizer")
+
+The second type of authorizer is the **Cognito** authorizer, which allows you to use Cognito User Pools to authorize requests to your API Gateway methods.
+
+![API Gateway Cognito Authorizer](/assets/aws-certified-developer-associate/ag_cognito_authorizer.png "API Gateway Cognito Authorizer")
