@@ -801,3 +801,17 @@ The first type of authorizer is the **Lambda** authorizer, which allows you to u
 The second type of authorizer is the **Cognito** authorizer, which allows you to use Cognito User Pools to authorize requests to your API Gateway methods.
 
 ![API Gateway Cognito Authorizer](/assets/aws-certified-developer-associate/ag_cognito_authorizer.png "API Gateway Cognito Authorizer")
+
+## 20.18 HTTP APIs vs REST APIs
+
+**HTTP APIs**:
+- Low-latency.
+- Cost-effective AWS Lambda proxy.
+- HTTP proxy APIs and private integration (no data mapping).
+- Support OpenID Connect and OAuth 2.0 authorization.
+- Built-in support for CORS.
+- No usage plans and API keys.
+
+**REST APIs**: all features of the HTTP APIs except the support for OpenID Connect and OAuth 2.0.
+
+The main things to remember for the exam are that H**TTP APIs are cheaper than REST APIs** and that **REST APIs do not support OpenID Connect and OAuth 2.0**.
