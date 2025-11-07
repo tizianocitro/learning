@@ -18,6 +18,12 @@ We create users to allow them to use our AWS account and to allow the to do so, 
 
 When signing-in to AWS, you have to choose to login either with a IAM User or a Root account.
 
+### 1.1.1 Multi-Session Support
+
+AWS Console can have multiple active sessions. This means that a user can be signed in to the console in one browser tab with an account and in another browser tab with a different account.
+
+To enable this, click on the *Turn On Multi-Session Support* option in the console.
+
 ## 1.2 IAM Policies (Manage AWS Permissions)
 
 Users or Groups can be assigned JSON documents called policies. **Policies** define the permissions of the user/group. 
