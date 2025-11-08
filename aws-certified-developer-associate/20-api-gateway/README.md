@@ -815,3 +815,56 @@ The second type of authorizer is the **Cognito** authorizer, which allows you to
 **REST APIs**: all features of the HTTP APIs except the support for OpenID Connect and OAuth 2.0.
 
 The main things to remember for the exam are that H**TTP APIs are cheaper than REST APIs** and that **REST APIs do not support OpenID Connect and OAuth 2.0**.
+
+## 20.19 WebSocket APIs in API Gateway
+
+Web sockets provide **two-way interactive communication between a browser and a server**.
+- Server can push information to the client without the client having to request it.
+- This enables stateful application use cases.
+
+WebSocket APIs are often used in real-time applications such as chat applications, collaboration platforms, multiplayer games, and financial trading applications.
+
+The following example shows how WebSocket APIs can be used in a chat application:
+
+![API Gateway WebSocket APIs](/assets/aws-certified-developer-associate/ag_websocket_apis.png "API Gateway WebSocket APIs")
+
+WebSocket APIs work with AWS services that integrate with API Gateway, such as Lambda, DynamoDB, and SQS, and HTTP endpoints.
+
+### 20.19.1 Connecting to WebSocket APIs
+
+You will use a web socket client to connect to the WebSocket API. The client will send a connection request to the API Gateway, which will provide a `ConnectionID` that remains persistent across the WS connection to identify the client.
+
+![API Gateway WebSocket Connecting](/assets/aws-certified-developer-associate/ag_websocket_connecting.png "API Gateway WebSocket Connecting")
+
+The WebSocket URL looks like this: `wss://[some-uniqueid].execute-api.[region].amazonaws.com/[stage-name]`. For example, `wss://abc123.execute-api.us-east-1.amazonaws.com/dev`.
+
+### 20.19.2 Client to Server Messaging
+
+Once the client is connected to the WS API, it can send messages to the server reusing the `ConnectionID` provided by the API Gateway. The server can then process the message and send a response back to the client.
+
+![API Gateway WebSocket Client to Server Messaging](/assets/aws-certified-developer-associate/ag_websocket_client_to_server_messaging.png "API Gateway WebSocket Client to Server Messaging")
+
+### 20.19.3 Server to Client Messaging
+
+The server can also send messages to the client using the `ConnectionID` provided by the API Gateway. The **API Gateway provides a connection URL callback to send messages to the client**. The URL of the callback is `https://[some-uniqueid].execute-api.[region].amazonaws.com/[stage-name]/@connections/[connection-id]`. For example, `https://abc123.execute-api.us-east-1.amazonaws.com/dev/@connections/abc1234567890`.
+
+![API Gateway WebSocket Server to Client Messaging](/assets/aws-certified-developer-associate/ag_websocket_server_to_client_messaging.png "API Gateway WebSocket Server to Client Messaging")
+
+The **operations the server can do on the connection URL callback** are presented in the table below:
+
+| Method | Description |
+|-----------|-------------|
+| `POST` | Send a message from the server to the WS client. |
+| `GET` | Get the latest connection status of the WS client. |
+| `DELETE` | Disconnect the client from the WS connection. |
+
+### 20.19.4 WebSocket API Routing in API Gateway
+
+Incoming JSON messages are routed to different backend.
+- If no route is specified, message are sent to the `$default` route.
+
+You **request a route selection expression to select the field on JSON messages to route from**. The **result is evaluated against the route keys available in your API gateway**.
+- If you want to route based on the `action` field in the JSON message, you can use the following route selection expression: `$request.body.action`.
+- **Each route is connected to a backend** you have setup through API Gateway.
+
+![API Gateway WebSocket API Routing](/assets/aws-certified-developer-associate/ag_websocket_api_routing.png "API Gateway WebSocket API Routing")
