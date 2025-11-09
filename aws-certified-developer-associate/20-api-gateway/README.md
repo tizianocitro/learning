@@ -868,3 +868,13 @@ You **request a route selection expression to select the field on JSON messages 
 - **Each route is connected to a backend** you have setup through API Gateway.
 
 ![API Gateway WebSocket API Routing](/assets/aws-certified-developer-associate/ag_websocket_api_routing.png "API Gateway WebSocket API Routing")
+
+## 20.20 Using API Gateway in Microservice Architectures
+
+You can use API Gateway to create a single interface for all microservices use API endpoints with various resources. You can also:
+- Apply domain names and SSL certificates for different clients.
+- Apply forwarding and transformation rules at the API Gateway level.
+
+![API Gateway Microservices Architecture](/assets/aws-certified-developer-associate/ag_microservices_architecture.png "API Gateway Microservices Architecture")
+
+The idea is to **use API Gateway as a facade** for all microservices and provide a single entry point for all clients.
