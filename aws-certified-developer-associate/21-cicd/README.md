@@ -19,3 +19,13 @@ For all of this, we need a **CI/CD pipeline**. AWS has several services to help 
 - `CodeGuru`: automated code reviews using machine learning.
 
 ![Technology Stack](/assets/aws-certified-developer-associate/cicd_techstack.png "Technology Stack")
+
+## 21.2 Continuous Integration (CI)
+
+Developers push the code to a code repository often (e.g., GitHub, CodeCommit, Bitbucket). A testing/build server checks the code as soon as it is pushed (e.g., CodeBuild, Jenkins), builds and tests it. The developer gets feedback about the tests and checks that have passed/failed.
+
+Advantages of CI:
+- Find and fix bugs early.
+- Deliver faster as the code is tested and deploy often.
+
+![Continuous Integration](/assets/aws-certified-developer-associate/cicd_ci.png "Continuous Integration")
