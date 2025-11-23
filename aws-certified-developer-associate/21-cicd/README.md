@@ -29,3 +29,13 @@ Advantages of CI:
 - Deliver faster as the code is tested and deploy often.
 
 ![Continuous Integration](/assets/aws-certified-developer-associate/cicd_ci.png "Continuous Integration")
+
+## 21.3 Continuous Delivery (CD)
+
+Ensures that:
+- Software can be released reliably whenever needed.
+- Deployments happen often and are quick.
+
+CD usually means automated deployment (e.g., CodeDeploy, Spinnaker).
+
+![Continuous Delivery](/assets/aws-certified-developer-associate/cicd_cd.png "Continuous Delivery")
