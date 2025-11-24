@@ -39,3 +39,32 @@ Ensures that:
 CD usually means automated deployment (e.g., CodeDeploy, Spinnaker).
 
 ![Continuous Delivery](/assets/aws-certified-developer-associate/cicd_cd.png "Continuous Delivery")
+
+## 21.4 CodeCommit
+
+Version control is the ability to understand the various changes that happened to the code over time, and possibly roll back. All these are enabled by using a version control system like Git.
+
+CodeCommit is fully managed and highly available. It provides:
+- Private Git repositories.
+- No size limit on repositories (scale seamlessly). 
+- Code availability only in AWS account, increasing security and compliance.
+- Security by encryption, access control, etc.
+- Integration with Jenkins, CodeBuild, and other CI tools.
+
+### 21.4.1 CodeCommit Security
+
+**Interactions** are done using Git.
+
+**Authentication** via:
+- SSH Keys: users can configure SSH keys in their IAM console.
+- HTTPS: CLI credential helper or Git credentials for IAM users.
+
+**Authorization** via IAM policies to manage user/role permissions to repositories.
+
+**Encryption**:
+- Repositories are automatically encrypted at rest using KMS.
+- Encrypted in transit: you can only use HTTPS or SSH, which are both secure.
+
+**Cross-account access**:
+- Do not share SSH keys or your AWS credentials.
+- Use an IAM role in your AWS account and use STS (`AssumeRole` API).
