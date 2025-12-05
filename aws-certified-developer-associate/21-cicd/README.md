@@ -68,3 +68,12 @@ CodeCommit is fully managed and highly available. It provides:
 **Cross-account access**:
 - Do not share SSH keys or your AWS credentials.
 - Use an IAM role in your AWS account and use STS (`AssumeRole` API).
+
+### 21.4.2 CodeCommit vs GitHub
+
+![CodeCommit vs GitHub](/assets/aws-certified-developer-associate/cicd_codecommit_vs_github.png "CodeCommit vs GitHub")
+
+### 21.4.3 CodeCommit is Deprecated
+
+On July 25th 2024, AWS discontinued CodeCommit, so new customers cannot use the service and AWS recommends to migrate to an external Git solution.
+- For example, use GitHub or GitLab instead.
