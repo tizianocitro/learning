@@ -166,3 +166,47 @@ You can finally **create the pipeline**, and **it will be created and started**:
 Until all stages are completed:
 
 ![CodePipeline Created 2](/assets/aws-certified-developer-associate/cicd_codepipeline_created_2.png "CodePipeline Created 2")
+
+### 21.6.1 Adding Stages to CodePipeline
+
+You can add stages to the pipeline by clicking on the *Edit* button and then clicking on the *Add Stage* button of the phase you want to add the new stage to:
+
+![CodePipeline Add Stage](/assets/aws-certified-developer-associate/cicd_codepipeline_add_stage.png "CodePipeline Add Stage")
+
+Give the new stage a **name**:
+
+![CodePipeline Add Stage Name](/assets/aws-certified-developer-associate/cicd_codepipeline_add_stage_name.png "CodePipeline Add Stage Name")
+
+Configure the **action group** for the stage:
+
+![CodePipeline Add Stage Action Group](/assets/aws-certified-developer-associate/cicd_codepipeline_add_stage_name.png "CodePipeline Add Stage Action Group")
+
+We will select Beanstalk as the action provider:
+
+![CodePipeline Add Stage Action Group Beanstalk](/assets/aws-certified-developer-associate/cicd_codepipeline_add_stage_action_group_eb.png "CodePipeline Add Stage Action Group Beanstalk")
+
+And enter the specific information it requires:
+
+![CodePipeline Add Stage Action Group Beanstalk Info](/assets/aws-certified-developer-associate/cicd_codepipeline_add_stage_action_group_eb_info.png "CodePipeline Add Stage Action Group Beanstalk Info")
+
+**Multiple action groups can be added to a stage**. This is useful for when you need a **manual approval** step like in this case because we are deploying to production:
+
+![CodePipeline Add Stage Manual Approval](/assets/aws-certified-developer-associate/cicd_codepipeline_add_stage_manual_approval.png "CodePipeline Add Stage Manual Approval")
+
+So, it will appear that you need to approve the deployment before it is done:
+
+![CodePipeline Add Stage Manual Approval 2](/assets/aws-certified-developer-associate/cicd_codepipeline_add_stage_manual_approval_2.png "CodePipeline Add Stage Manual Approval 2")
+
+Save the pipeline and it will be updated:
+
+![CodePipeline Updated](/assets/aws-certified-developer-associate/cicd_codepipeline_updated.png "CodePipeline Updated")
+
+Now, push a change to the GitHub repository and it will trigger the pipeline. This time, it will deployu to the `dev` environment and then **wait for a manual approval** to deploy to the `prod` environment:
+
+![CodePipeline Waiting for Approval](/assets/aws-certified-developer-associate/cicd_codepipeline_waiting_for_approval.png "CodePipeline Waiting for Approval")
+
+So, review the changes in the `dev` environment and click on the *Review* button to approve the deployment:
+
+![CodePipeline Review Changes](/assets/aws-certified-developer-associate/cicd_codepipeline_review_changes.png "CodePipeline Review Changes")
+
+And submit the approval so that the deployment to the `prod` environment can continue.
