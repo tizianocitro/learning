@@ -32,3 +32,12 @@ Write applications using resources that are specific to SAM:
 - `sam sync` to synchronize local changes with the deployed application.
     - `sam sync --watch` to watch for changes and automatically deploy them.
 - `sam delete` to delete the deployed application.
+
+### 22.1.2 Deployment Process
+
+1. **Build**: Use `sam build` to compile the application and prepare it for deployment.
+2. **Package**: Use `sam package` to package the application, uploading local artifacts to S3 and generating a CloudFormation template.
+    - You can **proceed directly to deploy as this step is optional and not required anymore**.
+3. **Deploy**: Use `sam deploy` to deploy the application, creating or updating the CloudFormation stack.
+
+![SAM Deployment Process](/assets/aws-certified-developer-associate/sam_deployment_process.png "SAM Deployment Process")
