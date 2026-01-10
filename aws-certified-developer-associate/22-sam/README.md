@@ -41,3 +41,20 @@ Write applications using resources that are specific to SAM:
 3. **Deploy**: Use `sam deploy` to deploy the application, creating or updating the CloudFormation stack.
 
 ![SAM Deployment Process](/assets/aws-certified-developer-associate/sam_deployment_process.png "SAM Deployment Process")
+
+### 22.1.3 SAM Accelerate
+
+SAM Accelerate is a **set of features to reduce latency while deploying resources to AWS**.
+
+Leverage them by running `sam sync` commands to:
+- Synchronize your project declared in SAM templates to AWS.
+- Synchronizes code changes to AWS without updating infrastructure, so using service APIs and bypassing CloudFormation.
+
+**Options** for `sam sync`:
+- `sam sync (no options)`: synchronizes code and infrastructure.
+- `sam sync --code`: synchronizes code changes without updating infrastructure, it bypasses CloudFormation to provide updates in seconds.
+- `sam sync --code --resource AWS::Serverless::Function`: synchronizes only all Lambda functions and their dependencies.
+- `sam sync --code --resource-id HelloWorldLambdaFunction`: synchronizes only a specific resource by its ID, in this case, a Lambda function named `HelloWorldLambdaFunction`.
+- `sam sync --watch`: monitors for file changes and automatically synchronize when changes are detected.
+    - If changes include configuration, it uses `sam sync`.
+    - If changes are code only, it uses `sam sync --code`.
