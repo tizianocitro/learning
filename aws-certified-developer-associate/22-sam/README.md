@@ -58,3 +58,33 @@ Leverage them by running `sam sync` commands to:
 - `sam sync --watch`: monitors for file changes and automatically synchronize when changes are detected.
     - If changes include configuration, it uses `sam sync`.
     - If changes are code only, it uses `sam sync --code`.
+
+## 22.2 Creating a SAM Project
+
+1. Use the `sam init` command to create a new SAM project. You can use different options:
+    - `--name`: specify the name of the project.
+    - `--runtime`: specify the runtime (e.g., `python3.8`, `nodejs14.x`, etc.).
+2. Create an S3 bucket to store the packaged application artifacts: `aws s3 mb s3://helloworld-sam-bucket`.
+3. Package the application using the command below to upload the application code to S3 and generate a CloudFormation template saved in `generated-cf-template.yaml` (optional step, as `sam deploy` can handle this automatically):
+    ```bash
+    sam package \
+        --s3-bucket helloworld-sam-bucket \
+        --output-template-file generated-cf-template.yaml
+    ```
+4. Deploy the application using the command below:
+    ```bash
+    sam deploy \
+        --template-file generated-cf-template.yaml \
+        --stack-name helloworld-sam-stack \
+        --capabilities CAPABILITY_IAM
+    ```
+
+You can see deployed SAM applications in the console under the *Applications* section in the Lambda console:
+
+![SAM Applications in Lambda Console](/assets/aws-certified-developer-associate/sam_applications_lambda_console.png "SAM Applications in Lambda Console")
+
+### 22.2.1 SAM Project Structure
+
+The generated project will include:
+- A `template.yaml` file with the SAM template.
+- A directory structure for the application code: for example, `src/app.py` for Python applications.
