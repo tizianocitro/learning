@@ -88,3 +88,156 @@ You can see deployed SAM applications in the console under the *Applications* se
 The generated project will include:
 - A `template.yaml` file with the SAM template.
 - A directory structure for the application code: for example, `src/app.py` for Python applications.
+
+### 22.2.2 Adding Lambda Functions to SAM Templates
+
+The following is an example of a `template.yaml` file for a simple SAM application that **defines a Lambda function** that returns `"Hello, World!"`:
+
+```yaml
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: A Hello World Lambda function.
+Resources:
+    HelloWorldFunction:
+        Type: 'AWS::Serverless::Function'
+        Properties:
+            # It is file-name.function-name
+            Handler: app.lambda_handler
+            Runtime: python3.8
+            # The CodeUri is the path to the source code directory
+            CodeUri: src/
+            Description: A function that returns "Hello, World!"
+            MemorySize: 128
+            Timeout: 3
+```
+
+The code of the function is in the `src/app.py` file, and can be as simple as:
+
+```python
+def lambda_handler(event, context):
+    return {
+        'statusCode': 200,
+        'body': 'Hello, World!'
+    }
+```
+
+### 22.2.3 Adding API Gateway to SAM Templates
+
+To add an API Gateway to the SAM template defined in section [22.2.2 SAM Template with Lambda Functions](#2222-sam-template-with-lambda-functions), you can add the `Events` property to the `HelloWorldFunction` resource to **allow the Lambda function to be triggered by an API Gateway event**. By doing so, SAM automatically creates an API Gateway for the function.
+
+```yaml
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: A Hello World Lambda function with API Gateway.
+Resources:
+    HelloWorldFunction:
+        Type: 'AWS::Serverless::Function'
+        Properties:
+            Handler: app.lambda_handler
+            Runtime: python3.8
+            CodeUri: src/
+            Description: A function that returns "Hello, World!"
+            MemorySize: 128
+            Timeout: 3
+            # Defines the event source for API Gateway
+            Events:
+                HelloWorldApi:
+                    Type: Api
+                    Properties:
+                        Path: /hello
+                        Method: GET
+```
+
+The `src/app.py` file can be updated to provide a response in the expected format for API Gateway:
+
+```python
+def lambda_handler(event, context):
+    return {
+        'statusCode': 200,
+        'body': 'Hello, World!'
+        'headers': {
+            'Content-Type': 'application/json'
+        }
+    }
+```
+
+You can see the API Gayeway's stage, deployment, and REST API being created by CloudFormation in the console after running the `sam deploy` command.
+
+### 22.2.4 Adding DynamoDB to SAM Templates
+
+Write a function that interacts with DynamoDB like the following example:
+
+```python
+import boto3
+import json
+import os
+
+region_name = os.environ['REGION_NAME']
+table_name = os.environ['TABLE_NAME']
+
+dynamodb_client = boto3.client(
+    'dynamodb',
+    region_name=region_name
+)
+
+def respond(err, res=None):
+    return {
+        'statusCode': '400' if err else '200',
+        'body': err.message if err else json.dumps(res),
+        'headers': {
+            'Content-Type': 'application/json',
+        },
+    }
+
+
+def lambda_handler(event, context):
+    print("Received event: " + json.dumps(event, indent=2))
+    scan_result = dynamodb_client.scan(TableName=table_name)
+    return respond(None, res=scan_result)
+```
+
+The functions is:
+- Reading two environment variables: `REGION_NAME` and `TABLE_NAME`, which need to be defined in the SAM template using the `Environment` property.
+- Scanning a DynamoDB table and returning the results, so we need to **define the table in the SAM template**. For this, we also need to **add a policy to allow the Lambda function to access the DynamoDB table**.
+
+The following example adds a DynamoDB table and sets the environment variables for the Lambda function to the SAM template in section [22.2.3 Adding API Gateway to SAM Templates](#2223-adding-api-gateway-to-sam-templates):
+
+```yaml
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: A Hello World Lambda function with API Gateway.
+Resources:
+    HelloWorldFunction:
+        Type: 'AWS::Serverless::Function'
+        Properties:
+            Handler: app.lambda_handler
+            Runtime: python3.8
+            CodeUri: src/
+            Description: A function that returns "Hello, World!"
+            MemorySize: 128
+            Timeout: 3
+            # Defines the environment variables
+            Environment:
+                Variables:
+                    TABLE_NAME: !Ref HelloWorldTable
+                    REGION_NAME: !Ref AWS::Region
+            Events:
+                HelloWorldApi:
+                    Type: Api
+                    Properties:
+                        Path: /hello
+                        Method: GET
+            Policies:
+            - DynamoDBCrudPolicy:
+                TableName: !Ref HelloWorldTable  
+    # Defines the DynamoDB table
+    HelloWorldTable:
+        Type: AWS::Serverless::SimpleTable
+        Properties:
+            PrimaryKey:
+                Name: greeting
+                Type: String
+            ProvisionedThroughput:
+                ReadCapacityUnits: 2
+                WriteCapacityUnits: 2
+```
