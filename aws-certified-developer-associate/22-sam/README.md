@@ -241,3 +241,38 @@ Resources:
                 ReadCapacityUnits: 2
                 WriteCapacityUnits: 2
 ```
+
+## 22.3 SAM Policy Templates
+
+List of templates to apply permissions to Lambda functions. They will result in IAM policies that are attached to the Lambda functions' execution role.
+
+A few examples:
+- `S3ReadPolicy`: Gives read only permissions to objects in S3.
+- `SQSPollerPolicy`: Allows to poll an SQS queue.
+- `DynamoDBCrudPolicy`: Allows to perform CRUD operations on a DynamoDB table.
+
+To use them, you can add them to the `Policies` property of the Lambda function in the SAM template:
+
+```yaml
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: A Lambda function that connects to DynamoDB, S3, and SQS.
+Resources:
+    HelloWorldFunction:
+        Type: 'AWS::Serverless::Function'
+        Properties:
+            Handler: app.lambda_handler
+            Runtime: python3.8
+            CodeUri: src/
+            Description: A function that returns "Hello, World!"
+            MemorySize: 128
+            Timeout: 3
+            Policies:
+            - DynamoDBCrudPolicy:
+                TableName: !Ref HelloWorldTable
+            - S3ReadPolicy:
+                BucketName: !Ref HelloWorldBucket
+            - SQSPollerPolicy:
+                QueueName: !Ref HelloWorldQueue
+# Define other resources here...
+```
