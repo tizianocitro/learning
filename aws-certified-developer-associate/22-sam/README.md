@@ -276,3 +276,45 @@ Resources:
                 QueueName: !Ref HelloWorldQueue
 # Define other resources here...
 ```
+
+## 22.4 SAM and CodeDeploy
+
+SAM framework natively uses CodeDeploy to update Lambda functions.
+
+You can use:
+- **Traffic shifting** to gradually shift traffic from the old version of a Lambda function to a new version.
+- **Pre and post traffic hooks to validate deployment before the traffic shift starts and after it ends**.
+- Easy and automated rollbacks using CloudWatch Alarms.
+
+![SAM and CodeDeploy](/assets/aws-certified-developer-associate/sam_codedeploy.png "SAM and CodeDeploy")
+
+### 22.4.1 SAM Template Options for CodeDeploy
+
+The options discussed below can be added to the `Properties` of the `AWS::Serverless::Function` resource in the SAM template like `Handler`, `Runtime`, `CodeUri`, etc.
+
+**AutoPublishAlias**:
+1. Detects when new code is being deployed.
+2. Creates and publishes an updated version of the function with the latest code.
+3. Points the alias to the updated version.
+
+```yaml
+AutoPublishAlias: live
+```
+
+**DeploymentPreference**: `Canary`, `Linear`, `AllAtOnce`.
+- **Alarms**: alarms that can trigger a rollback.
+- **Hooks**: pre and post traffic shifting Lambda functions to validate the deployment.
+
+```yaml
+DeploymentPreference:
+    Type: Canary10Percent10Minutes
+    Alarms:
+        - !Ref ErrorMetricGreaterThanZeroAlarm
+    Hooks:
+        PreTraffic: !Ref PreTrafficHook
+        PostTraffic: !Ref PostTrafficHook
+```
+
+With these options, when you deploy the SAM application, it will automatically create a new version of the function for the alias, and apply the canary deployment strategy with the specified alarms and hooks. To see it in action, check the CodeDeploy console after deploying the SAM application:
+
+![SAM Deployment with CodeDeploy](/assets/aws-certified-developer-associate/sam_codedeploy_deployment.png "SAM Deployment with CodeDeploy")
