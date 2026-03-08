@@ -318,3 +318,23 @@ DeploymentPreference:
 With these options, when you deploy the SAM application, it will automatically create a new version of the function for the alias, and apply the canary deployment strategy with the specified alarms and hooks. To see it in action, check the CodeDeploy console after deploying the SAM application:
 
 ![SAM Deployment with CodeDeploy](/assets/aws-certified-developer-associate/sam_codedeploy_deployment.png "SAM Deployment with CodeDeploy")
+
+## 22.5 Local Development with SAM
+
+SAM allows you to **locally emulate the Lambda service** using the `sam local start-lambda` command:
+- It starts a local endpoint that emulates Lambda.
+- You can run automated tests against this local endpoint.
+
+It also allows you to **locally Invoke Lambda functions** using the `sam local invoke` command:
+- It invokes a Lambda function with a payload once and quits after the invocation completes.
+- It is elpful for generating test cases.
+- If the function makes API calls to other AWS services, make sure to use the correct `--profile` option.
+
+SAM allows you to **locally start an API Gateway endpoint** using the `sam local start-api` command.
+- It starts a local HTTP server that hosts all your functions.
+- Changes to functions are automatically reloaded.
+
+With SAM, you can also **generate events for Lambda functions** using the `sam local generate-event` command:
+- It generates sample payloads for event sources like S3, API Gateway, SNS, Kinesis, DynamoDB, etc.
+
+![Generating Events with SAM](/assets/aws-certified-developer-associate/sam_generate_event.png "Generating Events with SAM")
