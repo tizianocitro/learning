@@ -338,3 +338,48 @@ With SAM, you can also **generate events for Lambda functions** using the `sam l
 - It generates sample payloads for event sources like S3, API Gateway, SNS, Kinesis, DynamoDB, etc.
 
 ![Generating Events with SAM](/assets/aws-certified-developer-associate/sam_generate_event.png "Generating Events with SAM")
+
+## 22.6 Multiple Environments with SAM
+
+**SAM supports the definition of multiple environments** using the `samconfig.toml` file:
+- It allows you to define different configurations for different environments (e.g., dev, prod).
+- You can specify different parameters, such as S3 bucket names, Lambda function names, and other resources.
+
+The `samconfig.toml` file defines configurations under headers in the form of `[environment.command.parameters]`, where:
+- `environment` is the environment name (e.g., `dev`, `prod`).
+- `command` is the SAM command (e.g., `deploy`, `package`, `sync`).
+
+The following is an example of a `samconfig.toml` file:
+
+```toml
+version = 0.1
+
+[dev.deploy.parameters]
+stack_name = "my-sam-app-dev"
+s3_bucket = "my-sam-app-dev-bucket"
+s3_prefix = "my-sam-app-dev"
+region = "us-west-2"
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = "Environment=dev"
+
+[prod.deploy.parameters]
+stack_name = "my-sam-app-prod"
+s3_bucket = "my-sam-app-prod-bucket"
+s3_prefix = "my-sam-app-prod"
+region = "us-west-2"
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = "Environment=prod"
+
+[dev.sync.parameters]
+watch = true
+
+[prod.sync.parameters]
+watch = false
+```
+
+To **specify the environment when running SAM commands**, you can use the `--config-env` option:
+
+```bash
+sam deploy --config-env dev
+sam sync --config-env prod
+```
