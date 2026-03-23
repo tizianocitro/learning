@@ -37,3 +37,23 @@ The code is compiled into a CloudFormation template (JSON/YAML).
 
 You can therefore deploy infrastructure and application code together.
 - It is great for Lambda functions and Docker containers in ECS/EKS.
+
+## 23.1 CDK vs SAM
+
+**SAM**:
+- Serverless focused.
+- Allows you to write templates declaratively in JSON or YAML.
+- Great for quickly getting started with Lambda.
+- Leverages CloudFormation.
+
+**CDK**:
+- All AWS services.
+- Allows you to write Cloud infrastructure in a programming language.
+- Leverages CloudFormation.
+
+### 23.1.1 CDK + SAM:
+- You can use SAM CLI to locally test your CDK applications.
+- You must first run `cdk synth` to generate the CloudFormation template.
+- Then you can use `sam local invoke` to test Lambda functions defined in your CDK application.
+
+![CDK + SAM](/assets/aws-certified-developer-associate/cdk_sam.png "CDK + SAM")
