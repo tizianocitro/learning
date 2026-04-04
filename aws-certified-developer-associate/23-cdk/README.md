@@ -51,7 +51,8 @@ You can therefore deploy infrastructure and application code together.
 - Allows you to write Cloud infrastructure in a programming language.
 - Leverages CloudFormation.
 
-### 23.1.1 CDK + SAM:
+### 23.1.1 CDK + SAM
+
 - You can use SAM CLI to locally test your CDK applications.
 - You must first run `cdk synth` to generate the CloudFormation template.
 - Then you can use `sam local invoke` to test Lambda functions defined in your CDK application.
@@ -232,4 +233,84 @@ If you want to **destroy the stack** later, you can run:
 
 ```bash
 cdk destroy
+```
+
+## 23.3 Constructs
+
+A **construct is a component that encapsulates everything CDK needs to create the final CloudFormation stack**.
+
+A construct can represent a single AWS resource (e.g., S3 bucket) or multiple related resources (e.g., worker queue with compute).
+
+Two components:
+- **Construct Library**: a collection of constructs included in AWS CDK which contains constructs for every AWS resource.
+    - It contains 3 different levels of constructs available: L1, L2, and L3.
+- **Construct Hub**: a collection of additional constructs from AWS, third parties, and open-source CDK community.
+
+### 23.3.1 L1 Constructs
+
+Also called *CFN Resources* because they represent all resources directly available in CloudFormation.
+- They are recognizable because construct names start with `Cfn`: for example, `CfnBucket`.
+- They require you to explicitly configure all resource properties.
+
+The following is an example of using the L1 construct `CfnBucket` to create a S3 bucket:
+
+```javascript
+const s3 = require ('aws-cdk-lib/aws-s3');
+
+const bucket = new s3.CfnBucket(this, 'MyBucket', {
+    bucketName: 'MyBucket'
+});
+```
+
+These constructs are periodically generated from CloudFormation resource specification.
+
+They are great if you want to migrate your CloudFormation templates to CDK in a one-by-one fashion.
+
+### 23.3.2 L2 Constructs
+
+L2 constructs represent AWS resources but with a higher level referred to as intent-based API.
+
+They provide similar functionalities as L1 constructs but with convenient defaults and boilerplate (e.g., a method to get the bucket URL).
+- You do not need to know all the details about the resource properties.
+- Provide methods that make it simpler to work with the resource: for example, `bucket.addLifeCycleRule()`.
+
+The following is an example of using the L2 construct `Bucket` to create a S3 bucket:
+
+```javascript
+const s3 = require ('aws-cdk-lib/aws-s3');
+
+const bucket = new s3.Bucket(this, 'MyBucket', {
+    versioned: true,
+    encryption: s3.BucketEncryption.KMS
+});
+
+// Returns the HTTPS URL of an S3 Object
+const objectUrl = bucket.urlForObject(
+    'MyBucket/MyObject'
+);
+```
+
+### 23.3.3 L3 Constructs
+
+Also called *Patterns*, they represent multiple related resources to helps completing common tasks in AWS. For example:
+- `aws-apigateway.LambdaRestApi`: it represents an API Gateway backed by a Lambda function.
+- `aws-ecs-patterns.ApplicationLoadBalancerFargateService`: it represents an architecture that includes a Fargate cluster with an ALB.
+
+The following is an example of `aws-apigateway.LambdaRestApi`:
+
+```javascript
+const api = new apigateway.LambdaRestApi(this, 'myapi', {
+    handler: backend,
+    proxy: false
+});
+
+const items = api. root.addResource('items');
+items.addMethod ('GET'); // GET /items
+items.addMethod ('POST'); // POST /items
+
+const item = items.addResource ('{item}');
+item.addMethod ('GET'); // GET /items/{item}
+item.addMethod ('DELETE', new apigateway.HttpIntegration(
+    'http://amazon.com'
+));
 ```
