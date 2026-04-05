@@ -314,3 +314,15 @@ item.addMethod ('DELETE', new apigateway.HttpIntegration(
     'http://amazon.com'
 ));
 ```
+
+## 23.4 Commands to Know
+
+| Command | Description |
+| ------- | ----------- |
+| `npm install -g aws-cdk-lib` | Installs the CDK CLI and libraries. |
+| `cdk init app` | Creates a new CDK project from a specified template. |
+| `cdk synth` | Synthesizes and prints the CloudFormation template. |
+| `cdk bootstrap` | Deploys the `CDKToolkit` stack to prepare the environment so that CDK can work properly. |
+| `cdk deploy` | Deploys stacks. |
+| `cdk diff`  | Shows the differences betweem the local CDK and the deployed stack. |
+| `cdk destroy` | Destroys stacks. |
