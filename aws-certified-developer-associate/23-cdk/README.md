@@ -326,3 +326,16 @@ item.addMethod ('DELETE', new apigateway.HttpIntegration(
 | `cdk deploy` | Deploys stacks. |
 | `cdk diff`  | Shows the differences betweem the local CDK and the deployed stack. |
 | `cdk destroy` | Destroys stacks. |
+
+## 23.5 Bootstrapping
+
+Bootstrapping is the process of provisioning resources for CDK before you can deploy CDK applications into an AWS environment.
+- An **AWS environment consists of accounts and region**.
+
+A CloudFormation stack called `CDKToolkit` is created and contains:
+- S3 bucket: to store files.
+- IAM roles: to grant permissions to perform deployments.
+
+You must run the `cdk bootstrap aws://<aws_account>/<aws_region>` command for each new environment. Otherwise, you will get the error *Policy contains a statement with one or more invalid principal*.
+
+![Bootstrap in CDK](/assets/aws-certified-developer-associate/cdk_bootstrap.png)
