@@ -339,3 +339,21 @@ A CloudFormation stack called `CDKToolkit` is created and contains:
 You must run the `cdk bootstrap aws://<aws_account>/<aws_region>` command for each new environment. Otherwise, you will get the error *Policy contains a statement with one or more invalid principal*.
 
 ![Bootstrap in CDK](/assets/aws-certified-developer-associate/cdk_bootstrap.png)
+
+## 23.6 Unit Testing
+
+To test CDK applications, you can use the *CDK Assertions* module combined with popular test frameworks such as Jest (JavaScript) or Pytest (Python).
+- This allows you to verify we have specific resources, rules, conditions, parameters, etc.
+
+Two types of tests:
+- **Fine-grained assertions (common)**: test specific
+aspects of the CloudFormation template (e.g., check if a
+resource has a cretain property with a specific value).
+- **Snapshot tests**: test the synthesized CloudFormation
+template against a previously stored baseline template.
+
+![Unit Testing in CDK](/assets/aws-certified-developer-associate/cdk_unit_testing.png)
+
+To import a template (**important for the exam**):
+- `Template.fromStack(MyStack)`: stack built in CDK.
+- `Template.fromString(mystring)`: stack build outside CDK.
