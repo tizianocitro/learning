@@ -16,3 +16,32 @@ Two sub-services: Cognito User Pools and Cognito Identity Pools (used to be call
 - Hundreds of users or even more.
 - Mobile and web users.
 - Need for authentication with SAML, OpenID Connect and other protocols.
+
+## 24.1 Cognito User Pools
+
+CPU allows you to **create a serverless database of users for your web and mobile applications**.
+
+It offers:
+- **Simple login**: login with username (or email) and password combination.
+- **Login with federated identities**: login users from Facebook, Google, SAML, etc.
+- Logins sends back a JSON Web Token (JWT).
+
+With support for:
+- Password reset.
+- Email and phone number verification.
+- Multi-factor authentication.
+- Blocking users if their credentials are compromised elsewhere.
+
+![CUP](/assets/aws-certified-developer-associate/cup.png)
+
+### 24.1.1 Cognito User Pools Integrations
+
+CUP integrates with API Gateway and ALB natively.
+
+**With API Gateway**:
+
+![CUP With API Gateway](/assets/aws-certified-developer-associate/cup_with_ag.png)
+
+**With ALB**:
+
+![CUP With ALB](/assets/aws-certified-developer-associate/cup_with_alb.png)
