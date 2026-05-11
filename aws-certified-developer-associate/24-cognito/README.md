@@ -45,3 +45,33 @@ CUP integrates with API Gateway and ALB natively.
 **With ALB**:
 
 ![CUP With ALB](/assets/aws-certified-developer-associate/cup_with_alb.png)
+
+## 24.2 Creating User Pools in Cognito
+
+Go to Cognito console and click on *User Pools* to access your user pools:
+
+![CUP User Pools](/assets/aws-certified-developer-associate/cup_user_pools.png)
+
+Then, click on *Create User Pool* to start creating a pool:
+
+![CUP Creation](/assets/aws-certified-developer-associate/cup_creation.png)
+
+So, the first step is to select the **application type** and give your application a **name**:
+
+![CUP Name](/assets/aws-certified-developer-associate/cup_name.png)
+
+Next, configure the **sign in options** (email, phone number, and username):
+
+![CUP Sign In Options](/assets/aws-certified-developer-associate/cup_sign_in_options.png)
+
+And the **return URL** that defines where to redirect users after they successfully sign in:
+
+![CUP Return URL](/assets/aws-certified-developer-associate/cup_return_url.png)
+
+With this, you can create your user pool:
+
+![CUP Created](/assets/aws-certified-developer-associate/cup_created.png)
+
+Click on it and you will **access the user pool details**:
+
+![CUP Details](/assets/aws-certified-developer-associate/cup_details.png)
