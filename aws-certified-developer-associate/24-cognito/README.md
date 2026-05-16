@@ -75,3 +75,69 @@ With this, you can create your user pool:
 Click on it and you will **access the user pool details**:
 
 ![CUP Details](/assets/aws-certified-developer-associate/cup_details.png)
+
+### 24.2.1 Accessing Users and Groups
+
+You can **access users** by clicking on *Users* in the side-bar from the user pool details:
+
+![CUP Users](/assets/aws-certified-developer-associate/cup_users.png)
+
+From there, you can also **create users** by clicking on *Create User*:
+
+![CUP Create Users](/assets/aws-certified-developer-associate/cup_create_users.png)
+
+You can **access groups** where you can group users by clicking on *Groups* in the side-bar from the user pool details:
+
+![CUP Groups](/assets/aws-certified-developer-associate/cup_groups.png)
+
+You can also **access sign-in and sign-up** to configure options like MFA, user verification (e.g., SMS), self-service sign-up, and more.
+
+### 24.2.2 Accessing Authentication Domains
+
+You can **access the authentication domain** by clicking on *Domain* in the side-bar from the user pool details:
+
+![CUP Domain](/assets/aws-certified-developer-associate/cup_domain.png)
+
+You can also configure custom domains with Route 53.
+
+### 24.2.3 Configuring Federated Identities
+
+You can **configure federated identities** by clicking on *Social and External Providers* in the side-bar from the user pool details:
+
+![CUP Federated Identities](/assets/aws-certified-developer-associate/cup_federated_identities.png)
+
+Then, click on *Add Identity Provider* to **configure a provider** of your choice (e.g., Amazon, Apple, Google):
+
+![CUP Configure Federated Identities](/assets/aws-certified-developer-associate/cup_configure_federated_identities.png)
+
+### 24.2.4 Configuring Authentication Methods
+
+You can **configure authentication methods** by clicking on *Authentication Methods* in the side-bar from the user pool details:
+
+![CUP Authentication Methods](/assets/aws-certified-developer-associate/cup_authentication_methods.png)
+
+For example, to use emails:
+
+![CUP Set Email Auth](/assets/aws-certified-developer-associate/cup_set_email_auth.png)
+
+You can also **set password policies and passkeys**:
+
+![CUP Password Policies and Passkeys](/assets/aws-certified-developer-associate/cup_password_policies_and_passkeys.png)
+
+### 24.2.5 Using Extensions to Trigger Lambda Functions
+
+Access the extensions by clicking on *Extensions* in the side-bar from the user pool details.
+
+From this page, you can **configure Lambda functions to be triggered by certain events** like sign-up or authentication.
+
+![CUP Extensions](/assets/aws-certified-developer-associate/cup_extensions.png)
+
+### 24.2.6 Accessing Other Settings
+
+You can access the **application clients** by clicking on *App Clients* in the side-bar from the user pool details:
+
+![CUP App Clients](/assets/aws-certified-developer-associate/cup_app_clients.png)
+
+For **security settings**, you can enable WAF, threat protection, and log streaming.
+
+For the **branding settings**, you can configure the template for the messages that Cognito sends to users or the style of the sign-in/sign-up page.
