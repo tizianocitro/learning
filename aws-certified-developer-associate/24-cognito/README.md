@@ -141,3 +141,47 @@ You can access the **application clients** by clicking on *App Clients* in the s
 For **security settings**, you can enable WAF, threat protection, and log streaming.
 
 For the **branding settings**, you can configure the template for the messages that Cognito sends to users or the style of the sign-in/sign-up page.
+
+## 24.3 Other Features in Cognito User Pools
+
+### 24.3.1 Lambda triggers
+
+CUP can invoke a Lambda function synchronously on these triggers:
+
+![CUP Lambda Triggers](/assets/aws-certified-developer-associate/cup_lambda_triggers.png)
+
+### 24.3.2 Hosted Authentication UI
+
+Cognito has a hosted authentication UI that can be added to applications to handle sign-up and sign-in.
+- It provides a foundation for integration with social logins, OIDC or SAML.
+- It can be customized with a custom logo and custom CSS.
+
+You can have custom domains for the UI. To do so, you must create an ACM certificate in `us-east-1`.
+- The custom domain must be defined in the *App Integration* section because it is a general configuration that applies to all application client.
+
+### 24.3.3 Adaptive Authentication
+
+This feature allows you to block sign-ins or require MFA if the login appears suspicious.
+
+The way it works, Cognito examines each sign-in attempt and generates a risk score (`low`, `medium`, `high`) for how likely it is that the sign-in request comes from malicious attacker.
+- Users are prompted for MFA only when risk is detected.
+- Risk score is based on different factors: if the user has used the same device, location, or IP address.
+- It also checks for compromised credentials and in case triggers the account takeover protections by sending phone and email notification.
+- It integrates with CloudWatch Logs to log sign-in attempts, risk score, failed challenges, etc.
+
+![CUP Adaptive Authentication](/assets/aws-certified-developer-associate/cup_adaptive_authentication.png)
+
+### 24.3.4 JSON Web Token
+
+CUP issues JWT tokens (Base64 encoded) that include:
+- Header.
+- Payload.
+- Signature.
+
+The signature must be verified to ensure that the JWT can be trusted.
+- There are libraries that can help you verify the validity of JWT issued by CUP.
+
+The payload will contain the user information, some of which are:
+- `sub` UUID: it is the ID of the user in Cognito database, which allows you to retrieve even more information about the user.
+- `email`.
+- `cognito:username`.
