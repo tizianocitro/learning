@@ -185,3 +185,53 @@ The payload will contain the user information, some of which are:
 - `sub` UUID: it is the ID of the user in Cognito database, which allows you to retrieve even more information about the user.
 - `email`.
 - `cognito:username`.
+
+## 24.4 Adding Authentication in ALB
+
+The **ALB can securely authenticate users**, which benefits because your application can:
+- Offload the work of authenticating users to the load balancer.
+- Focus on the business logic.
+
+ALB can authenticate users through:
+- Identity Providers (IdPs): they need to be compliant with OpenID Connect (OIDC).
+- Cognito User Pools that allows you to support:
+    - Social IdPs like Amazon, Facebook, or Google.
+    - Corporate identities using SAML, LDAP, or Microsoft Active Directory.
+
+For this to work, you must configure an HTTPS listener to set `authenticate-oidc` and `authenticate-cognito` rules.
+
+![CUP_ALB](/assets/aws-certified-developer-associate/cup_alb.png)
+
+To **handle unauthenticated requests** we can configure `OnUnauthenticatedRequest` to:
+- Ask to authenticate (default).
+- Deny the request.
+- Allow the request.
+
+### 24.4.1 ALB with Cognito Authentication
+
+To configure it:
+- Create a user pool, client and domain.
+- Make sure the ID token is returned as JWT.
+- Add the social or Corporate IdP, if needed.
+- Configure the URL redirections, which are necessary.
+- Allow your user pool domain on your IdP application's callback URL. For example:
+    - https://domain-prefix.auth.region.amazoncognito.com/saml2/idpresponse.
+    - https://user-pool-domain/oauth2/idpresponse.
+
+![ALB with Cognito Authentication](/assets/aws-certified-developer-associate/alb_with_cognito_authentication.png)
+
+### 24.4.2 ALB with OIDC Authentication
+
+This is a more complex authentication process, following the OAuth 2.0 standard.
+
+![ALB with OIDC Authentication](/assets/aws-certified-developer-associate/alb_with_oidc_authentication.png)
+
+To configure it:
+1. Configure a client ID and secret.
+2. Allow redirect from OIDC to your ALB DNS name
+(AWS-provided) and CNAME (DNS Alias of your application):
+    - https://DNS/oauth2/idpresponse.
+    - https://CNAME/oauth2/idpresponse.
+3. Set the parameters shown in the image below.
+
+![ALB with OIDC Authentication Configuration](/assets/aws-certified-developer-associate/alb_with_oidc_authentication_configuration.png)
